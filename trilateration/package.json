@@ -10,6 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "node-trilateration": "^1.0.0",
+    "trilat": "^1.0.0",
     "trilateration": "0.0.1"
   }
 }
