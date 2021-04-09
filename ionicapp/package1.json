@@ -19,8 +19,6 @@
     "@angular/platform-browser": "~11.2.0",
     "@angular/platform-browser-dynamic": "~11.2.0",
     "@angular/router": "~11.2.0",
-    "@ionic-native/core": "^5.32.0",
-    "@ionic-native/ibeacon": "^5.32.0",
     "@ionic/angular": "^5.5.2",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
@@ -37,7 +35,6 @@
     "@types/jasminewd2": "~2.0.3",
     "@types/node": "^12.11.1",
     "codelyzer": "^6.0.0",
-    "cordova-plugin-ibeacon": "^3.8.1",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~5.2.0",
@@ -51,10 +48,5 @@
     "tslint": "~6.1.0",
     "typescript": "~4.0.2"
   },
-  "description": "An Ionic project",
-  "cordova": {
-    "plugins": {
-      "com.unarin.cordova.beacon": {}
-    }
-  }
+  "description": "An Ionic project"
 }
