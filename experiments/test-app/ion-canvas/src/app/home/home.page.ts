@@ -12,20 +12,15 @@ import {NavController} from '@ionic/angular';
 })
 export class HomePage {
 
-
     /**
       * 'plug into' DOM canvas element using @ViewChild 
       */
     @ViewChild('canvas') canvasEl: ElementRef;
 
-
-
     /**
       * Reference Canvas object 
       */
     private _CANVAS: any;
-
-
 
     /**
       * Reference the context for the Canvas element 
@@ -41,8 +36,6 @@ export class HomePage {
         // thats what i was asking, where to declae
     }
 
-
-
     /**
       * Implement functionality as soon as the template view has loaded
       * 
@@ -51,7 +44,6 @@ export class HomePage {
       * @return {none}
       */
     ionViewDidEnter(): void {
-        console.log("hello")
         this._CANVAS = this.canvasEl.nativeElement;
         this._CANVAS.width = 704;
         this._CANVAS.height = 366;
@@ -59,8 +51,6 @@ export class HomePage {
         this.initialiseCanvas();
         this.drawCircle();
     }
-
-
 
     /**
       * Detect if HTML5 Canvas is supported and, if so, configure the 
@@ -82,8 +72,6 @@ export class HomePage {
     }
 
 
-
-
     /**
       * Create a circle using canvas drawing API
       * 
@@ -93,23 +81,13 @@ export class HomePage {
       */
     drawCircle(): void {
         this.clearCanvas();
-        console.log(this.xRange, this.yRange)
-        // this._CONTEXT.beginPath();
-
-        // // x, y, radius, startAngle, endAngle
-        // this._CONTEXT.arc(this._CANVAS.width / 2, this._CANVAS.height / 2, 80, 0, 2 * Math.PI);
-        // this._CONTEXT.lineWidth = 1;
-        // this._CONTEXT.strokeStyle = '#ffffff';
-        // this._CONTEXT.stroke();
-        //
 
         const ctx = this._CONTEXT
-        const bigThis = this
         ctx.drawImage(this.img, 0, 0)
         ctx.save()
 
         ctx.beginPath()
-        bigThis.drawDot()
+        this.drawDot()
         ctx.fill()
     }
 
@@ -125,49 +103,6 @@ export class HomePage {
         ctx.fillText("You are here", x + 10, y)
     }
 
-
-
-    /**
-      * Create a square using canvas drawing API
-      * 
-      * @public
-      * @method drawSquare
-      * @return {none}
-      */
-    drawSquare(): void {
-        this.clearCanvas();
-        this._CONTEXT.beginPath();
-        this._CONTEXT.rect(this._CANVAS.width / 2 - 100, this._CANVAS.height / 2 - 100, 200, 200);
-        this._CONTEXT.lineWidth = 1;
-        this._CONTEXT.strokeStyle = '#ffffff';
-        this._CONTEXT.stroke();
-    }
-
-
-
-
-    /**
-      * Create a triangle using canvas drawing API
-      * 
-      * @public
-      * @method drawTriangle
-      * @return {none}
-      */
-    drawTriangle(): void {
-        this.clearCanvas();
-        this._CONTEXT.beginPath();
-        this._CONTEXT.moveTo(this._CANVAS.width / 2 - 100, this._CANVAS.height / 2 + 100);
-        this._CONTEXT.lineTo(this._CANVAS.width / 2 + 100, this._CANVAS.height / 2 + 100);
-        this._CONTEXT.lineTo(this._CANVAS.width / 2, this._CANVAS.height / 2);
-        this._CONTEXT.lineTo(this._CANVAS.width / 2 - 100, this._CANVAS.height / 2 + 100);
-        this._CONTEXT.lineWidth = 1;
-        this._CONTEXT.strokeStyle = '#ffffff';
-        this._CONTEXT.stroke();
-    }
-
-
-
-
     /**
       * Configure the Canvas element
       * 
@@ -180,9 +115,6 @@ export class HomePage {
         this._CONTEXT.fillStyle = "#3e3e3e";
         this._CONTEXT.fillRect(0, 0, 500, 500);
     }
-
-
-
 
     /**
       * Reset the Canvas element/clear previous content
