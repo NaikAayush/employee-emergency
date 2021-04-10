@@ -1,10 +1,35 @@
 import {
     Component,
     ElementRef,
-    Input,
     ViewChild
 } from '@angular/core';
 import {NavController} from '@ionic/angular';
+declare var require: any
+const trilat = require('trilat')
+
+function initializeBeacons(coords: Array<Array<number>>): Array<Array<number>> {
+    let newInput = [];
+
+    coords.forEach((coord) => {
+        newInput.push([coord[0], coord[1], 0])
+    })
+
+    return newInput
+}
+
+function getLocation(beacons: Array<Array<number>>, distances: Array<number>): Array<number> {
+    if (beacons.length != distances.length) {
+        throw Error("Distances given do not match array length")
+    }
+
+    for (let i: number = 0; i < beacons.length; ++i) {
+        beacons[i][2] = distances[i]
+    }
+
+    const pos = trilat(beacons)
+
+    return pos
+}
 
 @Component({
     selector: 'page-home',
@@ -27,10 +52,21 @@ export class HomePage {
       */
     private _CONTEXT: any;
 
-    xRange = 300;
-    yRange = 100;
+    beacon1 = 100;
+    beacon2 = 100;
+    beacon3 = 100;
 
     private img: HTMLImageElement;
+
+    private width = 704;
+    private height = 366;
+
+    private beacons: Array<Array<number>> = initializeBeacons([
+        [220, 366],
+        [60, 366],
+        [220, 206]
+    ]);
+
 
     constructor(public navCtrl: NavController) {
         // thats what i was asking, where to declae
@@ -45,8 +81,8 @@ export class HomePage {
       */
     ionViewDidEnter(): void {
         this._CANVAS = this.canvasEl.nativeElement;
-        this._CANVAS.width = 704;
-        this._CANVAS.height = 366;
+        this._CANVAS.width = this.width;
+        this._CANVAS.height = this.height;
 
         this.initialiseCanvas();
         this.drawCircle();
@@ -97,8 +133,13 @@ export class HomePage {
 
         ctx.font = 'bold 20px serif';
         ctx.fillStyle = 'red'
-        let x = this.xRange
-        let y = this.yRange
+
+        const pos = getLocation(this.beacons, [this.beacon1, this.beacon2, this.beacon3])
+        console.log(pos)
+
+        const x = pos[0]
+        const y = this.height - pos[1]
+
         ctx.arc(x, y, 10, 0, Math.PI * 2, true)
         ctx.fillText("You are here", x + 10, y)
     }
