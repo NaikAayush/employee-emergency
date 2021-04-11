@@ -10,4 +10,5 @@ export const environment = {
     appId: '1:729866331218:web:f1a626e48bc05432fb6b8b',
   },
   apiUrl: 'http://34.87.56.251:5050/',
+  wsEndpoint: 'ws://34.87.56.251:5050/',
 };

@@ -165,7 +165,40 @@ export class IbeaconComponent implements OnInit {
     ctx.beginPath();
     this.drawDot();
     ctx.fill();
-    console.log('DRAWw');
+    this.beacons.forEach((item, idx) => {
+      this.drawDot2(
+        item[0],
+        this.height - item[1],
+        `beacon${idx}`,
+        'black',
+        10,
+        15
+      );
+    });
+  }
+
+  drawDot2(
+    x: number,
+    y: number,
+    text: string,
+    color: string = 'red',
+    offsetX: number = 10,
+    offsetY: number = 0
+  ): void {
+    const ctx = this._CONTEXT;
+
+    ctx.beginPath();
+
+    ctx.font = 'bold 20px arial';
+    ctx.fillStyle = color;
+
+    // const pos = getLocation(this.beacons, [this.beacon1, this.beacon2, this.beacon3])
+    // console.log(pos)
+
+    ctx.arc(x, y, 10, 0, Math.PI * 2, true);
+    ctx.fillText(text, x + offsetX, y + offsetY);
+
+    ctx.fill();
   }
 
   drawDot(): void {

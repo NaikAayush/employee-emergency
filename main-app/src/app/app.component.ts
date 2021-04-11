@@ -10,7 +10,11 @@ import { MenuController, Platform } from '@ionic/angular';
 export class AppComponent {
   public appPages = [
     { title: 'Employee', url: '/users/employee', icon: 'body' },
-    { title: 'Command Center', url: '/users/command-center', icon: 'business' },
+    {
+      title: 'Command Center',
+      url: '/users/command-center/dashboard',
+      icon: 'business',
+    },
     { title: 'Test', url: '/test', icon: 'warning' },
     { title: 'iBeacon', url: '/ibeacon', icon: 'warning' },
   ];
