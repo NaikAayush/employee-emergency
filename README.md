@@ -21,3 +21,4 @@
  - `server`: API and WebSocket server
  - `trilateration`: Utilities for trilateration. Now integrated into `ionicapp`
  - `experiments`: for experimenting with packages, modules, features, etc.
+ - `analysis`: some basic analysis of iBeacon sensor data
