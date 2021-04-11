@@ -1,0 +1,21 @@
+// :host {
+//   display: flex;
+//   justify-content: center;
+//   align-items: center;
+//   width: auto;
+//   height: 90vh;
+// }
+firebase-ui {
+  width: 800px;
+}
+:host {
+  display: flex;
+  /* height: 100vh; */
+  height: 50%;
+  justify-content: center;
+  align-items: center;
+}
+
+ion-button {
+  margin: 10px;
+}

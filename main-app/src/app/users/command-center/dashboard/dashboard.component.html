@@ -1,0 +1,45 @@
+<ion-header> </ion-header>
+<p>dashboard works!</p>
+<h1>Hi</h1>
+
+<div class="ion-canvas">
+  <canvas #canvas></canvas>
+</div>
+
+<ion-item>
+  <ion-range
+    min="0"
+    max="400"
+    step="1"
+    snaps="true"
+    color="secondary"
+    (ionChange)="drawCircle()"
+    [(ngModel)]="beacon1"
+  ></ion-range>
+</ion-item>
+{{ beacon1 }}
+
+<ion-item>
+  <ion-range
+    min="0"
+    max="400"
+    step="1"
+    snaps="true"
+    color="secondary"
+    (ionChange)="drawCircle()"
+    [(ngModel)]="beacon2"
+  ></ion-range>
+</ion-item>
+{{ beacon2 }}
+
+<ion-item>
+  <ion-range
+    min="0"
+    max="400"
+    step="1"
+    snaps="true"
+    color="secondary"
+    (ionChange)="drawCircle()"
+    [(ngModel)]="beacon3"
+  ></ion-range>
+</ion-item>

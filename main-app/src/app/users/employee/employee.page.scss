@@ -1,0 +1,12 @@
+app-login {
+  height: 90vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+:host {
+  height: 100vh;
+  font-family: "Poppins", sans-serif;
+}
