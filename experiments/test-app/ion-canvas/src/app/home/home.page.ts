@@ -1,4 +1,5 @@
 import { Component, ElementRef, ViewChild } from '@angular/core';
+import { NavController } from '@ionic/angular';
 
 declare var require: any;
 const trilat = require('trilat');
@@ -50,9 +51,9 @@ export class HomePage {
    */
   private _CONTEXT: any;
 
-  beacon1 = 100;
-  beacon2 = 100;
-  beacon3 = 100;
+  // beacon1 = 100;
+  // beacon2 = 100;
+  // beacon3 = 100;
 
   private img: HTMLImageElement;
 
@@ -65,9 +66,9 @@ export class HomePage {
     [220, 206],
   ]);
 
-  constructor() {
-    // thats what i was asking, where to declae
-  }
+  private allDots: any;
+
+  constructor(public navCtrl: NavController) {}
 
   /**
    * Implement functionality as soon as the template view has loaded
@@ -83,6 +84,35 @@ export class HomePage {
 
     this.initialiseCanvas();
     this.drawCircle();
+
+    const userIds = ['brr', 'abc', 'leUKab3VjIe42HgCq0qPafS1FLs2'];
+
+    this.allDots = {};
+
+    userIds.forEach((uid) => {
+      const listenWs = new WebSocket(`ws://34.87.56.251:5050/listen?id=${uid}`);
+
+      listenWs.addEventListener('open', function (event) {
+        listenWs.send('Hello Server!');
+      });
+
+      listenWs.addEventListener('message', (event) => {
+        try {
+          let data = JSON.parse(event.data);
+          console.log('Message from server ', data);
+
+          this.drawCircle();
+
+          // this.drawDot(data.x, data.y, uid)
+
+          this.allDots[uid] = data;
+
+          this.drawDots();
+        } catch (error) {
+          console.log('Bad data from WS', error);
+        }
+      });
+    });
   }
 
   /**
@@ -116,32 +146,53 @@ export class HomePage {
 
     const ctx = this._CONTEXT;
     ctx.drawImage(this.img, 0, 0);
-    ctx.save();
+
+    // this.drawDot()
+
+    this.beacons.forEach((item, idx) => {
+      this.drawDot(
+        item[0],
+        this.height - item[1],
+        `beacon${idx}`,
+        'black',
+        10,
+        15
+      );
+    });
+  }
+
+  drawDot(
+    x: number,
+    y: number,
+    text: string,
+    color: string = 'red',
+    offsetX: number = 10,
+    offsetY: number = 0
+  ): void {
+    const ctx = this._CONTEXT;
 
     ctx.beginPath();
-    this.drawDot();
+
+    ctx.font = 'bold 20px arial';
+    ctx.fillStyle = color;
+
+    // const pos = getLocation(this.beacons, [this.beacon1, this.beacon2, this.beacon3])
+    // console.log(pos)
+
+    ctx.arc(x, y, 10, 0, Math.PI * 2, true);
+    ctx.fillText(text, x + offsetX, y + offsetY);
+
     ctx.fill();
   }
 
-  drawDot(): void {
-    const ctx = this._CONTEXT;
-    ctx.restore();
-
-    ctx.font = 'bold 20px serif';
-    ctx.fillStyle = 'red';
-
-    const pos = getLocation(this.beacons, [
-      this.beacon1,
-      this.beacon2,
-      this.beacon3,
-    ]);
-    console.log(pos);
-
-    const x = pos[0];
-    const y = this.height - pos[1];
-
-    ctx.arc(x, y, 10, 0, Math.PI * 2, true);
-    ctx.fillText('You are here', x + 10, y);
+  drawDots() {
+    for (const uid in this.allDots) {
+      this.drawDot(
+        this.allDots[uid].x,
+        this.allDots[uid].y,
+        this.allDots[uid].name
+      );
+    }
   }
 
   /**
@@ -153,8 +204,8 @@ export class HomePage {
    */
   setupCanvas(): void {
     this._CONTEXT = this._CANVAS.getContext('2d');
-    this._CONTEXT.fillStyle = '#3e3e3e';
-    this._CONTEXT.fillRect(0, 0, 500, 500);
+    // this._CONTEXT.fillStyle = "#3e3e3e";
+    // this._CONTEXT.fillRect(0, 0, 500, 500);
   }
 
   /**
