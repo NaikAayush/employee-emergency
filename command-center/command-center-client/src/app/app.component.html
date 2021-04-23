@@ -1,13 +1,1 @@
-<div>
-    <h1>Hello there</h1>
-
-    <div class="form-group">
-        <!-- <label for="file">Choose File</label> -->
-        <!-- <input type="file" id="file" (change)="handleFileInput($event.target)"> -->
-
-        <input #imageInput hidden="true" type="file" onclick="this.value=null" (change)="handleFileInput($event.target)"
-            accept="image/*" />
-        <button mat-flat-button color="primary" (click)="imageInput.click()">Choose Map Image</button>
-
-    </div>
-</div>
+<router-outlet></router-outlet>
