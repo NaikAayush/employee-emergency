@@ -6,7 +6,10 @@ import imutils
 import numpy as np
 
 
-def get_yellow(img: np.ndarray):
+IMAGE_WIDTH = 500
+
+
+def _get_yellow(img: np.ndarray):
     """The maps provided by EY have the paths (corridors)
     highlighted in yellow. So we extract just that.
     """
@@ -19,7 +22,7 @@ def get_yellow(img: np.ndarray):
     return mask
 
 
-def make_paths_better(img: np.ndarray):
+def _make_paths_better(img: np.ndarray):
     """The paths in EY map have a person logo/icon
     at regular intervals. Those holes have to be
     filled for path finding to work.
@@ -38,12 +41,12 @@ def make_paths_better(img: np.ndarray):
     return e_im
 
 
-def resize_image(img: np.ndarray):
-    return imutils.resize(img, width=500, inter=cv2.INTER_NEAREST)
+def _resize_image(img: np.ndarray):
+    return imutils.resize(img, width=IMAGE_WIDTH, inter=cv2.INTER_NEAREST)
 
 
 def process_map(img: np.ndarray):
-    return resize_image(make_paths_better(get_yellow(img)))
+    return _resize_image(_make_paths_better(_get_yellow(img)))
 
 
 if __name__ == "__main__":
@@ -64,14 +67,14 @@ if __name__ == "__main__":
 
     draw_img(img)
 
-    img2 = get_yellow(img)
+    img2 = _get_yellow(img)
 
     # draw_img(img2)
 
-    img3 = make_paths_better(img2)
+    img3 = _make_paths_better(img2)
 
     # draw_img(img3)
 
-    img4 = resize_image(img3)
+    img4 = _resize_image(img3)
 
     draw_img(img4)
