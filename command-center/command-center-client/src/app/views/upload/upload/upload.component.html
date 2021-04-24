@@ -1,39 +1,66 @@
 <div>
-    <h1>Hello there</h1>
+  <h1>Hello there</h1>
 
-    <div class="form-group">
-        <!-- <label for="file">Choose File</label> -->
-        <!-- <input type="file" id="file" (change)="handleFileInput($event.target)"> -->
+  <div class="form-group">
+    <!-- <label for="file">Choose File</label> -->
+    <!-- <input type="file" id="file" (change)="handleFileInput($event.target)"> -->
 
-        <input #imageInput hidden="true" type="file" onclick="this.value=null" (change)="handleFileInput($event.target)"
-            accept="image/*" />
-        <button mat-flat-button color="primary" (click)="imageInput.click()">Choose Map Image</button>
+    <input
+      #imageInput
+      hidden="true"
+      type="file"
+      onclick="this.value=null"
+      (change)="handleFileInput($event.target)"
+      accept="image/*"
+    />
+    <button mat-flat-button color="primary" (click)="imageInput.click()">
+      Choose Map Image
+    </button>
+  </div>
 
-    </div>
+  <style>
+    .marker-radio-group {
+      display: flex;
+      flex-direction: column;
+      margin: 15px 0;
+    }
 
+    .marker-radio-button {
+      margin: 5px;
+    }
+  </style>
 
-    <style>
-        .marker-radio-group {
-            display: flex;
-            flex-direction: column;
-            margin: 15px 0;
-        }
+  <div class="form-group">
+    <label id="markerChoiceLabel">Choose marker to place</label>
+    <mat-radio-group
+      class="marker-radio-group"
+      name="markerChoice"
+      aria-labelledby="markerChoiceLabel"
+      [(ngModel)]="markerChoice"
+    >
+      <mat-radio-button
+        class="marker-radio-button"
+        name="markerChoice"
+        value="entry"
+        >Entry</mat-radio-button
+      >
+      <mat-radio-button
+        checked="true"
+        class="marker-radio-button"
+        name="markerChoice"
+        value="exit"
+        >Exit
+      </mat-radio-button>
+      <mat-radio-button
+        class="marker-radio-button"
+        name="markerChoice"
+        value="beacon"
+        >Beacon</mat-radio-button
+      >
+    </mat-radio-group>
+  </div>
 
-        .marker-radio-button {
-            margin: 5px;
-        }
-    </style>
+  <canvas id="mapFabricCanvas"></canvas>
 
-    <div class="form-group">
-        <label id="markerChoiceLabel">Choose marker to place</label>
-        <mat-radio-group class="marker-radio-group" name="markerChoice" aria-labelledby="markerChoiceLabel"
-            [(ngModel)]="markerChoice">
-            <mat-radio-button class="marker-radio-button" name="markerChoice" value="entry">Entry</mat-radio-button>
-            <mat-radio-button checked="true" class="marker-radio-button" name="markerChoice" value="exit">Exit
-            </mat-radio-button>
-            <mat-radio-button class="marker-radio-button" name="markerChoice" value="beacon">Beacon</mat-radio-button>
-        </mat-radio-group>
-    </div>
-
-    <canvas id="mapFabricCanvas"></canvas>
+  <button mat-flat-button color="primary" (click)="submit()">Submit</button>
 </div>
