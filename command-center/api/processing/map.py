@@ -6,7 +6,9 @@ import imutils
 import numpy as np
 
 
-IMAGE_WIDTH = 500
+IMAGE_WIDTH = 800
+DILATE_SIZE_VERT = 8
+DILATE_SIZE_HOR = 11
 
 
 def _get_yellow(img: np.ndarray):
@@ -29,52 +31,43 @@ def _make_paths_better(img: np.ndarray):
     """
     # img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    kernel = np.ones((1,40), np.uint8)  # horizontal kernel
+    kernel = np.ones((1,DILATE_SIZE_HOR), np.uint8)  # horizontal kernel
     d_im = cv2.dilate(img, kernel, iterations=1)
     e_im = cv2.erode(d_im, kernel, iterations=1)
 
 
-    kernel = np.ones((40,1), np.uint8)  # vertical kernel
+    kernel = np.ones((DILATE_SIZE_VERT,1), np.uint8)  # vertical kernel
     d_im = cv2.dilate(e_im, kernel, iterations=1)
     e_im = cv2.erode(d_im, kernel, iterations=1)
 
     return e_im
 
 
-def _resize_image(img: np.ndarray):
-    return imutils.resize(img, width=IMAGE_WIDTH, inter=cv2.INTER_NEAREST)
+def _resize_image(img: np.ndarray, nearest=True):
+    if nearest:
+        return imutils.resize(img, width=IMAGE_WIDTH, inter=cv2.INTER_NEAREST)
+    else:
+        return imutils.resize(img, width=IMAGE_WIDTH, inter=cv2.INTER_AREA)
 
 
 def process_map(img: np.ndarray):
-    return _resize_image(_make_paths_better(_get_yellow(img)))
+    smol_img = _resize_image(img, nearest=False)
+    processed_img = _make_paths_better(_get_yellow(smol_img))
+    return smol_img, processed_img
 
 
 if __name__ == "__main__":
-    from matplotlib import pyplot as plt
+    def draw_img(img):
 
-    def draw_img(img, color=True):
-
-        plt.figure(figsize = (15, 15))
-        if color:
-            plt.imshow(cv2.cvtColor(img, cv2.COLOR_BGR2RGB))
-        else:
-            plt.imshow(img, cmap="Greys")
-        plt.show(block=False)
-        input()
-        plt.close()
+        cv2.imshow("image", img)
+        cv2.waitKey(0)
+        cv2.destroyAllWindows()
 
     img = cv2.imread("map-1.png")
 
     draw_img(img)
 
-    img2 = _get_yellow(img)
+    img2, img3 = process_map(img)
 
-    # draw_img(img2)
-
-    img3 = _make_paths_better(img2)
-
-    # draw_img(img3)
-
-    img4 = _resize_image(img3)
-
-    draw_img(img4)
+    draw_img(img2)
+    draw_img(img3)
