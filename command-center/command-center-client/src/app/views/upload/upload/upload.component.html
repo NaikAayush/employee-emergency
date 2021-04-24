@@ -11,5 +11,27 @@
 
     </div>
 
+
+    <style>
+        .marker-radio-group {
+            display: flex;
+            flex-direction: column;
+            margin: 15px 0;
+        }
+
+        .marker-radio-button {
+            margin: 5px;
+        }
+    </style>
+
+    <div class="form-group">
+        <label id="markerChoiceLabel">Choose marker to place</label>
+        <mat-radio-group class="marker-radio-group" name="markerChoice" aria-labelledby="markerChoiceLabel">
+            <mat-radio-button class="marker-radio-button" name="markerChoice" value="entry">Entry</mat-radio-button>
+            <mat-radio-button class="marker-radio-button" name="markerChoice" value="exit">Exit</mat-radio-button>
+            <mat-radio-button class="marker-radio-button" name="markerChoice" value="beacon">Beacon</mat-radio-button>
+        </mat-radio-group>
+    </div>
+
     <canvas #mapCanvas style="width: 100%" (mousedown)="getMousePos($event)"></canvas>
 </div>

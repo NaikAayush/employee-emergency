@@ -17,6 +17,6 @@ export class ApiService {
     }
 
     async post(route: String, data: any) {
-        return await this.http.post(`${environment.apiUrl}${route}`, data, {responseType: "blob"}).toPromise();
+        return await this.http.post(`${environment.apiUrl}${route}`, data, {responseType: "json"}).toPromise();
     }
 }

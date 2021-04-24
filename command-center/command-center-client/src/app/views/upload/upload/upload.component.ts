@@ -14,8 +14,9 @@ export class UploadComponent implements OnInit {
     private mapCanvas!: ElementRef<HTMLCanvasElement>;
 
     private context!: CanvasRenderingContext2D;
-    private imgUrl: string = "";
     private rect!: DOMRect;
+    private origImg!: HTMLImageElement;
+    private mapImg!: HTMLImageElement;
 
     constructor(public api: ApiService) {}
 
@@ -54,20 +55,23 @@ export class UploadComponent implements OnInit {
         formData.append("file", file);
 
         this.api.post("/map/processImage", formData).then(
-            (res: Blob) => {
-                console.log(res)
-                let imgUrl = URL.createObjectURL(res);
-                this.imgUrl = imgUrl;
+            (res: any) => {
+                let orig_img = new Image();
+                orig_img.src = "data:image/jpg;base64," + res.orig_img;
 
-                let img = new Image();
-                img.src = this.imgUrl;
-                img.onload = () => {
-                    this.mapCanvas.nativeElement.width = img.width;
-                    this.mapCanvas.nativeElement.height = img.height;
-                    this.context.drawImage(img, 0, 0);
+                orig_img.onload = () => {
+                    this.mapCanvas.nativeElement.width = orig_img.width;
+                    this.mapCanvas.nativeElement.height = orig_img.height;
+                    this.context.drawImage(orig_img, 0, 0);
 
                     this.rect = this.mapCanvas.nativeElement.getBoundingClientRect();
                 }
+
+                let map_img = new Image();
+                map_img.src = "data:image/jpg;base64," + res.map_img;
+
+                this.origImg = orig_img;
+                this.mapImg = map_img;
             }
         ).catch(
             err => {
