@@ -99,7 +99,7 @@ export class UploadComponent implements OnInit {
         let x = e.pointer.x - iconSize / 2;
         let y = e.pointer.y - iconSize / 2;
         let intersects = false;
-        let intObject: fabric.Object | null = null;
+        let intObject!: fabric.Object;
 
         this.canvas.getObjects('image').some((obj) => {
           let inter = obj.intersectsWithRect(
@@ -114,8 +114,26 @@ export class UploadComponent implements OnInit {
           return false;
         });
 
-        if (intersects && intObject !== null) {
-          this.canvas.remove(intObject);
+        if (
+          intersects &&
+          intObject !== null &&
+          intObject.left !== undefined &&
+          intObject.top !== undefined
+        ) {
+          const tl = new fabric.Point(x + iconSize / 4, y + iconSize / 4);
+          const br = new fabric.Point(
+            x + (3 * iconSize) / 4,
+            y + (3 * iconSize) / 4
+          );
+          const smolRect = new fabric.Rect({
+            left: intObject.left + iconSize / 4,
+            top: intObject.top + iconSize / 4,
+            width: iconSize / 2,
+            height: iconSize / 2,
+          });
+          if (smolRect.intersectsWithRect(tl, br)) {
+            this.canvas.remove(intObject);
+          }
         } else {
           let iconImg = new fabric.Image(
             this.choicesInfo[this.markerChoice].iconEl,
