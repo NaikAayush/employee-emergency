@@ -1,6 +1,7 @@
 """Module for processing of map images
 """
 
+from typing import Tuple
 import cv2
 import imutils
 import numpy as np
@@ -50,7 +51,7 @@ def _resize_image(img: np.ndarray, nearest=True):
         return imutils.resize(img, width=IMAGE_WIDTH, inter=cv2.INTER_AREA)
 
 
-def process_map(img: np.ndarray):
+def process_map(img: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     smol_img = _resize_image(img, nearest=False)
     processed_img = _make_paths_better(_get_yellow(smol_img))
     return smol_img, processed_img
