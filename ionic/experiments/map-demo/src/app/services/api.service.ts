@@ -15,9 +15,15 @@ export class ApiService {
       .toPromise();
   }
 
-  async post(route: String, data: any) {
+  async post(route: String, data: any, params: Record<string, string>) {
+    let url = `${environment.apiUrl}${route}`;
+
+    if (params !== undefined) {
+      url += '?' + new URLSearchParams(params);
+    }
+
     return await this.http
-      .post(`${environment.apiUrl}${route}`, data, { responseType: 'json' })
+      .post(url, data, { responseType: 'json' })
       .toPromise();
   }
 }

@@ -7,6 +7,16 @@ import {
 import { AngularFireStorage } from '@angular/fire/storage';
 import { ApiService } from 'src/app/services/api.service';
 
+class Point {
+  x: number;
+  y: number;
+
+  constructor(x: number, y: number) {
+    this.x = x;
+    this.y = y;
+  }
+}
+
 interface MarkerInfo {
   name: string;
   top: number;
@@ -30,6 +40,7 @@ interface ChoiceInfo {
   styleUrls: ['./upload.component.scss'],
 })
 export class UploadComponent implements OnInit {
+  // uuid of the map to download
   uuid: string;
 
   private mapDoc: AngularFirestoreDocument<MapInfo>;
@@ -55,8 +66,12 @@ export class UploadComponent implements OnInit {
       iconSrc: 'assets/img/beacon.svg',
     },
   };
-  // for use in ngFor ig
+  // update this when updating above
   private choices = ['exit', 'entry', 'beacon'];
+
+  // current position
+  currentPos: Point;
+  drawnPath: fabric.Rect[] = [];
 
   constructor(
     private api: ApiService,
@@ -77,6 +92,15 @@ export class UploadComponent implements OnInit {
       let choiceInfo = this.choicesInfo[choice];
       choiceInfo.iconEl = new Image();
       choiceInfo.iconEl.src = choiceInfo.iconSrc;
+    });
+
+    this.canvas.on('mouse:down', (e: fabric.IEvent) => {
+      if (e.pointer === undefined) {
+        console.log('aaaaa undefined');
+      } else {
+        console.log(e.pointer.x, e.pointer.y);
+        this.currentPos = new Point(e.pointer.x, e.pointer.y);
+      }
     });
   }
 
@@ -155,6 +179,44 @@ export class UploadComponent implements OnInit {
           iconImg.data = { name: marker.name };
           this.canvas.add(iconImg);
         }
+      });
+  }
+
+  private getNearestExit() {
+    this.api
+      .post(
+        '/map/nearestExit',
+        { x: this.currentPos.x, y: this.currentPos.y },
+        { id_: this.uuid }
+      )
+      .then((res: any) => {
+        console.log(res);
+
+        while (this.drawnPath.length != 0) {
+          let rect = this.drawnPath.pop();
+          this.canvas.remove(rect);
+        }
+
+        if (res.path !== null) {
+          for (let point of res.path) {
+            var rect = new fabric.Rect({
+              left: point[0],
+              top: point[1],
+              fill: 'red',
+              width: 2,
+              height: 2,
+              angle: 45,
+            });
+
+            this.canvas.add(rect);
+            this.drawnPath.push(rect);
+          }
+        } else {
+          console.log('Nope. No path found');
+        }
+      })
+      .catch((err) => {
+        console.log('Error in getting nearest exit', err);
       });
   }
 }
