@@ -1,1 +1,15 @@
-<p>upload works! aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa</p>
+<div id="upload-component">
+  <h1>Hello there</h1>
+
+  <div class="form-group">
+    <input
+      #uuid
+      placeholder="Enter UUID"
+      type="text"
+      value="2d9aa6e0-8811-4f78-8518-93f31ee8ca79"
+    />
+    <button (click)="handleSubmitClick(uuid.value)">Submit</button>
+  </div>
+
+  <canvas id="mapFabricCanvas"></canvas>
+</div>
