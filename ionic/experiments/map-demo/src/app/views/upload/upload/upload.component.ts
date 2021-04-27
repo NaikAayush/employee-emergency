@@ -243,77 +243,77 @@ export class UploadComponent implements OnInit {
   }
 
   private getNearestExit() {
-    // need to scale this too
-    const curpos = { x: this.currentPos.x, y: this.currentPos.y };
+    // const curpos = { x: this.currentPos.x, y: this.currentPos.y };
+
+    // const scale = this.origImg.height / this.imgMatrix.length;
+    // const curposActual = {
+    //   y: Math.round(curpos.x / scale),
+    //   x: Math.round(curpos.y / scale),
+    // };
+
+    // console.log('cur pos', curposActual);
+
+    // let exit = { x: this.exits[0].x, y: this.exits[0].y };
+    // console.log('exit', exit);
+    // const path = this.pathfinder.findPath(curposActual, exit);
+    // console.log('found path', path);
+
+    // if (path) {
+    //   while (this.drawnPath.length != 0) {
+    //     let rect = this.drawnPath.pop();
+    //     this.canvas.remove(rect);
+    //   }
+
+    //   for (let point of path) {
+    //     console.log(point, this.imgMatrix[point[0]][point[1]]);
+    //     var rect = new fabric.Rect({
+    //       left: point[1] * scale,
+    //       top: point[0] * scale,
+    //       fill: 'red',
+    //       width: 5,
+    //       height: 5,
+    //       angle: 45,
+    //       selectable: false,
+    //     });
+    //     this.canvas.add(rect);
+    //     this.drawnPath.push(rect);
+    //   }
+    // } else {
+    //   console.log('Nope. No path found');
+    // }
 
     const scale = this.origImg.height / this.imgMatrix.length;
-    const curposActual = {
-      x: Math.round(curpos.x / scale),
-      y: Math.round(curpos.y / scale),
-    };
-
-    console.log('cur pos', curposActual);
-
-    let exit = { x: this.exits[0].x, y: this.exits[0].y };
-    console.log('exit', exit);
-    const path = this.pathfinder.findPath(curposActual, exit);
-    console.log('found path', path);
-
-    if (path) {
-      while (this.drawnPath.length != 0) {
-        let rect = this.drawnPath.pop();
-        this.canvas.remove(rect);
-      }
-
-      for (let point of path) {
-        var rect = new fabric.Rect({
-          left: point[0] * scale,
-          top: point[1] * scale,
-          fill: 'red',
-          width: 2,
-          height: 2,
-          angle: 45,
-          selectable: false,
-        });
-        this.canvas.add(rect);
-        this.drawnPath.push(rect);
-      }
-    } else {
-      console.log('Nope. No path found');
-    }
-
-    //
-    // this.api
-    //   .post(
-    //     '/map/nearestExit',
-    //     { x: this.currentPos.x, y: this.currentPos.y },
-    //     { id_: this.uuid }
-    //   )
-    //   .then((res: any) => {
-    //     console.log(res);
-    //     while (this.drawnPath.length != 0) {
-    //       let rect = this.drawnPath.pop();
-    //       this.canvas.remove(rect);
-    //     }
-    //     if (res.path !== null) {
-    //       for (let point of res.path) {
-    //         var rect = new fabric.Rect({
-    //           left: point[0],
-    //           top: point[1],
-    //           fill: 'red',
-    //           width: 2,
-    //           height: 2,
-    //           angle: 45,
-    //         });
-    //         this.canvas.add(rect);
-    //         this.drawnPath.push(rect);
-    //       }
-    //     } else {
-    //       console.log('Nope. No path found');
-    //     }
-    //   })
-    //   .catch((err) => {
-    //     console.log('Error in getting nearest exit', err);
-    //   });
+    this.api
+      .post(
+        '/map/nearestExit',
+        { x: this.currentPos.x / scale, y: this.currentPos.y / scale },
+        { id_: this.uuid }
+      )
+      .then((res: any) => {
+        console.log(res);
+        while (this.drawnPath.length != 0) {
+          let rect = this.drawnPath.pop();
+          this.canvas.remove(rect);
+        }
+        if (res.path !== null) {
+          for (let point of res.path) {
+            var rect = new fabric.Rect({
+              left: scale * point[0],
+              top: scale * point[1],
+              fill: 'red',
+              width: 2,
+              height: 2,
+              angle: 45,
+            });
+            this.canvas.add(rect);
+            this.drawnPath.push(rect);
+          }
+        } else {
+          console.log('Nope. No path found');
+        }
+      })
+      .catch((err) => {
+        console.log('Error in getting nearest exit', err);
+      });
   }
 }
