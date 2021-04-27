@@ -1,12 +1,14 @@
 import io
+import logging
 import os
 import base64
 import json
+import math
 from typing import Any, Dict, List, Tuple, Union
+from dataclasses import asdict, dataclass
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from numpy.lib import math
 from pydantic import BaseModel
 
 from PIL import Image
@@ -23,6 +25,7 @@ from firebase_admin import storage
 from dotenv import load_dotenv
 
 from processing.map import process_map
+import processing.map
 
 
 # FastAPI stuff
@@ -54,12 +57,31 @@ class Marker(BaseModel):
     width: int
 
 
-class Map(BaseModel):
+@dataclass
+class POI:
+    """Points of interest - same as marker, but only point"""
+
+    name: str
+    loc: Point
+
+
+@dataclass
+class Map:
     id_: str
     exits: List[Marker]
     entries: List[Marker]
     beacons: List[Marker]
     others: List[Marker]
+
+    def get_markers(self):
+        for m in self.exits:
+            yield m
+        for m in self.entries:
+            yield m
+        for m in self.beacons:
+            yield m
+        for m in self.others:
+            yield m
 
 
 # Firebase stuff
@@ -230,16 +252,90 @@ def get_map_data(id_: str):
             height=marker["height"],
             width=marker["width"],
         )
-        if marker["name"]== "exit":
+        if marker["name"] == "exit":
             exits.append(marker_obj)
-        elif marker["name"]== "entry":
+        elif marker["name"] == "entry":
             entries.append(marker_obj)
-        elif marker["name"]== "beacon":
+        elif marker["name"] == "beacon":
             beacons.append(marker_obj)
         else:
             others.append(marker_obj)
 
     return Map(id_=id_, exits=exits, entries=entries, beacons=beacons, others=others)
+
+
+def set_map_data(id_: str, data: dict):
+    doc_ref = map_ref.document(id_)
+    doc_data: dict = doc_ref.get().to_dict()
+
+    if doc_data is None:
+        return HTTPException(400, f"Map data with ID {id_} does not exist")
+
+    doc_data.update(data)
+    doc_ref.update(doc_data)
+
+    return True
+
+
+@app.get("/map/processMarkers")
+async def processMarkers(id_: str):
+    map_data = get_map_data(id_)
+    if isinstance(map_data, HTTPException):
+        return map_data
+
+    # get images here
+    ret = get_images(id_)
+
+    if isinstance(ret, HTTPException):
+        return ret
+
+    map_img, orig_img = ret
+
+    print(map_img.shape, orig_img.shape)
+
+    h_scale = orig_img.shape[0] / map_img.shape[0]
+    w_scale = orig_img.shape[1] / map_img.shape[1]
+
+    print(h_scale)
+    print(w_scale)
+    exits: List[POI] = []
+    others: List[POI] = []
+
+    def get_nearest_valid(img: np.ndarray, x, y):
+        x_close, x_min, x_max = round(x), math.floor(x), math.ceil(x)
+        y_close, y_min, y_max = round(y), math.floor(y), math.ceil(y)
+
+        for x_cand in (x_close, x_min, x_max):
+            for y_cand in (y_close, y_min, y_max):
+                if img[x_cand, y_cand] > 0:
+                    return Point(x=x_cand, y=y_cand)
+
+        logging.warning(
+            "Point (%f, %f) is on an invalid point (%d, %d)", x, y, x_close, y_close
+        )
+        return Point(x=x_close, y=y_close)
+
+    for marker in map_data.exits:
+        exits.append(
+            POI(
+                name=marker.name,
+                loc=get_nearest_valid(
+                    map_img,
+                    x=(marker.top + marker.height / 2) / w_scale,
+                    y=(marker.left + marker.width / 2) / h_scale,
+                ),
+            )
+        )
+
+    map_img[map_img > 0] = 1
+    # map_arr = dict(((str(i), j) for i, j in enumerate(map_img.tolist())))
+    map_arr = map_img.tolist()
+    map_arr_s = json.dumps(map_arr, separators=(',', ':'))
+    # print(map_arr_s)
+    print(len(map_arr))
+    print(len(map_arr[0]))
+
+    set_map_data(id_, {"array": map_arr_s, "exits": [poi.loc.dict() for poi in exits]})
 
 
 @app.post("/map/shortestpathtest")
@@ -296,7 +392,6 @@ async def nearestExit(id_: str, source: Point):
             shortest_dist = len(path)
             shortest_path = path
             shortest_runs = runs
-
 
     return {
         "message": "Success",
