@@ -6,6 +6,7 @@ import {
 } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { ApiService } from 'src/app/services/api.service';
+import { AStarFinder } from 'astar-typescript';
 
 class Point {
   x: number;
@@ -28,7 +29,7 @@ interface MarkerInfo {
 interface MapInfo {
   markers: MarkerInfo[];
   array: string;
-  exists: Point[];
+  exits: Point[];
 }
 
 interface ChoiceInfo {
@@ -47,6 +48,13 @@ export class UploadComponent implements OnInit {
 
   private mapDoc: AngularFirestoreDocument<MapInfo>;
   private canvas: fabric.Canvas;
+
+  // image matrix for path finding
+  private imgMatrix: Array<Array<number>>;
+  // array of exits for pathfinding
+  private exits: Point[];
+  // A star finder
+  private pathfinder: AStarFinder;
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -74,6 +82,7 @@ export class UploadComponent implements OnInit {
   // current position
   currentPos: Point;
   drawnPath: fabric.Rect[] = [];
+  origImg: HTMLImageElement;
 
   constructor(
     private api: ApiService,
@@ -119,6 +128,7 @@ export class UploadComponent implements OnInit {
         console.log(res);
 
         let orig_img = new Image();
+        this.origImg = orig_img;
         orig_img.src = res;
 
         orig_img.onload = () => {
@@ -155,12 +165,16 @@ export class UploadComponent implements OnInit {
           this.canvas.add(orig_img_f);
 
           this.addMarkers();
+
+          this.getMapGrid();
         };
       })
       .catch((err) => {
         console.log('error go brr', err);
       });
+  }
 
+  private getMapGrid() {
     this.mapDoc
       .get() // TODO: maybe set cache here for spid
       .toPromise()
@@ -168,7 +182,41 @@ export class UploadComponent implements OnInit {
         const data = res.data();
         const imgString = data.array;
         const imgArray = JSON.parse(imgString);
-        console.log(imgArray);
+        this.imgMatrix = imgArray;
+
+        this.pathfinder = new AStarFinder({
+          grid: {
+            matrix: this.imgMatrix,
+          },
+          diagonalAllowed: false,
+          heuristic: 'Manhattan',
+          includeStartNode: true,
+          includeEndNode: true,
+        });
+
+        const scale = this.origImg.height / this.imgMatrix.length;
+        console.log(this.imgMatrix.length, this.imgMatrix[0].length, scale);
+
+        // this draws the map with points for each >0 cell
+        for (let i = 0; i < this.imgMatrix.length; ++i) {
+          for (let j = 0; j < this.imgMatrix[i].length; ++j) {
+            if (this.imgMatrix[i][j] > 0) {
+              var rect = new fabric.Rect({
+                left: j * scale,
+                top: i * scale,
+                fill: 'blue',
+                width: 1,
+                height: 1,
+                angle: 0,
+                selectable: false,
+              });
+              this.canvas.add(rect);
+            }
+          }
+        }
+
+        this.exits = data.exits;
+        console.log(this.exits);
       });
   }
 
@@ -195,40 +243,77 @@ export class UploadComponent implements OnInit {
   }
 
   private getNearestExit() {
-    this.api
-      .post(
-        '/map/nearestExit',
-        { x: this.currentPos.x, y: this.currentPos.y },
-        { id_: this.uuid }
-      )
-      .then((res: any) => {
-        console.log(res);
+    // need to scale this too
+    const curpos = { x: this.currentPos.x, y: this.currentPos.y };
 
-        while (this.drawnPath.length != 0) {
-          let rect = this.drawnPath.pop();
-          this.canvas.remove(rect);
-        }
+    const scale = this.origImg.height / this.imgMatrix.length;
+    const curposActual = {
+      x: Math.round(curpos.x / scale),
+      y: Math.round(curpos.y / scale),
+    };
 
-        if (res.path !== null) {
-          for (let point of res.path) {
-            var rect = new fabric.Rect({
-              left: point[0],
-              top: point[1],
-              fill: 'red',
-              width: 2,
-              height: 2,
-              angle: 45,
-            });
+    console.log('cur pos', curposActual);
 
-            this.canvas.add(rect);
-            this.drawnPath.push(rect);
-          }
-        } else {
-          console.log('Nope. No path found');
-        }
-      })
-      .catch((err) => {
-        console.log('Error in getting nearest exit', err);
-      });
+    let exit = { x: this.exits[0].x, y: this.exits[0].y };
+    console.log('exit', exit);
+    const path = this.pathfinder.findPath(curposActual, exit);
+    console.log('found path', path);
+
+    if (path) {
+      while (this.drawnPath.length != 0) {
+        let rect = this.drawnPath.pop();
+        this.canvas.remove(rect);
+      }
+
+      for (let point of path) {
+        var rect = new fabric.Rect({
+          left: point[0] * scale,
+          top: point[1] * scale,
+          fill: 'red',
+          width: 2,
+          height: 2,
+          angle: 45,
+          selectable: false,
+        });
+        this.canvas.add(rect);
+        this.drawnPath.push(rect);
+      }
+    } else {
+      console.log('Nope. No path found');
+    }
+
+    //
+    // this.api
+    //   .post(
+    //     '/map/nearestExit',
+    //     { x: this.currentPos.x, y: this.currentPos.y },
+    //     { id_: this.uuid }
+    //   )
+    //   .then((res: any) => {
+    //     console.log(res);
+    //     while (this.drawnPath.length != 0) {
+    //       let rect = this.drawnPath.pop();
+    //       this.canvas.remove(rect);
+    //     }
+    //     if (res.path !== null) {
+    //       for (let point of res.path) {
+    //         var rect = new fabric.Rect({
+    //           left: point[0],
+    //           top: point[1],
+    //           fill: 'red',
+    //           width: 2,
+    //           height: 2,
+    //           angle: 45,
+    //         });
+    //         this.canvas.add(rect);
+    //         this.drawnPath.push(rect);
+    //       }
+    //     } else {
+    //       console.log('Nope. No path found');
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log('Error in getting nearest exit', err);
+    //   });
   }
 }
