@@ -27,6 +27,8 @@ interface MarkerInfo {
 
 interface MapInfo {
   markers: MarkerInfo[];
+  array: string;
+  exists: Point[];
 }
 
 interface ChoiceInfo {
@@ -157,6 +159,16 @@ export class UploadComponent implements OnInit {
       })
       .catch((err) => {
         console.log('error go brr', err);
+      });
+
+    this.mapDoc
+      .get() // TODO: maybe set cache here for spid
+      .toPromise()
+      .then((res) => {
+        const data = res.data();
+        const imgString = data.array;
+        const imgArray = JSON.parse(imgString);
+        console.log(imgArray);
       });
   }
 
