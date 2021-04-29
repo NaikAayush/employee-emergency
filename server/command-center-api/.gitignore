@@ -2,3 +2,4 @@ env
 .vim
 service-account.json
 .env
+processing/map-1.png

@@ -8,6 +8,7 @@ import numpy as np
 
 
 IMAGE_WIDTH = 800
+MAP_WIDTH = 150
 DILATE_SIZE_VERT = 8
 DILATE_SIZE_HOR = 11
 
@@ -44,16 +45,16 @@ def _make_paths_better(img: np.ndarray):
     return e_im
 
 
-def _resize_image(img: np.ndarray, nearest=True):
+def _resize_image(img: np.ndarray, nearest=True, width=IMAGE_WIDTH):
     if nearest:
-        return imutils.resize(img, width=IMAGE_WIDTH, inter=cv2.INTER_NEAREST)
+        return imutils.resize(img, width=width, inter=cv2.INTER_NEAREST)
     else:
-        return imutils.resize(img, width=IMAGE_WIDTH, inter=cv2.INTER_AREA)
+        return imutils.resize(img, width=width, inter=cv2.INTER_AREA)
 
 
 def process_map(img: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     smol_img = _resize_image(img, nearest=False)
-    processed_img = _make_paths_better(_get_yellow(smol_img))
+    processed_img = _resize_image(_make_paths_better(_get_yellow(smol_img)), width=MAP_WIDTH)
     return smol_img, processed_img
 
 

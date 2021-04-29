@@ -225,26 +225,24 @@ export class UploadComponent implements OnInit {
     // TODO: aaaaaaaaaaaaaa
   }
 
-  private uploadImage(img: HTMLImageElement, id: string, name: string) {
+  private async uploadImage(
+    img: HTMLImageElement,
+    id: string,
+    name: string,
+    cback?: Function
+  ) {
     const imgPath = '/map/' + id + '/' + name;
     const ref = this.storage.ref(imgPath);
-    fetch(img.src)
-      .then((res) => res.blob())
-      .then((res) => {
-        const task = ref.put(res, { contentType: 'image/png' });
-        task
-          .percentageChanges()
-          .toPromise()
-          .then((value) => {
-            console.log(name + ' Image upload done this much', value);
-          });
-        task.then((a) => {
-          console.log(name + ' Image upload done', a.totalBytes, a.state);
-        });
-      });
+    const res = await (await fetch(img.src)).blob();
+    const value = await ref.put(res, { contentType: 'image/png' });
+    console.log(name + ' Image upload done', value.state, value.totalBytes);
+
+    if (cback) {
+      cback();
+    }
   }
 
-  submit() {
+  async submit() {
     const markers: MarkerInfo[] = [];
     this.canvas.forEachObject((obj) => {
       if (obj.data !== undefined) {
@@ -268,13 +266,23 @@ export class UploadComponent implements OnInit {
       }
     });
 
-    this.uploadImage(this.origImg, this.mapId, 'orig');
-    this.uploadImage(this.mapImg, this.mapId, 'map');
-
     const mapInfo: MapInfo = {
       markers: markers,
     };
     console.log(mapInfo);
-    this.mapDoc.set(mapInfo);
+    await Promise.all([
+      this.uploadImage(this.origImg, this.mapId, 'orig'),
+      this.uploadImage(this.mapImg, this.mapId, 'map'),
+      this.mapDoc.set(mapInfo),
+    ]);
+
+    this.api
+      .get('/map/processMarkers', { id_: this.mapId })
+      .then((res) => {
+        console.log('Process markers done', res);
+      })
+      .catch((err) => {
+        console.log('Error in process markers', err);
+      });
   }
 }
