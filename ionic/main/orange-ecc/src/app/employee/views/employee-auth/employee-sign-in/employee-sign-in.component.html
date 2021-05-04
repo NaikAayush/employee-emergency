@@ -1,0 +1,101 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Employee Sign In</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div *ngIf="auth.user$ | async; then authenticated else guest">
+  <!-- template will replace this div -->
+</div>
+
+<ion-content>
+  <ng-template #guest>
+    <div class="min-h-screen flex items-center justify-center bg-white dark:bg-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-md w-full">
+        <div>
+          <img src="assets/ey-logo.png" class="mx-auto h-20 w-auto mb-6" id="logo">
+          <h3 class="mt-6 text-center text-3xl font-semibold text-gray-900">
+            Sign In
+          </h3>
+        </div>
+
+        <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="px-8 pt-6 pb-8 mb-24">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+              Email
+            </label>
+            <input [ngClass]="emailClass()" formControlName="email" class="email" type="email" placeholder="Email">
+          </div>
+          <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+              Password
+            </label>
+            <input formControlName="password" (focusout)="checkPwd($event)" class="pwd" type="password"
+              placeholder="******************">
+            <p [ngClass]="pwdErrorClass()">Please enter a password.</p>
+          </div>
+          <div class="flex items-center justify-between">
+            <button class="submit-button" type="submit" [disabled]="!signInForm.valid">
+              Sign In
+            </button>
+            <a class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-900" href="#">
+              Forgot Password?
+            </a>
+          </div>
+        </form>
+
+
+      </div>
+    </div>
+    <!-- <section class="bg-white {-- h-full --}">
+      <div class="mx-auto flex justify-center h-full flex-col lg:flex-row">
+        <div
+          class="w-full sm:w-4/6 md:w-3/6 lg:w-2/3 text-gray-800 dark:text-gray-100 mb-12 sm:mb-0 flex flex-col justify-center px-2 sm:px-0">
+          <div class="px-2 flex flex-col items-center justify-center pt-12 lg:pt-0">
+            <img src="assets/ey-logo.png" class="w-32 h-32" id="logo" height="44" />
+          </div>
+          <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="px-8 pt-6 pb-8 mb-4">
+            <div class="mb-4">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+                Email
+              </label>
+              <input formControlName="email" class="default-input" type="email" placeholder="Email">
+            </div>
+            <div class="mb-6">
+              <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+                Password
+              </label>
+              <input formControlName="password" class="error-input" type="password" placeholder="******************">
+              <p class="text-red-500 text-xs italic">Please choose a password.</p>
+            </div>
+            <div class="flex items-center justify-between">
+              <button
+                class="bg-yellow-1000 hover:bg-yellow-300 text-gray-800 font-bold py-2 px-4 rounded focus:outline-none focus:shadow-outline"
+                type="submit" [disabled]="!signInForm.valid">
+                Sign In
+              </button>
+              <a class="inline-block align-baseline font-bold text-sm text-gray-800 hover:text-gray-700" href="#">
+                Forgot Password?
+              </a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </section> -->
+  </ng-template>
+
+  <ng-template #authenticated>
+    <div *ngIf="auth.user$ | async as user">
+      <h1>Namaste</h1>
+      <!-- <h3>Howdy, {{ user.displayName }}</h3>
+      <img [src]="user.photoURL">
+      <p>UID: {{ user.uid }}</p>
+       -->
+      <button (click)="auth.signOut()">Logout</button>
+    </div>
+  </ng-template>
+
+</ion-content>

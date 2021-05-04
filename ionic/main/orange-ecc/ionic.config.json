@@ -1,0 +1,10 @@
+{
+  "name": "orange-ecc",
+  "integrations": {
+    "capacitor": {
+      "enabled": false
+    },
+    "cordova": {}
+  },
+  "type": "angular"
+}
