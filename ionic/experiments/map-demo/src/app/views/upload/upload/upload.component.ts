@@ -6,7 +6,8 @@ import {
 } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 import { ApiService } from 'src/app/services/api.service';
-import { AStarFinder } from 'astar-typescript';
+// import { AStarFinder } from 'astar-typescript';
+import {Grid, Astar} from "fast-astar";
 
 class Point {
   x: number;
@@ -54,7 +55,8 @@ export class UploadComponent implements OnInit {
   // array of exits for pathfinding
   private exits: Point[];
   // A star finder
-  private pathfinder: AStarFinder;
+  // private pathfinder: AStarFinder;
+  private astar: Astar;
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -98,7 +100,6 @@ export class UploadComponent implements OnInit {
 
     this.canvas.height = 0;
     this.canvas.width = 0;
-
     this.choices.forEach((choice: string) => {
       let choiceInfo = this.choicesInfo[choice];
       choiceInfo.iconEl = new Image();
@@ -184,15 +185,27 @@ export class UploadComponent implements OnInit {
         const imgArray = JSON.parse(imgString);
         this.imgMatrix = imgArray;
 
-        this.pathfinder = new AStarFinder({
-          grid: {
-            matrix: this.imgMatrix,
-          },
-          diagonalAllowed: false,
-          heuristic: 'Manhattan',
-          includeStartNode: true,
-          includeEndNode: true,
+        let grid = new Grid({
+          col: this.imgMatrix[0].length,
+          row: this.imgMatrix.length,
+          render: function(){}
         });
+        for (let i = 0; i < this.imgMatrix.length; ++i) {
+          for (let j = 0; j < this.imgMatrix[i].length; ++j) {
+            // console.log("Setting value of ", i, j, "to ", 1 - this.imgMatrix[i][j]);
+            grid.set([i, j], "value", 1 - this.imgMatrix[i][j]);
+          }
+        }
+        this.astar = new Astar(grid);
+        // this.pathfinder = new AStarFinder({
+        //   grid: {
+        //     matrix: this.imgMatrix,
+        //   },
+        //   diagonalAllowed: false,
+        //   heuristic: 'Manhattan',
+        //   includeStartNode: true,
+        //   includeEndNode: true,
+        // });
 
         const scale = this.origImg.height / this.imgMatrix.length;
         console.log(this.imgMatrix.length, this.imgMatrix[0].length, scale);

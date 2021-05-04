@@ -29,6 +29,7 @@
     "@types/fabric": "^4.2.5",
     "astar-typescript": "^1.2.5",
     "fabric": "^4.4.0",
+    "fast-astar": "^1.0.6",
     "firebase": "^7.0 || ^8.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
