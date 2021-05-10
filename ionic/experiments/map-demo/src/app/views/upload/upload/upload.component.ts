@@ -7,7 +7,9 @@ import {
 import { AngularFireStorage } from '@angular/fire/storage';
 import { ApiService } from 'src/app/services/api.service';
 // import { AStarFinder } from 'astar-typescript';
-import {Grid, Astar} from "fast-astar";
+// import { Grid, Astar } from 'fast-astar';
+// import { PF } from 'pathfinding';
+import * as EasyStar from 'easystarjs';
 
 class Point {
   x: number;
@@ -56,7 +58,8 @@ export class UploadComponent implements OnInit {
   private exits: Point[];
   // A star finder
   // private pathfinder: AStarFinder;
-  private astar: Astar;
+  // private astar: Astar;
+  private easystar: EasyStar.js;
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -92,6 +95,8 @@ export class UploadComponent implements OnInit {
     private storage: AngularFireStorage
   ) {
     this.mapDoc = firestore.doc<MapInfo>('map/unknown');
+
+    this.easystar = new EasyStar.js();
   }
 
   ngOnInit() {
@@ -185,18 +190,37 @@ export class UploadComponent implements OnInit {
         const imgArray = JSON.parse(imgString);
         this.imgMatrix = imgArray;
 
-        let grid = new Grid({
-          col: this.imgMatrix[0].length,
-          row: this.imgMatrix.length,
-          render: function(){}
-        });
-        for (let i = 0; i < this.imgMatrix.length; ++i) {
-          for (let j = 0; j < this.imgMatrix[i].length; ++j) {
-            // console.log("Setting value of ", i, j, "to ", 1 - this.imgMatrix[i][j]);
-            grid.set([i, j], "value", 1 - this.imgMatrix[i][j]);
-          }
-        }
-        this.astar = new Astar(grid);
+        // console.log('Matrix', this.imgMatrix);
+        // let grid = [];
+        // for (let i = 0; i < this.imgMatrix.length; ++i) {
+        //   let row = [];
+        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
+        //     // console.log("Setting value of ", i, j, "to ", 1 - this.imgMatrix[i][j]);
+        //     // grid.set([i, j], 'value', 1 - this.imgMatrix[i][j]);
+        //     row.push(1 - this.imgMatrix[i][j]);
+        //   }
+        //   grid.push(row);
+        // }
+        // console.log(grid);
+
+        this.easystar.setGrid(this.imgMatrix);
+        // this.easystar.setAcceptableTiles(1);
+        this.easystar.setAcceptableTiles(1);
+        this.easystar.enableDiagonals();
+        // let grid = new Grid({
+        //   col: this.imgMatrix[0].length,
+        //   row: this.imgMatrix.length,
+        //   render: function     },
+        // });
+        //
+        // for (let i = 0; i < this.imgMatrix.length; ++i) {
+        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
+        //     // console.log("Setting value of ", i, j, "to ", 1 - this.imgMatrix[i][j]);
+        //     // grid.set([i, j], 'value', 1 - this.imgMatrix[i][j]);
+        //   }
+        // }
+        //
+        // this.astar = new Astar(grid);
         // this.pathfinder = new AStarFinder({
         //   grid: {
         //     matrix: this.imgMatrix,
@@ -256,18 +280,22 @@ export class UploadComponent implements OnInit {
   }
 
   private getNearestExit() {
-    // const curpos = { x: this.currentPos.x, y: this.currentPos.y };
+    const curpos = { x: this.currentPos.x, y: this.currentPos.y };
 
-    // const scale = this.origImg.height / this.imgMatrix.length;
-    // const curposActual = {
-    //   y: Math.round(curpos.x / scale),
-    //   x: Math.round(curpos.y / scale),
-    // };
+    const scale = this.origImg.height / this.imgMatrix.length;
+    const curposActual = {
+      x: Math.round(curpos.y / scale),
+      y: Math.round(curpos.x / scale),
+    };
 
-    // console.log('cur pos', curposActual);
+    console.log(
+      'cur pos',
+      curposActual,
+      this.imgMatrix[curposActual.x][curposActual.y]
+    );
 
-    // let exit = { x: this.exits[0].x, y: this.exits[0].y };
-    // console.log('exit', exit);
+    let exit = { x: this.exits[0].x, y: this.exits[0].y };
+    console.log('exit', exit, this.imgMatrix[exit.x][exit.y]);
     // const path = this.pathfinder.findPath(curposActual, exit);
     // console.log('found path', path);
 
@@ -295,38 +323,85 @@ export class UploadComponent implements OnInit {
     //   console.log('Nope. No path found');
     // }
 
-    const scale = this.origImg.height / this.imgMatrix.length;
-    this.api
-      .post(
-        '/map/nearestExit',
-        { x: this.currentPos.x / scale, y: this.currentPos.y / scale },
-        { id_: this.uuid }
-      )
-      .then((res: any) => {
-        console.log(res);
-        while (this.drawnPath.length != 0) {
-          let rect = this.drawnPath.pop();
-          this.canvas.remove(rect);
-        }
-        if (res.path !== null) {
-          for (let point of res.path) {
+    // easystarjs
+    console.log(curposActual.x, curposActual.y, exit.x, exit.y);
+    this.easystar.findPath(
+      curposActual.x,
+      curposActual.y,
+      exit.x,
+      exit.y,
+      (path) => {
+        if (path == null) {
+          console.log('no path aaaaaaaaaa');
+        } else {
+          console.log('path found', path);
+          while (this.drawnPath.length != 0) {
+            let rect = this.drawnPath.pop();
+            this.canvas.remove(rect);
+          }
+
+          for (let point of path) {
+            console.log(point, this.imgMatrix[point.y][point.x]);
             var rect = new fabric.Rect({
-              left: scale * point[0],
-              top: scale * point[1],
+              left: point.y * scale,
+              top: point.x * scale,
               fill: 'red',
-              width: 2,
-              height: 2,
+              width: 5,
+              height: 5,
               angle: 45,
+              selectable: false,
             });
             this.canvas.add(rect);
             this.drawnPath.push(rect);
           }
-        } else {
-          console.log('Nope. No path found');
         }
-      })
-      .catch((err) => {
-        console.log('Error in getting nearest exit', err);
-      });
+      }
+    );
+    this.easystar.setIterationsPerCalculation(10000);
+    this.easystar.calculate();
+
+    for (let i = 52; i >= 43; --i) {
+      console.log(
+        44,
+        i,
+        this.imgMatrix[44][i],
+        typeof this.imgMatrix[44][i],
+        1 === this.imgMatrix[44][i]
+      );
+    }
+
+    // const scale = this.origImg.height / this.imgMatrix.length;
+    // this.api
+    //   .post(
+    //     '/map/nearestExit',
+    //     { x: this.currentPos.x / scale, y: this.currentPos.y / scale },
+    //     { id_: this.uuid }
+    //   )
+    //   .then((res: any) => {
+    //     console.log(res);
+    //     while (this.drawnPath.length != 0) {
+    //       let rect = this.drawnPath.pop();
+    //       this.canvas.remove(rect);
+    //     }
+    //     if (res.path !== null) {
+    //       for (let point of res.path) {
+    //         var rect = new fabric.Rect({
+    //           left: scale * point[0],
+    //           top: scale * point[1],
+    //           fill: 'red',
+    //           width: 2,
+    //           height: 2,
+    //           angle: 45,
+    //         });
+    //         this.canvas.add(rect);
+    //         this.drawnPath.push(rect);
+    //       }
+    //     } else {
+    //       console.log('Nope. No path found');
+    //     }
+    //   })
+    //   .catch((err) => {
+    //     console.log('Error in getting nearest exit', err);
+    //   });
   }
 }
