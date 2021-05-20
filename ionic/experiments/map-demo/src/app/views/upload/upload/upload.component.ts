@@ -205,7 +205,7 @@ export class UploadComponent implements OnInit {
 
         this.easystar.setGrid(this.imgMatrix);
         // this.easystar.setAcceptableTiles(1);
-        this.easystar.setAcceptableTiles(1);
+        this.easystar.setAcceptableTiles([1]);
         this.easystar.enableDiagonals();
         // let grid = new Grid({
         //   col: this.imgMatrix[0].length,
@@ -284,8 +284,8 @@ export class UploadComponent implements OnInit {
 
     const scale = this.origImg.height / this.imgMatrix.length;
     const curposActual = {
-      x: Math.round(curpos.y / scale),
-      y: Math.round(curpos.x / scale),
+      x: Math.round(curpos.x / scale),
+      y: Math.round(curpos.y / scale),
     };
 
     console.log(
@@ -294,7 +294,7 @@ export class UploadComponent implements OnInit {
       this.imgMatrix[curposActual.x][curposActual.y]
     );
 
-    let exit = { x: this.exits[0].x, y: this.exits[0].y };
+    let exit = { x: this.exits[0].y, y: this.exits[0].x };
     console.log('exit', exit, this.imgMatrix[exit.x][exit.y]);
     // const path = this.pathfinder.findPath(curposActual, exit);
     // console.log('found path', path);
@@ -341,10 +341,10 @@ export class UploadComponent implements OnInit {
           }
 
           for (let point of path) {
-            console.log(point, this.imgMatrix[point.y][point.x]);
+            // console.log(point, this.imgMatrix[point.y][point.x]);
             var rect = new fabric.Rect({
-              left: point.y * scale,
-              top: point.x * scale,
+              left: point.x * scale - 5,
+              top: point.y * scale - 5,
               fill: 'red',
               width: 5,
               height: 5,
@@ -359,16 +359,6 @@ export class UploadComponent implements OnInit {
     );
     this.easystar.setIterationsPerCalculation(10000);
     this.easystar.calculate();
-
-    for (let i = 52; i >= 43; --i) {
-      console.log(
-        44,
-        i,
-        this.imgMatrix[44][i],
-        typeof this.imgMatrix[44][i],
-        1 === this.imgMatrix[44][i]
-      );
-    }
 
     // const scale = this.origImg.height / this.imgMatrix.length;
     // this.api
