@@ -1,0 +1,23 @@
+<div>
+  <div class="form-group">
+    <input #senderUid placeholder="Enter sender ID" type="text" value="sam" />
+    <input
+      #receiverUid
+      placeholder="Enter receiver ID"
+      type="text"
+      value="yush"
+    />
+
+    <button (click)="handleSubmitClick(senderUid.value, receiverUid.value)">
+      Submit
+    </button>
+  </div>
+
+  <div *ngIf="status">
+    <ul class="messages">
+      <li *ngFor="let msg of messages">
+        {{ receiverUid }} <span class="message">{{ msg.content }}</span>
+      </li>
+    </ul>
+  </div>
+</div>

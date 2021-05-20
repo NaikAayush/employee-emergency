@@ -10,6 +10,7 @@ import { ApiService } from 'src/app/services/api.service';
 // import { Grid, Astar } from 'fast-astar';
 // import { PF } from 'pathfinding';
 import * as EasyStar from 'easystarjs';
+import * as util from 'util';
 
 class Point {
   x: number;
@@ -60,6 +61,7 @@ export class UploadComponent implements OnInit {
   // private pathfinder: AStarFinder;
   // private astar: Astar;
   private easystar: EasyStar.js;
+  private findPathAsync: Function;
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -190,67 +192,45 @@ export class UploadComponent implements OnInit {
         const imgArray = JSON.parse(imgString);
         this.imgMatrix = imgArray;
 
-        // console.log('Matrix', this.imgMatrix);
-        // let grid = [];
-        // for (let i = 0; i < this.imgMatrix.length; ++i) {
-        //   let row = [];
-        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
-        //     // console.log("Setting value of ", i, j, "to ", 1 - this.imgMatrix[i][j]);
-        //     // grid.set([i, j], 'value', 1 - this.imgMatrix[i][j]);
-        //     row.push(1 - this.imgMatrix[i][j]);
-        //   }
-        //   grid.push(row);
-        // }
-        // console.log(grid);
-
         this.easystar.setGrid(this.imgMatrix);
         // this.easystar.setAcceptableTiles(1);
-        this.easystar.setAcceptableTiles(1);
+        this.easystar.setAcceptableTiles([1]);
         this.easystar.enableDiagonals();
-        // let grid = new Grid({
-        //   col: this.imgMatrix[0].length,
-        //   row: this.imgMatrix.length,
-        //   render: function     },
-        // });
-        //
-        // for (let i = 0; i < this.imgMatrix.length; ++i) {
-        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
-        //     // console.log("Setting value of ", i, j, "to ", 1 - this.imgMatrix[i][j]);
-        //     // grid.set([i, j], 'value', 1 - this.imgMatrix[i][j]);
-        //   }
-        // }
-        //
-        // this.astar = new Astar(grid);
-        // this.pathfinder = new AStarFinder({
-        //   grid: {
-        //     matrix: this.imgMatrix,
-        //   },
-        //   diagonalAllowed: false,
-        //   heuristic: 'Manhattan',
-        //   includeStartNode: true,
-        //   includeEndNode: true,
-        // });
+
+        // promisify
+        this.easystar.findPath[util.promisify.custom] = (
+          startX: number,
+          startY: number,
+          endX: number,
+          endY: number
+        ) => {
+          return new Promise((resolve) => {
+            this.easystar.findPath(startX, startY, endX, endY, resolve);
+          });
+        };
+
+        this.findPathAsync = util.promisify(this.easystar.findPath);
 
         const scale = this.origImg.height / this.imgMatrix.length;
         console.log(this.imgMatrix.length, this.imgMatrix[0].length, scale);
 
         // this draws the map with points for each >0 cell
-        for (let i = 0; i < this.imgMatrix.length; ++i) {
-          for (let j = 0; j < this.imgMatrix[i].length; ++j) {
-            if (this.imgMatrix[i][j] > 0) {
-              var rect = new fabric.Rect({
-                left: j * scale,
-                top: i * scale,
-                fill: 'blue',
-                width: 1,
-                height: 1,
-                angle: 0,
-                selectable: false,
-              });
-              this.canvas.add(rect);
-            }
-          }
-        }
+        // for (let i = 0; i < this.imgMatrix.length; ++i) {
+        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
+        //     if (this.imgMatrix[i][j] > 0) {
+        //       var rect = new fabric.Rect({
+        //         left: j * scale,
+        //         top: i * scale,
+        //         fill: 'blue',
+        //         width: 1,
+        //         height: 1,
+        //         angle: 0,
+        //         selectable: false,
+        //       });
+        //       this.canvas.add(rect);
+        //     }
+        //   }
+        // }
 
         this.exits = data.exits;
         console.log(this.exits);
@@ -279,95 +259,73 @@ export class UploadComponent implements OnInit {
       });
   }
 
-  private getNearestExit() {
+  private async getNearestExit() {
     const curpos = { x: this.currentPos.x, y: this.currentPos.y };
 
     const scale = this.origImg.height / this.imgMatrix.length;
     const curposActual = {
-      x: Math.round(curpos.y / scale),
-      y: Math.round(curpos.x / scale),
+      x: Math.round(curpos.x / scale),
+      y: Math.round(curpos.y / scale),
     };
 
-    console.log(
-      'cur pos',
-      curposActual,
-      this.imgMatrix[curposActual.x][curposActual.y]
-    );
-
-    let exit = { x: this.exits[0].x, y: this.exits[0].y };
-    console.log('exit', exit, this.imgMatrix[exit.x][exit.y]);
-    // const path = this.pathfinder.findPath(curposActual, exit);
-    // console.log('found path', path);
-
-    // if (path) {
-    //   while (this.drawnPath.length != 0) {
-    //     let rect = this.drawnPath.pop();
-    //     this.canvas.remove(rect);
-    //   }
-
-    //   for (let point of path) {
-    //     console.log(point, this.imgMatrix[point[0]][point[1]]);
-    //     var rect = new fabric.Rect({
-    //       left: point[1] * scale,
-    //       top: point[0] * scale,
-    //       fill: 'red',
-    //       width: 5,
-    //       height: 5,
-    //       angle: 45,
-    //       selectable: false,
-    //     });
-    //     this.canvas.add(rect);
-    //     this.drawnPath.push(rect);
-    //   }
-    // } else {
-    //   console.log('Nope. No path found');
-    // }
+    // console.log(
+    //   'cur pos',
+    //   curposActual,
+    //   this.imgMatrix[curposActual.x][curposActual.y]
+    // );
 
     // easystarjs
-    console.log(curposActual.x, curposActual.y, exit.x, exit.y);
-    this.easystar.findPath(
-      curposActual.x,
-      curposActual.y,
-      exit.x,
-      exit.y,
-      (path) => {
-        if (path == null) {
-          console.log('no path aaaaaaaaaa');
-        } else {
-          console.log('path found', path);
-          while (this.drawnPath.length != 0) {
-            let rect = this.drawnPath.pop();
-            this.canvas.remove(rect);
-          }
+    const promises = [];
+    for (let exit of this.exits) {
+      const exitPoint = { x: exit.y, y: exit.x };
+      console.log(curposActual.x, curposActual.y, exitPoint.x, exitPoint.y);
 
-          for (let point of path) {
-            console.log(point, this.imgMatrix[point.y][point.x]);
-            var rect = new fabric.Rect({
-              left: point.y * scale,
-              top: point.x * scale,
-              fill: 'red',
-              width: 5,
-              height: 5,
-              angle: 45,
-              selectable: false,
-            });
-            this.canvas.add(rect);
-            this.drawnPath.push(rect);
-          }
-        }
-      }
-    );
-    this.easystar.setIterationsPerCalculation(10000);
-    this.easystar.calculate();
-
-    for (let i = 52; i >= 43; --i) {
-      console.log(
-        44,
-        i,
-        this.imgMatrix[44][i],
-        typeof this.imgMatrix[44][i],
-        1 === this.imgMatrix[44][i]
+      promises.push(
+        this.findPathAsync(
+          curposActual.x,
+          curposActual.y,
+          exitPoint.x,
+          exitPoint.y
+        )
       );
+      this.easystar.setIterationsPerCalculation(10000);
+      this.easystar.calculate();
+    }
+    const paths = await Promise.all(promises);
+
+    let minPath = null;
+    let minPathLength = Number.MAX_SAFE_INTEGER;
+    for (let path of paths) {
+      if (path !== null && path.length < minPathLength) {
+        minPath = path;
+        minPathLength = path.length;
+      }
+    }
+
+    const path = minPath;
+    if (path == null) {
+      console.log('no path aaaaaaaaaa');
+    } else {
+      console.log('path found', path);
+      while (this.drawnPath.length != 0) {
+        let rect = this.drawnPath.pop();
+        this.canvas.remove(rect);
+      }
+
+      for (let point of path) {
+        // console.log(point, this.imgMatrix[point.y][point.x]);
+        var rect = new fabric.Rect({
+          left: point.x * scale - 5,
+          top: point.y * scale - 5,
+          fill: 'red',
+          width: 5,
+          height: 5,
+          angle: 45,
+          selectable: false,
+        });
+        this.canvas.add(rect);
+        this.drawnPath.push(rect);
+      }
     }
 
     // const scale = this.origImg.height / this.imgMatrix.length;
