@@ -215,22 +215,22 @@ export class UploadComponent implements OnInit {
         console.log(this.imgMatrix.length, this.imgMatrix[0].length, scale);
 
         // this draws the map with points for each >0 cell
-        for (let i = 0; i < this.imgMatrix.length; ++i) {
-          for (let j = 0; j < this.imgMatrix[i].length; ++j) {
-            if (this.imgMatrix[i][j] > 0) {
-              var rect = new fabric.Rect({
-                left: j * scale,
-                top: i * scale,
-                fill: 'blue',
-                width: 1,
-                height: 1,
-                angle: 0,
-                selectable: false,
-              });
-              this.canvas.add(rect);
-            }
-          }
-        }
+        // for (let i = 0; i < this.imgMatrix.length; ++i) {
+        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
+        //     if (this.imgMatrix[i][j] > 0) {
+        //       var rect = new fabric.Rect({
+        //         left: j * scale,
+        //         top: i * scale,
+        //         fill: 'blue',
+        //         width: 1,
+        //         height: 1,
+        //         angle: 0,
+        //         selectable: false,
+        //       });
+        //       this.canvas.add(rect);
+        //     }
+        //   }
+        // }
 
         this.exits = data.exits;
         console.log(this.exits);
@@ -268,11 +268,11 @@ export class UploadComponent implements OnInit {
       y: Math.round(curpos.y / scale),
     };
 
-    console.log(
-      'cur pos',
-      curposActual,
-      this.imgMatrix[curposActual.x][curposActual.y]
-    );
+    // console.log(
+    //   'cur pos',
+    //   curposActual,
+    //   this.imgMatrix[curposActual.x][curposActual.y]
+    // );
 
     // easystarjs
     const promises = [];
@@ -296,7 +296,7 @@ export class UploadComponent implements OnInit {
     let minPath = null;
     let minPathLength = Number.MAX_SAFE_INTEGER;
     for (let path of paths) {
-      if (path.length < minPathLength) {
+      if (path !== null && path.length < minPathLength) {
         minPath = path;
         minPathLength = path.length;
       }
