@@ -10,6 +10,7 @@ import { ApiService } from 'src/app/services/api.service';
 // import { Grid, Astar } from 'fast-astar';
 // import { PF } from 'pathfinding';
 import * as EasyStar from 'easystarjs';
+import * as util from 'util';
 
 class Point {
   x: number;
@@ -60,6 +61,7 @@ export class UploadComponent implements OnInit {
   // private pathfinder: AStarFinder;
   // private astar: Astar;
   private easystar: EasyStar.js;
+  private findPathAsync: Function;
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -207,6 +209,21 @@ export class UploadComponent implements OnInit {
         // this.easystar.setAcceptableTiles(1);
         this.easystar.setAcceptableTiles([1]);
         this.easystar.enableDiagonals();
+
+        // promisify
+        this.easystar.findPath[util.promisify.custom] = (
+          startX: number,
+          startY: number,
+          endX: number,
+          endY: number
+        ) => {
+          return new Promise((resolve) => {
+            this.easystar.findPath(startX, startY, endX, endY, resolve);
+          });
+        };
+
+        this.findPathAsync = util.promisify(this.easystar.findPath);
+
         // let grid = new Grid({
         //   col: this.imgMatrix[0].length,
         //   row: this.imgMatrix.length,
@@ -279,7 +296,7 @@ export class UploadComponent implements OnInit {
       });
   }
 
-  private getNearestExit() {
+  private async getNearestExit() {
     const curpos = { x: this.currentPos.x, y: this.currentPos.y };
 
     const scale = this.origImg.height / this.imgMatrix.length;
@@ -294,8 +311,8 @@ export class UploadComponent implements OnInit {
       this.imgMatrix[curposActual.x][curposActual.y]
     );
 
-    let exit = { x: this.exits[0].y, y: this.exits[0].x };
-    console.log('exit', exit, this.imgMatrix[exit.x][exit.y]);
+    // let exit = { x: this.exits[0].y, y: this.exits[0].x };
+    // console.log('exit', exit, this.imgMatrix[exit.x][exit.y]);
     // const path = this.pathfinder.findPath(curposActual, exit);
     // console.log('found path', path);
 
@@ -324,41 +341,59 @@ export class UploadComponent implements OnInit {
     // }
 
     // easystarjs
-    console.log(curposActual.x, curposActual.y, exit.x, exit.y);
-    this.easystar.findPath(
-      curposActual.x,
-      curposActual.y,
-      exit.x,
-      exit.y,
-      (path) => {
-        if (path == null) {
-          console.log('no path aaaaaaaaaa');
-        } else {
-          console.log('path found', path);
-          while (this.drawnPath.length != 0) {
-            let rect = this.drawnPath.pop();
-            this.canvas.remove(rect);
-          }
 
-          for (let point of path) {
-            // console.log(point, this.imgMatrix[point.y][point.x]);
-            var rect = new fabric.Rect({
-              left: point.x * scale - 5,
-              top: point.y * scale - 5,
-              fill: 'red',
-              width: 5,
-              height: 5,
-              angle: 45,
-              selectable: false,
-            });
-            this.canvas.add(rect);
-            this.drawnPath.push(rect);
-          }
-        }
+    const promises = [];
+    for (let exit of this.exits) {
+      const exitPoint = { x: exit.y, y: exit.x };
+      console.log(curposActual.x, curposActual.y, exitPoint.x, exitPoint.y);
+
+      promises.push(
+        this.findPathAsync(
+          curposActual.x,
+          curposActual.y,
+          exitPoint.x,
+          exitPoint.y
+        )
+      );
+      this.easystar.setIterationsPerCalculation(10000);
+      this.easystar.calculate();
+    }
+    const paths = await Promise.all(promises);
+
+    let minPath = null;
+    let minPathLength = Number.MAX_SAFE_INTEGER;
+    for (let path of paths) {
+      if (path.length < minPathLength) {
+        minPath = path;
+        minPathLength = path.length;
       }
-    );
-    this.easystar.setIterationsPerCalculation(10000);
-    this.easystar.calculate();
+    }
+
+    const path = minPath;
+    if (path == null) {
+      console.log('no path aaaaaaaaaa');
+    } else {
+      console.log('path found', path);
+      while (this.drawnPath.length != 0) {
+        let rect = this.drawnPath.pop();
+        this.canvas.remove(rect);
+      }
+
+      for (let point of path) {
+        // console.log(point, this.imgMatrix[point.y][point.x]);
+        var rect = new fabric.Rect({
+          left: point.x * scale - 5,
+          top: point.y * scale - 5,
+          fill: 'red',
+          width: 5,
+          height: 5,
+          angle: 45,
+          selectable: false,
+        });
+        this.canvas.add(rect);
+        this.drawnPath.push(rect);
+      }
+    }
 
     // const scale = this.origImg.height / this.imgMatrix.length;
     // this.api
