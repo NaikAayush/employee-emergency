@@ -9,7 +9,9 @@ import { EmployeePageRoutingModule } from './employee-routing.module';
 import { EmployeePage } from './employee.page';
 
 import { EmployeeSignInComponent } from './views/employee-auth/employee-sign-in/employee-sign-in.component';
-
+import { EmployeeSignUpComponent } from './views/employee-auth/employee-sign-up/employee-sign-up.component';
+import { EmployeeDashboardComponent } from './views/employee-dashboard/employee-dashboard.component';
+import { EmployeeTabsPageModule } from './views/employee-tabs/employee-tabs.module';
 
 @NgModule({
   imports: [
@@ -17,8 +19,14 @@ import { EmployeeSignInComponent } from './views/employee-auth/employee-sign-in/
     FormsModule,
     IonicModule,
     EmployeePageRoutingModule,
-    ReactiveFormsModule
+    ReactiveFormsModule,
+    EmployeeTabsPageModule,
   ],
-  declarations: [EmployeePage, EmployeeSignInComponent]
+  declarations: [
+    EmployeePage,
+    EmployeeSignInComponent,
+    EmployeeSignUpComponent,
+    EmployeeDashboardComponent,
+  ],
 })
-export class EmployeePageModule { }
+export class EmployeePageModule {}

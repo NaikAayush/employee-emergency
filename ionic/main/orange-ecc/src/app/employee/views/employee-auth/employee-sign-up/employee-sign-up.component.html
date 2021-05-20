@@ -1,3 +1,86 @@
-<p>
-  employee-sign-up works!
-</p>
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>Employee Sign Up</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<div *ngIf="auth.user$ | async; then authenticated else guest">
+  <!-- template will replace this div -->
+</div>
+
+<ion-content>
+  <ng-template #guest>
+    <div class="min-h-screen flex items-center justify-center bg-white dark:bg-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+      <div class="max-w-md w-full">
+        <div>
+          <img src="assets/ey-logo.png" class="mx-auto h-20 w-auto mb-6" id="logo">
+          <h3 class="mt-6 text-center text-3xl font-semibold text-gray-900">
+            Sign Up
+          </h3>
+        </div>
+
+        <form [formGroup]="signUpForm" (ngSubmit)="onSubmit()" class="px-8 pt-6 pb-8 mb-24">
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="name">
+              Name
+            </label>
+            <input formControlName="name" class="input" type="text" placeholder="Name">
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="emp_id">
+              Employee ID
+            </label>
+            <input formControlName="emp_id" class="input" type="text" placeholder="Employee ID">
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="phone_no">
+              Phone Number
+            </label>
+            <input formControlName="phone_no" class="input" type="tel" placeholder="Phone Number">
+          </div>
+          <div class="mb-4">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+              Email
+            </label>
+            <input class="input" formControlName="email" type="email" placeholder="Email">
+          </div>
+          <div class="mb-6">
+            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+              Password
+            </label>
+            <input formControlName="password" (focusout)="checkPwd($event)" class="input" type="password"
+              placeholder="******************">
+            <!-- <p [ngClass]="pwdErrorClass()">Please enter a password.</p> -->
+          </div>
+          <div class="flex items-center justify-center">
+            <button class="submit-button" type="submit" [disabled]="!signUpForm.valid">
+              Sign Up
+            </button>
+          </div>
+          <!-- <a class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-900" href="#">
+              Forgot Password?
+            </a> -->
+          <!-- </div> -->
+        </form>
+
+
+      </div>
+    </div>
+
+  </ng-template>
+
+  <ng-template #authenticated>
+    <div *ngIf="auth.user$ | async as user">
+      <h1>Namaste</h1>
+      <!-- <h3>Howdy, {{ user.displayName }}</h3>
+      <img [src]="user.photoURL">
+      <p>UID: {{ user.uid }}</p>
+       -->
+      <button (click)="auth.signOut()">Logout</button>
+    </div>
+  </ng-template>
+
+</ion-content>

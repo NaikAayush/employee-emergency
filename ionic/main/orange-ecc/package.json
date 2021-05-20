@@ -28,6 +28,7 @@
     "@ionic-native/ibeacon": "https://github.com/NaikAayush/ionic5ibeacon.git",
     "@ionic-native/splash-screen": "^5.0.0",
     "@ionic-native/status-bar": "^5.0.0",
+    "@ionic-native/wifi-wizard-2": "^5.32.1",
     "@ionic/angular": "^5.0.0",
     "@tailwindcss/forms": "^0.3.2",
     "@tailwindcss/typography": "^0.4.0",
@@ -59,6 +60,7 @@
     "cordova-plugin-splashscreen": "^5.0.2",
     "cordova-plugin-statusbar": "^2.4.2",
     "cordova-plugin-whitelist": "^1.3.3",
+    "cordova-plugin-wifiwizard2": "^3.1.1",
     "jasmine-core": "~3.6.0",
     "jasmine-spec-reporter": "~5.0.0",
     "karma": "~6.3.2",
@@ -81,6 +83,7 @@
   "description": "An Employee Emergency App for EY Hackpions 2.0",
   "cordova": {
     "plugins": {
+      "wifiwizard2": {},
       "cordova-plugin-whitelist": {},
       "cordova-plugin-statusbar": {},
       "cordova-plugin-device": {},
