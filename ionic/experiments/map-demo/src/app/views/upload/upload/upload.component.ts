@@ -192,19 +192,6 @@ export class UploadComponent implements OnInit {
         const imgArray = JSON.parse(imgString);
         this.imgMatrix = imgArray;
 
-        // console.log('Matrix', this.imgMatrix);
-        // let grid = [];
-        // for (let i = 0; i < this.imgMatrix.length; ++i) {
-        //   let row = [];
-        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
-        //     // console.log("Setting value of ", i, j, "to ", 1 - this.imgMatrix[i][j]);
-        //     // grid.set([i, j], 'value', 1 - this.imgMatrix[i][j]);
-        //     row.push(1 - this.imgMatrix[i][j]);
-        //   }
-        //   grid.push(row);
-        // }
-        // console.log(grid);
-
         this.easystar.setGrid(this.imgMatrix);
         // this.easystar.setAcceptableTiles(1);
         this.easystar.setAcceptableTiles([1]);
@@ -223,30 +210,6 @@ export class UploadComponent implements OnInit {
         };
 
         this.findPathAsync = util.promisify(this.easystar.findPath);
-
-        // let grid = new Grid({
-        //   col: this.imgMatrix[0].length,
-        //   row: this.imgMatrix.length,
-        //   render: function     },
-        // });
-        //
-        // for (let i = 0; i < this.imgMatrix.length; ++i) {
-        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
-        //     // console.log("Setting value of ", i, j, "to ", 1 - this.imgMatrix[i][j]);
-        //     // grid.set([i, j], 'value', 1 - this.imgMatrix[i][j]);
-        //   }
-        // }
-        //
-        // this.astar = new Astar(grid);
-        // this.pathfinder = new AStarFinder({
-        //   grid: {
-        //     matrix: this.imgMatrix,
-        //   },
-        //   diagonalAllowed: false,
-        //   heuristic: 'Manhattan',
-        //   includeStartNode: true,
-        //   includeEndNode: true,
-        // });
 
         const scale = this.origImg.height / this.imgMatrix.length;
         console.log(this.imgMatrix.length, this.imgMatrix[0].length, scale);
@@ -311,37 +274,7 @@ export class UploadComponent implements OnInit {
       this.imgMatrix[curposActual.x][curposActual.y]
     );
 
-    // let exit = { x: this.exits[0].y, y: this.exits[0].x };
-    // console.log('exit', exit, this.imgMatrix[exit.x][exit.y]);
-    // const path = this.pathfinder.findPath(curposActual, exit);
-    // console.log('found path', path);
-
-    // if (path) {
-    //   while (this.drawnPath.length != 0) {
-    //     let rect = this.drawnPath.pop();
-    //     this.canvas.remove(rect);
-    //   }
-
-    //   for (let point of path) {
-    //     console.log(point, this.imgMatrix[point[0]][point[1]]);
-    //     var rect = new fabric.Rect({
-    //       left: point[1] * scale,
-    //       top: point[0] * scale,
-    //       fill: 'red',
-    //       width: 5,
-    //       height: 5,
-    //       angle: 45,
-    //       selectable: false,
-    //     });
-    //     this.canvas.add(rect);
-    //     this.drawnPath.push(rect);
-    //   }
-    // } else {
-    //   console.log('Nope. No path found');
-    // }
-
     // easystarjs
-
     const promises = [];
     for (let exit of this.exits) {
       const exitPoint = { x: exit.y, y: exit.x };
