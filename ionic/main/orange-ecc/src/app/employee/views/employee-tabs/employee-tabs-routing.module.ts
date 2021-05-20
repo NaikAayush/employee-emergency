@@ -8,20 +8,48 @@ const routes: Routes = [
     path: 'employee/employee-tabs',
     component: EmployeeTabsPage,
     children: [
+      // {
+      //   path: 'tab1',
+      //   loadChildren: () =>
+      //     import('../tab1/tab1.module').then((m) => m.Tab1PageModule),
+      // },
+      // {
+      //   path: 'tab2',
+      //   loadChildren: () =>
+      //     import('../tab2/tab2.module').then((m) => m.Tab2PageModule),
+      // },
+      // {
+      //   path: 'tab3',
+      //   loadChildren: () =>
+      //     import('../tab3/tab3.module').then((m) => m.Tab3PageModule),
+      // },
       {
-        path: 'tab1',
+        path: 'sos',
         loadChildren: () =>
-          import('../tab1/tab1.module').then((m) => m.Tab1PageModule),
+          import('../tabs/employee-sos/employee-sos.module').then(
+            (m) => m.EmployeeSosPageModule
+          ),
       },
       {
-        path: 'tab2',
+        path: 'map',
         loadChildren: () =>
-          import('../tab2/tab2.module').then((m) => m.Tab2PageModule),
+          import('../tabs/employee-map/employee-map.module').then(
+            (m) => m.EmployeeMapPageModule
+          ),
       },
       {
-        path: 'tab3',
+        path: 'chat',
         loadChildren: () =>
-          import('../tab3/tab3.module').then((m) => m.Tab3PageModule),
+          import('../tabs/employee-chat/employee-chat.module').then(
+            (m) => m.EmployeeChatPageModule
+          ),
+      },
+      {
+        path: 'ar',
+        loadChildren: () =>
+          import('../tabs/employee-ar/employee-ar.module').then(
+            (m) => m.EmployeeArPageModule
+          ),
       },
       {
         path: '',

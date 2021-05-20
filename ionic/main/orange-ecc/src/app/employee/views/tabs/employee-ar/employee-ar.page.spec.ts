@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { ExploreContainerComponent } from './explore-container.component';
+import { EmployeeArPage } from './employee-ar.page';
 
-describe('ExploreContainerComponent', () => {
-  let component: ExploreContainerComponent;
-  let fixture: ComponentFixture<ExploreContainerComponent>;
+describe('EmployeeArPage', () => {
+  let component: EmployeeArPage;
+  let fixture: ComponentFixture<EmployeeArPage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ ExploreContainerComponent ],
+      declarations: [ EmployeeArPage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(ExploreContainerComponent);
+    fixture = TestBed.createComponent(EmployeeArPage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

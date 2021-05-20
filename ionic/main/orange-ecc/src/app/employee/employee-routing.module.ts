@@ -35,6 +35,34 @@ const routes: Routes = [
         (m) => m.EmployeeTabsPageModule
       ),
   },
+  {
+    path: 'employee-ar',
+    loadChildren: () =>
+      import('./views/tabs/employee-ar/employee-ar.module').then(
+        (m) => m.EmployeeArPageModule
+      ),
+  },
+  {
+    path: 'employee-sos',
+    loadChildren: () =>
+      import('./views/tabs/employee-sos/employee-sos.module').then(
+        (m) => m.EmployeeSosPageModule
+      ),
+  },
+  {
+    path: 'employee-map',
+    loadChildren: () =>
+      import('./views/tabs/employee-map/employee-map.module').then(
+        (m) => m.EmployeeMapPageModule
+      ),
+  },
+  {
+    path: 'employee-chat',
+    loadChildren: () =>
+      import('./views/tabs/employee-chat/employee-chat.module').then(
+        (m) => m.EmployeeChatPageModule
+      ),
+  },
 ];
 
 @NgModule({
