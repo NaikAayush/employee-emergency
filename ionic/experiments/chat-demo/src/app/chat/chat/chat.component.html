@@ -13,12 +13,12 @@
     </button>
   </div>
 
-  <div *ngIf="messageObs">
+  <div *ngIf="chat.messageObs">
     aaaaaaaaaaaaaaaaaaaaaaaaaaa
     <ul>
-      <li *ngFor="let msg of messageObs | async">
+      <li *ngFor="let msg of chat.messageObs | async">
         <span class="sender-name">{{ msg.sender }}> </span
-        ><span class="messageContent">{{ msg.content }}</span>
+        ><span class="message-content">{{ msg.content }}</span>
       </li>
     </ul>
   </div>
@@ -26,6 +26,6 @@
   <div class="form-group">
     <input #messageInput placeholder="Enter Message" type="text" />
 
-    <button (click)="sendMessage(messageInput.value)">Send Message</button>
+    <button (click)="chat.sendMessage(messageInput.value)">Send Message</button>
   </div>
 </div>
