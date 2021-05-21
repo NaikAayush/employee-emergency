@@ -10,6 +10,8 @@ import { Observable } from 'rxjs';
 
 class Message {
   content: string;
+  sender: string;
+  senderId: string;
 }
 
 @Component({
@@ -20,8 +22,8 @@ class Message {
 export class ChatComponent implements OnInit {
   public senderUid: string;
   public receiverUid: string;
+  public senderName: string;
   public messages: Message[];
-  public status = false;
 
   private messagesRef: AngularFireList<Message>;
   private messageObs: Observable<Message[]>;
@@ -29,29 +31,41 @@ export class ChatComponent implements OnInit {
   constructor(
     public firestore: AngularFirestore,
     public db: AngularFireDatabase
-  ) {
-    console.log(this.messages);
-  }
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() { }
 
   public handleSubmitClick(senderUid_: string, receiverUid_: string) {
     console.log('submit clicked', senderUid_, receiverUid_);
     this.senderUid = senderUid_;
     this.receiverUid = receiverUid_;
+    this.senderName = senderUid_;
 
+    if (this.senderUid < this.receiverUid) {
     this.messagesRef = this.db.list(
       `messages/${this.senderUid}_${this.receiverUid}`
     );
+    } else {
+    this.messagesRef = this.db.list(
+      `messages/${this.receiverUid}_${this.senderUid}`
+    );
+    }
     this.messageObs = this.messagesRef.valueChanges();
 
-    this.messageObs.subscribe({
-      next(msgs) {
-        console.log(msgs);
-        this.messages = msgs;
-        this.status = true;
-      },
-    });
-    this.messagesRef.push({ content: 'bye' });
+    // this.messageObs.subscribe({
+    //   next(msgs) {
+    //     console.log(msgs);
+    //     this.messages = msgs;
+    //   },
+    // });
+    // this.messagesRef.push({ content: 'bye' });
+  }
+
+  public sendMessage(inp: string) {
+    this.messagesRef.push({
+      content: inp,
+      sender: this.senderName,
+      senderId: this.senderUid
+    })
   }
 }

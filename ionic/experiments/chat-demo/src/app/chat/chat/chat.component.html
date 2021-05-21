@@ -13,11 +13,19 @@
     </button>
   </div>
 
-  <div *ngIf="status">
-    <ul class="messages">
-      <li *ngFor="let msg of messages">
-        {{ receiverUid }} <span class="message">{{ msg.content }}</span>
+  <div *ngIf="messageObs">
+    aaaaaaaaaaaaaaaaaaaaaaaaaaa
+    <ul>
+      <li *ngFor="let msg of messageObs | async">
+        <span class="sender-name">{{ msg.sender }}> </span
+        ><span class="messageContent">{{ msg.content }}</span>
       </li>
     </ul>
+  </div>
+
+  <div class="form-group">
+    <input #messageInput placeholder="Enter Message" type="text" />
+
+    <button (click)="sendMessage(messageInput.value)">Send Message</button>
   </div>
 </div>
