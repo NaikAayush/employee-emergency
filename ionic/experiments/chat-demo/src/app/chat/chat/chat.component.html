@@ -1,4 +1,4 @@
-<div>
+<div class="overflow-y-auto">
   <div class="form-group">
     <input #senderUid placeholder="Enter sender ID" type="text" value="sam" />
     <input
@@ -8,24 +8,93 @@
       value="yush"
     />
 
-    <button (click)="handleSubmitClick(senderUid.value, receiverUid.value)">
+    <button
+      (click)="handleSubmitClick(senderUid.value, receiverUid.value)"
+      class="
+        ml-5
+        bg-white
+        py-2
+        px-3
+        border border-gray-300
+        rounded-md
+        shadow-sm
+        text-sm
+        leading-4
+        font-medium
+        text-gray-700
+        hover:bg-gray-50
+        focus:outline-none
+        focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+      "
+    >
       Submit
     </button>
   </div>
 
   <div *ngIf="chat.messageObs">
-    aaaaaaaaaaaaaaaaaaaaaaaaaaa
-    <ul>
-      <li *ngFor="let msg of chat.messageObs | async">
-        <span class="sender-name">{{ msg.sender }}> </span
-        ><span class="message-content">{{ msg.content }}</span>
+    <ul class="mt-20 mb-16" >
+      <li *ngFor="let msg of chat.messageObs | async" class="flow-root">
+        <div
+          *ngIf="
+            msg.sender == chat.senderName;
+            then sentMessage;
+            else receivedMessage
+          "
+        ></div>
+
+        <ng-template #sentMessage>
+          <div
+            class="bg-green-300 float-right min-w-min w-3/4 mx-4 my-1 p-2 rounded-lg"
+            >{{ msg.content }}</div
+          >
+        </ng-template>
+
+        <ng-template #receivedMessage>
+          <div class="bg-gray-300 min-w-min w-3/4 mx-4 my-1 p-2 rounded-lg">{{
+            msg.content
+          }}</div>
+        </ng-template>
       </li>
     </ul>
   </div>
 
-  <div class="form-group">
-    <input #messageInput placeholder="Enter Message" type="text" />
+  <div class="form-group" class="flex" #msgInput>
+    <input
+      #messageInput
+      placeholder="Enter Message"
+      type="text"
+      class="
+        mt-1
+        focus:ring-indigo-500
+        focus:border-indigo-500
+        block
+        w-full
+        shadow-sm
+        sm:text-sm
+        border-gray-300
+        rounded-md
+      "
+    />
 
-    <button (click)="chat.sendMessage(messageInput.value)">Send Message</button>
+    <button
+      (click)="chat.sendMessage(messageInput.value)"
+      class="
+        justify-center
+        py-2
+        px-4
+        border border-transparent
+        shadow-sm
+        text-sm
+        font-medium
+        rounded-md
+        text-white
+        bg-indigo-600
+        hover:bg-indigo-700
+        focus:outline-none
+        focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+      "
+    >
+      Send
+    </button>
   </div>
 </div>

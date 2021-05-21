@@ -14,7 +14,7 @@ class Message {
 export class ChatService {
   private senderUid: string;
   private receiverUid: string;
-  private senderName: string;
+  public senderName: string;
 
   private messagesRef: AngularFireList<Message>;
   public messageObs: Observable<Message[]>;
