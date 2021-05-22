@@ -5,34 +5,40 @@ const routes: Routes = [
   {
     path: '',
     redirectTo: 'home',
-    pathMatch: 'full'
+    pathMatch: 'full',
   },
   {
     path: 'employee',
-    loadChildren: () => import('./employee/employee.module').then(m => m.EmployeePageModule)
+    loadChildren: () =>
+      import('./employee/employee.module').then((m) => m.EmployeePageModule),
   },
   {
     path: 'ert',
-    loadChildren: () => import('./ert/ert.module').then(m => m.ErtPageModule)
+    loadChildren: () => import('./ert/ert.module').then((m) => m.ErtPageModule),
   },
   {
-    path: 'command-center',
-    loadChildren: () => import('./command-center/command-center.module').then(m => m.CommandCenterPageModule)
+    path: 'cc',
+    loadChildren: () =>
+      import('./command-center/command-center.module').then(
+        (m) => m.CommandCenterPageModule
+      ),
   },
   {
     path: 'home',
-    loadChildren: () => import('./home/home.module').then(m => m.HomePageModule)
+    loadChildren: () =>
+      import('./home/home.module').then((m) => m.HomePageModule),
   },
   {
     path: 'test',
-    loadChildren: () => import('./test/test.module').then( m => m.TestPageModule)
-  }
+    loadChildren: () =>
+      import('./test/test.module').then((m) => m.TestPageModule),
+  },
 ];
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules })
+    RouterModule.forRoot(routes, { preloadingStrategy: PreloadAllModules }),
   ],
-  exports: [RouterModule]
+  exports: [RouterModule],
 })
-export class AppRoutingModule { }
+export class AppRoutingModule {}
