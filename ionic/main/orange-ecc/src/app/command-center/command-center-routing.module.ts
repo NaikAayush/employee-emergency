@@ -6,20 +6,37 @@ import { CommandCenterPage } from './command-center.page';
 const routes: Routes = [
   {
     path: '',
-    component: CommandCenterPage
+    component: CommandCenterPage,
   },
   {
     path: 'command-center-approve',
-    loadChildren: () => import('./views/tabs/command-center-approve/command-center-approve.module').then( m => m.CommandCenterApprovePageModule)
+    loadChildren: () =>
+      import(
+        './views/tabs/command-center-approve/command-center-approve.module'
+      ).then((m) => m.CommandCenterApprovePageModule),
   },
   {
     path: 'command-center-map',
-    loadChildren: () => import('./views/tabs/command-center-map/command-center-map.module').then( m => m.CommandCenterMapPageModule)
+    loadChildren: () =>
+      import('./views/tabs/command-center-map/command-center-map.module').then(
+        (m) => m.CommandCenterMapPageModule
+      ),
   },
   {
-    path: 'command-center-tabs',
-    loadChildren: () => import('./views/command-center-tabs/command-center-tabs.module').then( m => m.CommandCenterTabsPageModule)
-  }
+    path: 'cc-tabs',
+    loadChildren: () =>
+      import('./views/command-center-tabs/command-center-tabs.module').then(
+        (m) => m.CommandCenterTabsPageModule
+      ),
+  },  {
+    path: 'command-center-overview',
+    loadChildren: () => import('./views/tabs/command-center-overview/command-center-overview.module').then( m => m.CommandCenterOverviewPageModule)
+  },
+  {
+    path: 'command-center-setup',
+    loadChildren: () => import('./views/tabs/command-center-setup/command-center-setup.module').then( m => m.CommandCenterSetupPageModule)
+  },
+
 ];
 
 @NgModule({
