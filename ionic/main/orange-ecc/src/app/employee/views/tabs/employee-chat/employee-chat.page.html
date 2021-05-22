@@ -8,15 +8,9 @@
   <div class="overflow-y-auto">
     <div class="form-group">
       <input #senderUid placeholder="Enter sender ID" type="text" value="sam" />
-      <input
-        #receiverUid
-        placeholder="Enter receiver ID"
-        type="text"
-        value="yush"
-      />
 
       <button
-        (click)="handleSubmitClick(senderUid.value, receiverUid.value)"
+        (click)="handleSubmitClick(senderUid.value)"
         class="
           ml-5
           bg-white

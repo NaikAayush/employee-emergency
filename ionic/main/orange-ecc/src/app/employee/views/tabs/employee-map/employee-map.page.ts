@@ -485,7 +485,7 @@ export class EmployeeMapPage {
     const minPath = await this.pathfinding.getPath(
       curpos,
       this.pathfinding.exits
-    );
+    ) as Point[];
 
     const path = minPath;
     if (path == null) {

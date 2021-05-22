@@ -50,12 +50,12 @@ export class PathfindingService {
     orig_img.src = res;
     await orig_img.decode();
 
-    this.getMapGrid();
+    await this.getMapGrid();
 
     return orig_img;
   }
 
-  async getMapGrid() {
+  private async getMapGrid() {
     let res = await this.mapDoc
       .get() // TODO: maybe set cache here for spid
       .toPromise();
@@ -109,7 +109,7 @@ export class PathfindingService {
     console.log(this.exits);
   }
 
-  async getPath(curpos: Point, targets: Point[], flipTarget = true) {
+  async getPath(curpos: Point, targets: Point[], flipTarget = true, scaleTarget = false, getMinTarget = false) {
     const scale = this.origImg.height / this.imgMatrix.length;
     const curposActual = {
       x: Math.round(curpos.x / scale),
@@ -121,6 +121,11 @@ export class PathfindingService {
       let exitPoint = { x: exit.x, y: exit.y };
       if (flipTarget) {
         exitPoint = { x: exit.y, y: exit.x };
+      }
+
+      if (scaleTarget) {
+        exitPoint.x = Math.round(exitPoint.x / scale);
+        exitPoint.y = Math.round(exitPoint.y / scale);
       }
 
       console.log(curposActual.x, curposActual.y, exitPoint.x, exitPoint.y);
@@ -140,10 +145,13 @@ export class PathfindingService {
 
     let minPath: Point[] = null;
     let minPathLength = Number.MAX_SAFE_INTEGER;
-    for (let path of paths) {
+    let minTarget: Point = null;
+    for (let i = 0; i < paths.length; ++i) {
+      const path = paths[i];
       if (path !== null && path.length < minPathLength) {
         minPath = path;
         minPathLength = path.length;
+        minTarget = targets[i];
       }
     }
 
@@ -153,6 +161,9 @@ export class PathfindingService {
       minPath[i].y = minPath[i].y * scale - 5;
     }
 
+    if (getMinTarget) {
+      return minTarget;
+    }
     return minPath;
   }
 }
