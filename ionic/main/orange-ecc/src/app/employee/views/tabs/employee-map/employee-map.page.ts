@@ -22,8 +22,6 @@ import {
   AngularFirestoreDocument,
 } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
-import * as EasyStar from 'easystarjs';
-import * as util from 'util';
 
 import { Point } from './models/point';
 import { MarkerInfo } from './models/marker-info';
@@ -32,6 +30,7 @@ import { ChoiceInfo } from './models/choice-info';
 import { TrilaterationService } from 'src/app/employee/services/trilateration/trilateration.service';
 import { WebsocketService } from 'src/app/employee/services/websocket/websocket.service';
 import { WebSocketSubject } from 'rxjs/webSocket';
+import { PathfindingService } from 'src/app/employee/services/pathfinding/pathfinding.service';
 
 @Component({
   selector: 'app-employee-map',
@@ -48,19 +47,7 @@ export class EmployeeMapPage {
   //////////////////////////////////////////////
   // uuidMap of the map to download
   uuidMap: string = 'a246ddf4-3ded-49b9-bacf-fbf7b700e49e';
-
-  private mapDoc: AngularFirestoreDocument<MapInfo>;
   private canvas: fabric.Canvas;
-
-  // image matrix for path finding
-  private imgMatrix: Array<Array<number>>;
-  // array of exits for pathfinding
-  private exits: Point[];
-  // A star finder
-  // private pathfinder: AStarFinder;
-  // private astar: Astar;
-  private easystar: EasyStar.js;
-  private findPathAsync: Function;
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -88,7 +75,6 @@ export class EmployeeMapPage {
   // current position
   currentPos: Point;
   drawnPath: fabric.Rect[] = [];
-  origImg: HTMLImageElement;
 
   //////////////////////////////////////////////
   //////////////////////////////////////////////
@@ -132,21 +118,21 @@ export class EmployeeMapPage {
     // trilateration
     private trilateration: TrilaterationService,
     // ws
-    private socket: WebsocketService
+    private socket: WebsocketService,
+
+    // pathfinding
+    private pathfinding: PathfindingService
   ) {
     this.platform.ready().then(() => {
       this.requestLocPermissoin();
       this.enableDebugLogs();
     });
 
-    this.startScanning();
+    // this.startScanning();
     // interval(1000).subscribe((x) => {
     //   this.startWifiScan();
     // });
     //////////////////////////////////////////////
-    this.mapDoc = firestore.doc<MapInfo>('map/unknown');
-
-    this.easystar = new EasyStar.js();
     this.handleSubmitClick(this.uuidMap);
     // this.getDirection();
   }
@@ -291,20 +277,24 @@ export class EmployeeMapPage {
           //   // console.log(this.statData);
           // }
 
-          const beaconData2: any[] = JSON.parse(JSON.stringify(this.beaconData));
+          const beaconData2: any[] = JSON.parse(
+            JSON.stringify(this.beaconData)
+          );
           beaconData2.sort((a, b) => {
-            return ((a.accuracy > b.accuracy) ? -1 : ((a.accuracy < b.accuracy) ? 1 : 0));
+            return a.accuracy > b.accuracy
+              ? -1
+              : a.accuracy < b.accuracy
+              ? 1
+              : 0;
           });
           const beaconData3 = beaconData2.slice(0, 3);
 
-
-          const distArray = [0, 0, 0, 0, 0, 0];
+          const distArray = [0, 0, 0];
           console.log(distArray);
           for (let i = 0; i < beaconData3.length; i++) {
-            distArray[i] =
-              beaconData3[i].accuracy * 100;
+            distArray[i] = beaconData3[i].accuracy * 100;
 
-            // this.trilateration.beacons[i] = 
+            // this.trilateration.beacons[i] =
             for (let beacon of this.mainBeaconData) {
               if (beacon.beaconNo == beaconData3[i].minor) {
                 const x = beacon.x;
@@ -359,122 +349,45 @@ export class EmployeeMapPage {
       });
   }
 
-  handleSubmitClick(uuidMap: string) {
-    this.uuidMap = uuidMap;
-    this.mapDoc = this.firestore.doc<MapInfo>('map/' + uuidMap);
-    console.log('hiii', uuidMap);
+  async handleSubmitClick(uuidMap: string) {
+    let orig_img = await this.pathfinding.initialize(uuidMap);
+    // this.canvas.setDimensions({
+    //   width: orig_img.width,
+    //   height: orig_img.height,
+    // });
+    this.canvas.setWidth(orig_img.width);
+    // this.canvas.height = orig_img.height;
+    this.canvas.setHeight(orig_img.height);
+    // this.canvas.width = orig_img.width;
+    this.canvas.setDimensions(
+      {
+        width: '100%',
+        height: '',
+      },
+      {
+        cssOnly: true,
+      }
+    );
 
-    const imgRef = this.storage.ref('map/' + this.uuidMap + '/orig');
-    imgRef
-      .getDownloadURL()
-      .toPromise()
-      .then((res) => {
-        console.log(res);
+    const height = this.canvas.getHeight();
+    console.log('height is ', height);
+    this.canvas.hoverCursor = 'auto';
 
-        let orig_img = new Image();
-        this.origImg = orig_img;
-        orig_img.src = res;
+    let orig_img_f = new fabric.Image(orig_img, {
+      left: 0,
+      top: 0,
+      lockMovementX: true,
+      lockMovementY: true,
+      lockScalingX: true,
+      selectable: false,
+    });
+    this.canvas.add(orig_img_f);
 
-        orig_img.onload = () => {
-          // this.canvas.setDimensions({
-          //   width: orig_img.width,
-          //   height: orig_img.height,
-          // });
-          this.canvas.setWidth(orig_img.width);
-          // this.canvas.height = orig_img.height;
-          this.canvas.setHeight(orig_img.height);
-          // this.canvas.width = orig_img.width;
-          this.canvas.setDimensions(
-            {
-              width: '100%',
-              height: '',
-            },
-            {
-              cssOnly: true,
-            }
-          );
-
-          const height = this.canvas.getHeight();
-          console.log('height is ', height);
-          this.canvas.hoverCursor = 'auto';
-
-          let orig_img_f = new fabric.Image(orig_img, {
-            left: 0,
-            top: 0,
-            lockMovementX: true,
-            lockMovementY: true,
-            lockScalingX: true,
-            selectable: false,
-          });
-          this.canvas.add(orig_img_f);
-
-          this.addMarkers();
-
-          this.getMapGrid();
-        };
-      })
-      .catch((err) => {
-        console.log('error go brr', err);
-      });
-  }
-
-  private getMapGrid() {
-    this.mapDoc
-      .get() // TODO: maybe set cache here for spid
-      .toPromise()
-      .then((res) => {
-        const data = res.data();
-        const imgString = data.array;
-        const imgArray = JSON.parse(imgString);
-        this.imgMatrix = imgArray;
-
-        this.easystar.setGrid(this.imgMatrix);
-        // this.easystar.setAcceptableTiles(1);
-        this.easystar.setAcceptableTiles([1]);
-        this.easystar.enableDiagonals();
-
-        // promisify
-        this.easystar.findPath[util.promisify.custom] = (
-          startX: number,
-          startY: number,
-          endX: number,
-          endY: number
-        ) => {
-          return new Promise((resolve) => {
-            this.easystar.findPath(startX, startY, endX, endY, resolve);
-          });
-        };
-
-        this.findPathAsync = util.promisify(this.easystar.findPath);
-
-        const scale = this.origImg.height / this.imgMatrix.length;
-        console.log(this.imgMatrix.length, this.imgMatrix[0].length, scale);
-
-        // this draws the map with points for each >0 cell
-        // for (let i = 0; i < this.imgMatrix.length; ++i) {
-        //   for (let j = 0; j < this.imgMatrix[i].length; ++j) {
-        //     if (this.imgMatrix[i][j] > 0) {
-        //       var rect = new fabric.Rect({
-        //         left: j * scale,
-        //         top: i * scale,
-        //         fill: 'blue',
-        //         width: 1,
-        //         height: 1,
-        //         angle: 0,
-        //         selectable: false,
-        //       });
-        //       this.canvas.add(rect);
-        //     }
-        //   }
-        // }
-
-        this.exits = data.exits;
-        console.log(this.exits);
-      });
+    this.addMarkers();
   }
 
   private addMarkers() {
-    this.mapDoc
+    this.pathfinding.mapDoc
       .get()
       .toPromise()
       .then(async (res) => {
@@ -562,12 +475,6 @@ export class EmployeeMapPage {
   private async getNearestExit() {
     const curpos = { x: this.currentPos.x, y: this.currentPos.y };
 
-    const scale = this.origImg.height / this.imgMatrix.length;
-    const curposActual = {
-      x: Math.round(curpos.x / scale),
-      y: Math.round(curpos.y / scale),
-    };
-
     // console.log(
     //   'cur pos',
     //   curposActual,
@@ -575,32 +482,10 @@ export class EmployeeMapPage {
     // );
 
     // easystarjs
-    const promises = [];
-    for (let exit of this.exits) {
-      const exitPoint = { x: exit.y, y: exit.x };
-      console.log(curposActual.x, curposActual.y, exitPoint.x, exitPoint.y);
-
-      promises.push(
-        this.findPathAsync(
-          curposActual.x,
-          curposActual.y,
-          exitPoint.x,
-          exitPoint.y
-        )
-      );
-      this.easystar.setIterationsPerCalculation(10000);
-      this.easystar.calculate();
-    }
-    const paths = await Promise.all(promises);
-
-    let minPath = null;
-    let minPathLength = Number.MAX_SAFE_INTEGER;
-    for (let path of paths) {
-      if (path !== null && path.length < minPathLength) {
-        minPath = path;
-        minPathLength = path.length;
-      }
-    }
+    const minPath = await this.pathfinding.getPath(
+      curpos,
+      this.pathfinding.exits
+    );
 
     const path = minPath;
     if (path == null) {
@@ -615,8 +500,8 @@ export class EmployeeMapPage {
       for (let point of path) {
         // console.log(point, this.imgMatrix[point.y][point.x]);
         var rect = new fabric.Rect({
-          left: point.x * scale - 5,
-          top: point.y * scale - 5,
+          left: point.x,
+          top: point.y,
           fill: 'red',
           width: 5,
           height: 5,
