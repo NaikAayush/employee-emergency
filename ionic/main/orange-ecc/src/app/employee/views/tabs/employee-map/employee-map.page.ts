@@ -39,6 +39,7 @@ import { WebSocketSubject } from 'rxjs/webSocket';
   styleUrls: ['./employee-map.page.scss'],
 })
 export class EmployeeMapPage {
+  data;
   beaconListData: MarkerInfo[] = [];
   mainBeaconData = [];
   //////////////////////////////////////////////
@@ -138,7 +139,7 @@ export class EmployeeMapPage {
       this.enableDebugLogs();
     });
 
-    // this.startScanning();
+    this.startScanning();
     // interval(1000).subscribe((x) => {
     //   this.startWifiScan();
     // });
@@ -147,7 +148,7 @@ export class EmployeeMapPage {
 
     this.easystar = new EasyStar.js();
     this.handleSubmitClick(this.uuidMap);
-    this.getDirection();
+    // this.getDirection();
   }
 
   ngOnInit() {
@@ -272,6 +273,35 @@ export class EmployeeMapPage {
         console.log('found beacons size: ' + pluginResult.beacons.length);
         if (pluginResult.beacons.length > 0) {
           this.beaconData = pluginResult.beacons;
+          //WRITE CODE HERE
+          // for (let i = 0; i <= this.beaconData.length; i++) {
+          //   // this.data.push(this.beaconData[i].accuracy);
+          //   const obj = {
+          //     dist: this.beaconData[i].accuracy,
+          //     // proximity: this.beaconData[i].proximity,
+          //     // rssi: this.beaconData[i].rssi,
+          //     // tx: this.beaconData[i].tx,
+          //     beaconNo: this.beaconData[i].minor,
+          //   };
+
+          //   [1,1,2,2,3]
+          //   // this.statData.push(obj);
+          //   // console.log(this.beaconData[i].accuracy);
+          //   // console.log(this.beaconData[i].accuracy);
+          //   // console.log(this.statData);
+          // }
+
+          const distArray = [0, 0, 0, 0, 0, 0];
+          console.log(distArray);
+          for (let i = 0; i < this.beaconData.length; i++) {
+            distArray[this.beaconData[i].minor - 1] =
+              this.beaconData[i].accuracy * 100;
+          }
+          console.log(distArray);
+          console.log('Calling Get Location');
+          this.getLocation(distArray);
+          //END HERE
+
           this.changeRef.detectChanges(); // Check for data change to update view Y.Q
         } else {
           console.log('no beacons nearby');
@@ -473,12 +503,14 @@ export class EmployeeMapPage {
     for (let i = 0; i < this.mainBeaconData.length; i++) {
       beaconArr.push([this.mainBeaconData[i].x, this.mainBeaconData[i].y]);
     }
-
+    console.log('INIT BEACON');
+    console.log(beaconArr);
+    console.log('INIT BEACON');
     this.trilateration.initializeBeacons(beaconArr);
   }
 
-  private getLocation() {
-    const pos = this.trilateration.getLocation(this.distances);
+  private async getLocation(distArray) {
+    const pos = this.trilateration.getLocation(distArray);
     console.log('Got trilatered position', pos);
 
     // draw dot/image
@@ -494,7 +526,7 @@ export class EmployeeMapPage {
         // width: 20,
         // fill: 'red',
         selectable: false,
-        angle: this.headingAngle
+        angle: this.headingAngle,
       });
       this.drawnCurrentLocation.scaleToHeight(20);
       this.drawnCurrentLocation.scaleToWidth(20);

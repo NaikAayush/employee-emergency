@@ -22,5 +22,9 @@
     <ion-button (click)="getLocation()">Get Location</ion-button>
 
     <canvas id="mapFabricCanvas"></canvas>
+
+    <ul *ngFor="let i of distArray">
+      <li>{{i}}</li>
+    </ul>
   </div>
 </ion-content>
