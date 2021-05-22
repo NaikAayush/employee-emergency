@@ -29,6 +29,7 @@ import { Point } from './models/point';
 import { MarkerInfo } from './models/marker-info';
 import { MapInfo } from './models/map-info';
 import { ChoiceInfo } from './models/choice-info';
+import { TrilaterationService } from 'src/app/employee/services/trilateration/trilateration.service';
 
 @Component({
   selector: 'app-employee-map',
@@ -36,7 +37,7 @@ import { ChoiceInfo } from './models/choice-info';
   styleUrls: ['./employee-map.page.scss'],
 })
 export class EmployeeMapPage {
-  beaconListData = [];
+  beaconListData: MarkerInfo[] = [];
   mainBeaconData = [];
   //////////////////////////////////////////////
   //////////////////////////////////////////////
@@ -89,6 +90,10 @@ export class EmployeeMapPage {
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
+  // trilateration
+  distances: number[] = [100, 100, 100, 100, 100, 100];
+  drawnCurrentLocation: fabric.Circle;
+
   //////////////////////////////////////////////
   //////////////////////////////////////////////
 
@@ -110,7 +115,10 @@ export class EmployeeMapPage {
     private changeRef: ChangeDetectorRef,
     private wifiWizard2: WifiWizard2,
     private magnetometer: Magnetometer,
-    private deviceOrientation: DeviceOrientation
+    private deviceOrientation: DeviceOrientation,
+
+    // trilateration
+    private trilateration: TrilaterationService
   ) {
     this.platform.ready().then(() => {
       this.requestLocPermissoin();
@@ -423,10 +431,11 @@ export class EmployeeMapPage {
         console.log('Hello Data');
         console.log(this.beaconListData);
         this.mainBeaconData = await this.setupBeaconData(this.beaconListData);
+        this.setupTrilateration();
       });
   }
 
-  private async setupBeaconData(beaconListData) {
+  private async setupBeaconData(beaconListData: MarkerInfo[]) {
     const data = [];
     for (let i = 0; i < beaconListData.length; i++) {
       data.push({
@@ -438,6 +447,37 @@ export class EmployeeMapPage {
     console.log('New Data');
     console.log(data);
     return data;
+  }
+
+  private setupTrilateration() {
+    let beaconArr: Array<Array<number>> = [];
+    for (let i = 0; i < this.mainBeaconData.length; i++) {
+      beaconArr.push([this.mainBeaconData[i].x, this.mainBeaconData[i].y]);
+    }
+
+    this.trilateration.initializeBeacons(beaconArr);
+  }
+
+  private getLocation() {
+    const pos = this.trilateration.getLocation(this.distances);
+    console.log('Got trilatered position', pos);
+
+    if (this.drawnCurrentLocation) {
+      this.drawnCurrentLocation.left = pos[0];
+      this.drawnCurrentLocation.top = pos[1];
+      this.drawnCurrentLocation.setCoords();
+    } else {
+      this.drawnCurrentLocation = new fabric.Circle({
+        left: pos[0],
+        top: pos[1],
+        height: 20,
+        width: 20,
+        fill: 'red',
+        selectable: false,
+        radius: 10,
+      });
+      this.canvas.add(this.drawnCurrentLocation);
+    }
   }
 
   private async getNearestExit() {
