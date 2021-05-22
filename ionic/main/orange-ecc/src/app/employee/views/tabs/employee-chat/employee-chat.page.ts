@@ -1,4 +1,7 @@
 import { Component, ElementRef, OnInit, ViewChild } from '@angular/core';
+import { AngularFirestore, AngularFirestoreCollection } from '@angular/fire/firestore';
+import { WebSocketSubject } from 'rxjs/webSocket';
+import { WebsocketService } from 'src/app/employee/services/websocket/websocket.service';
 import { ChatService } from './chat-service/chat.service';
 
 @Component({
@@ -10,9 +13,33 @@ export class EmployeeChatPage implements OnInit {
   @ViewChild('msgInput') msgInput: ElementRef;
   @ViewChild('messageInput') messageInput: ElementRef;
 
-  constructor(public chat: ChatService) {}
+  private ertCollection: AngularFirestoreCollection;
+  private ertUids: string[];
+  private ertLocations: any[];
+  private ertSubjects: WebSocketSubject<any>[];
 
-  ngOnInit() {}
+  constructor(public chat: ChatService, private firestore: AngularFirestore, private websocket: WebsocketService) {
+  }
+
+  async ngOnInit() {
+    this.ertCollection = this.firestore.collection("users", ref => ref.where("ert", "==", true));
+
+    let ertDoc = await this.ertCollection.get().toPromise();
+
+    this.ertUids = [];
+    for (let i = 0; i < ertDoc.docs.length; ++i) {
+      this.ertUids.push(ertDoc.docs[i].data().uid);
+    }
+
+    console.log(this.ertUids);
+
+    for (let i = 0; i < this.ertUids.length; ++i) {
+      const ertUid = this.ertUids[i];
+      this.websocket.connectSocket("update?id=" + ertUid).subscribe((data) => {
+        console.log(data);
+      }, (err) => console.log(err));
+    }
+  }
 
   public handleSubmitClick(senderUid_: string, receiverUid_: string) {
     console.log('submit clicked', senderUid_, receiverUid_);
@@ -27,7 +54,7 @@ export class EmployeeChatPage implements OnInit {
     });
   }
 
-  sendChatMessage(message) {
+  sendChatMessage(message: string) {
     this.chat.sendMessage(message);
     this.messageInput.nativeElement.value = '';
   }

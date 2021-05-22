@@ -291,12 +291,30 @@ export class EmployeeMapPage {
           //   // console.log(this.statData);
           // }
 
+          const beaconData2: any[] = JSON.parse(JSON.stringify(this.beaconData));
+          beaconData2.sort((a, b) => {
+            return ((a.accuracy > b.accuracy) ? -1 : ((a.accuracy < b.accuracy) ? 1 : 0));
+          });
+          const beaconData3 = beaconData2.slice(0, 3);
+
+
           const distArray = [0, 0, 0, 0, 0, 0];
           console.log(distArray);
-          for (let i = 0; i < this.beaconData.length; i++) {
-            distArray[this.beaconData[i].minor - 1] =
-              this.beaconData[i].accuracy * 100;
+          for (let i = 0; i < beaconData3.length; i++) {
+            distArray[i] =
+              beaconData3[i].accuracy * 100;
+
+            // this.trilateration.beacons[i] = 
+            for (let beacon of this.mainBeaconData) {
+              if (beacon.beaconNo == beaconData3[i].minor) {
+                const x = beacon.x;
+                const y = beacon.y;
+                this.trilateration.beacons[i] = [x, y];
+                break;
+              }
+            }
           }
+
           console.log(distArray);
           console.log('Calling Get Location');
           this.getLocation(distArray);
@@ -500,7 +518,7 @@ export class EmployeeMapPage {
 
   private setupTrilateration() {
     let beaconArr: Array<Array<number>> = [];
-    for (let i = 0; i < this.mainBeaconData.length; i++) {
+    for (let i = 0; i < 3; i++) {
       beaconArr.push([this.mainBeaconData[i].x, this.mainBeaconData[i].y]);
     }
     console.log('INIT BEACON');
