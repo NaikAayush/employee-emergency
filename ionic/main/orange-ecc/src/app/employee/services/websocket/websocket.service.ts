@@ -8,8 +8,15 @@ import { environment } from 'src/environments/environment';
 export class WebsocketService {
   constructor() {}
 
-  connectSocket(url: string) {
-    return webSocket(environment.wsEndpoint + url);
+  connectSocket(url: string, deserializer: any = null) {
+    if (deserializer) {
+      return webSocket({
+        url: environment.wsEndpoint + url,
+        deserializer: deserializer,
+      });
+    } else {
+      return webSocket(environment.wsEndpoint + url);
+    }
   }
 
   sendMessage(subject: WebSocketSubject<any>, msg) {
