@@ -378,11 +378,14 @@ async def nearestExit(id_: str, source: Point):
 
     print(map_data)
 
+    scale = processing.map.IMAGE_WIDTH / processing.map.MAP_WIDTH
+
     for exit in map_data.exits:
         grid.cleanup()
+        print(exit)
 
         end = get_nearest_node(
-            grid, Point(x=exit.top + exit.height / 2, y=exit.left + exit.width / 2)
+            grid, Point(x=(exit.top + exit.height / 2)/scale, y=(exit.left + exit.width / 2)/scale)
         )
         path, runs = finder.find_path(start, end, grid)
 
