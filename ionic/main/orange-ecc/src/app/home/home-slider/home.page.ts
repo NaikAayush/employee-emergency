@@ -1,4 +1,5 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { IonSlides } from '@ionic/angular';
 @Component({
   selector: 'app-home',
@@ -10,7 +11,7 @@ export class HomePage implements OnInit {
     initialSlide: 0,
     speed: 400,
   };
-  constructor() {}
+  constructor(private router: Router) {}
 
   ngOnInit() {}
 
@@ -18,5 +19,12 @@ export class HomePage implements OnInit {
 
   swipeNext() {
     this.slides.slideNext();
+  }
+
+  navigateToEmployee() {
+    this.router.navigateByUrl('/employee');
+  }
+  navigateToERT() {
+    this.router.navigateByUrl('/ert');
   }
 }

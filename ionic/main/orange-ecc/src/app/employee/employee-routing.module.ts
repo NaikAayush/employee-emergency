@@ -5,7 +5,6 @@ import { EmployeeSignUpComponent } from './views/employee-auth/employee-sign-up/
 
 import { EmployeePage } from './employee.page';
 import { EmployeeVerifyComponent } from './views/employee-auth/employee-verify/employee-verify.component';
-import { EmployeeDashboardComponent } from './views/employee-dashboard/employee-dashboard.component';
 
 const routes: Routes = [
   {
@@ -23,10 +22,6 @@ const routes: Routes = [
   {
     path: 'verify',
     component: EmployeeVerifyComponent,
-  },
-  {
-    path: 'dashboard',
-    component: EmployeeDashboardComponent,
   },
   {
     path: 'employee-tabs',

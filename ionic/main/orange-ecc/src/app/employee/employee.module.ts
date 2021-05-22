@@ -10,7 +10,6 @@ import { EmployeePage } from './employee.page';
 
 import { EmployeeSignInComponent } from './views/employee-auth/employee-sign-in/employee-sign-in.component';
 import { EmployeeSignUpComponent } from './views/employee-auth/employee-sign-up/employee-sign-up.component';
-import { EmployeeDashboardComponent } from './views/employee-dashboard/employee-dashboard.component';
 import { EmployeeTabsPageModule } from './views/employee-tabs/employee-tabs.module';
 
 @NgModule({
@@ -26,7 +25,6 @@ import { EmployeeTabsPageModule } from './views/employee-tabs/employee-tabs.modu
     EmployeePage,
     EmployeeSignInComponent,
     EmployeeSignUpComponent,
-    EmployeeDashboardComponent,
   ],
 })
 export class EmployeePageModule {}

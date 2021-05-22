@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { EmployeeDashboardComponent } from './employee-dashboard.component';
+import { CommandCenterApprovePage } from './command-center-approve.page';
 
-describe('EmployeeDashboardComponent', () => {
-  let component: EmployeeDashboardComponent;
-  let fixture: ComponentFixture<EmployeeDashboardComponent>;
+describe('CommandCenterApprovePage', () => {
+  let component: CommandCenterApprovePage;
+  let fixture: ComponentFixture<CommandCenterApprovePage>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ EmployeeDashboardComponent ],
+      declarations: [ CommandCenterApprovePage ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(EmployeeDashboardComponent);
+    fixture = TestBed.createComponent(CommandCenterApprovePage);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));
