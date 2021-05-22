@@ -30,6 +30,8 @@ import { MarkerInfo } from './models/marker-info';
 import { MapInfo } from './models/map-info';
 import { ChoiceInfo } from './models/choice-info';
 import { TrilaterationService } from 'src/app/employee/services/trilateration/trilateration.service';
+import { WebsocketService } from 'src/app/employee/services/websocket/websocket.service';
+import { WebSocketSubject } from 'rxjs/webSocket';
 
 @Component({
   selector: 'app-employee-map',
@@ -92,7 +94,16 @@ export class EmployeeMapPage {
 
   // trilateration
   distances: number[] = [100, 100, 100, 100, 100, 100];
-  drawnCurrentLocation: fabric.Circle;
+  drawnCurrentLocation: fabric.Image;
+  headingAngle: number = 45;
+
+  // ws
+  userUuid: string = 'sampleasechangethis';
+  subject: WebSocketSubject<any>;
+
+  // navigation icon
+  private navIcon: HTMLImageElement;
+  private navIconSrc = 'assets/img/arrow.svg';
 
   //////////////////////////////////////////////
   //////////////////////////////////////////////
@@ -118,7 +129,9 @@ export class EmployeeMapPage {
     private deviceOrientation: DeviceOrientation,
 
     // trilateration
-    private trilateration: TrilaterationService
+    private trilateration: TrilaterationService,
+    // ws
+    private socket: WebsocketService
   ) {
     this.platform.ready().then(() => {
       this.requestLocPermissoin();
@@ -164,6 +177,12 @@ export class EmployeeMapPage {
     if (!this.platform.is('ios')) {
       this.iosDevice = true;
     }
+
+    // ws
+    this.subject = this.socket.connectSocket('update?id=' + this.userUuid);
+    // download nav icon
+    this.navIcon = new Image();
+    this.navIcon.src = this.navIconSrc;
   }
 
   async getDirection() {
@@ -462,22 +481,32 @@ export class EmployeeMapPage {
     const pos = this.trilateration.getLocation(this.distances);
     console.log('Got trilatered position', pos);
 
+    // draw dot/image
     if (this.drawnCurrentLocation) {
       this.drawnCurrentLocation.left = pos[0];
       this.drawnCurrentLocation.top = pos[1];
       this.drawnCurrentLocation.setCoords();
     } else {
-      this.drawnCurrentLocation = new fabric.Circle({
+      this.drawnCurrentLocation = new fabric.Image(this.navIcon, {
         left: pos[0],
         top: pos[1],
-        height: 20,
-        width: 20,
-        fill: 'red',
+        // height: 20,
+        // width: 20,
+        // fill: 'red',
         selectable: false,
-        radius: 10,
+        angle: this.headingAngle
       });
+      this.drawnCurrentLocation.scaleToHeight(20);
+      this.drawnCurrentLocation.scaleToWidth(20);
       this.canvas.add(this.drawnCurrentLocation);
     }
+
+    // send to ws server
+    this.socket.sendMessage(this.subject, {
+      x: pos[0],
+      y: pos[0],
+      name: this.userUuid,
+    });
   }
 
   private async getNearestExit() {
