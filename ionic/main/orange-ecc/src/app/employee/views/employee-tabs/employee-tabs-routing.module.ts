@@ -53,14 +53,14 @@ const routes: Routes = [
       },
       {
         path: '',
-        redirectTo: 'employee/employee-tabs/tab1',
+        redirectTo: 'employee/employee-tabs/sos',
         pathMatch: 'full',
       },
     ],
   },
   {
     path: '',
-    redirectTo: 'employee/employee-tabs/tab1',
+    redirectTo: 'employee/employee-tabs/sos',
     pathMatch: 'full',
   },
 ];
