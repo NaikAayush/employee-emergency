@@ -16,6 +16,8 @@ import { AngularFireAuthModule } from '@angular/fire/auth';
 
 import { IBeacon } from '@ionic-native/ibeacon/ngx';
 import { WifiWizard2 } from '@ionic-native/wifi-wizard-2/ngx';
+import { Magnetometer } from '@ionic-native/magnetometer/ngx';
+import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -34,6 +36,8 @@ import { WifiWizard2 } from '@ionic-native/wifi-wizard-2/ngx';
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     IBeacon,
     WifiWizard2,
+    Magnetometer,
+    DeviceOrientation,
   ],
   bootstrap: [AppComponent],
 })

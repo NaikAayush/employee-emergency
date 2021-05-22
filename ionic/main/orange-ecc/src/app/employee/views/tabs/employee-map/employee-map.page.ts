@@ -5,6 +5,15 @@ import {
   WifiScanResultsOptions,
   WifiWizard2,
 } from '@ionic-native/wifi-wizard-2/ngx';
+import {
+  Magnetometer,
+  MagnetometerReading,
+} from '@ionic-native/magnetometer/ngx';
+import {
+  DeviceOrientation,
+  DeviceOrientationCompassHeading,
+} from '@ionic-native/device-orientation/ngx';
+
 import { interval } from 'rxjs';
 
 import { fabric } from 'fabric';
@@ -99,7 +108,9 @@ export class EmployeeMapPage {
     private readonly ibeacon: IBeacon,
     private readonly platform: Platform,
     private changeRef: ChangeDetectorRef,
-    private wifiWizard2: WifiWizard2
+    private wifiWizard2: WifiWizard2,
+    private magnetometer: Magnetometer,
+    private deviceOrientation: DeviceOrientation
   ) {
     this.platform.ready().then(() => {
       this.requestLocPermissoin();
@@ -115,6 +126,7 @@ export class EmployeeMapPage {
 
     this.easystar = new EasyStar.js();
     this.handleSubmitClick(this.uuidMap);
+    this.getDirection();
   }
 
   ngOnInit() {
@@ -144,6 +156,18 @@ export class EmployeeMapPage {
     if (!this.platform.is('ios')) {
       this.iosDevice = true;
     }
+  }
+
+  async getDirection() {
+    this.deviceOrientation.getCurrentHeading().then(
+      (data: DeviceOrientationCompassHeading) => console.log(data),
+      (error: any) => console.log(error)
+    );
+
+    // Watch the device compass heading change
+    var subscription = this.deviceOrientation
+      .watchHeading()
+      .subscribe((data: DeviceOrientationCompassHeading) => console.log(data));
   }
 
   async startWifiScan() {
