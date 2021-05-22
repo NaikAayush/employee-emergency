@@ -18,6 +18,7 @@ import { IBeacon } from '@ionic-native/ibeacon/ngx';
 import { WifiWizard2 } from '@ionic-native/wifi-wizard-2/ngx';
 import { Magnetometer } from '@ionic-native/magnetometer/ngx';
 import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [AppComponent],
@@ -31,6 +32,7 @@ import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
     AngularFirestoreModule,
     AngularFireStorageModule,
     AngularFireAuthModule,
+    HttpClientModule,
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },

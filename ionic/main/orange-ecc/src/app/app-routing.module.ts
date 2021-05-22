@@ -19,9 +19,9 @@ const routes: Routes = [
   {
     path: 'cc',
     loadChildren: () =>
-      import('./command-center/command-center.module').then(
-        (m) => m.CommandCenterPageModule
-      ),
+      import(
+        './command-center/views/command-center-tabs/command-center-tabs.module'
+      ).then((m) => m.CommandCenterTabsPageModule),
   },
   {
     path: 'home',

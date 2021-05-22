@@ -7,14 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { CommandCenterSetupPageRoutingModule } from './command-center-setup-routing.module';
 
 import { CommandCenterSetupPage } from './command-center-setup.page';
+import { CommandCenterUploadMapComponent } from './command-center-upload-map/command-center-upload-map.component';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CommandCenterSetupPageRoutingModule
+    CommandCenterSetupPageRoutingModule,
   ],
-  declarations: [CommandCenterSetupPage]
+  declarations: [CommandCenterSetupPage, CommandCenterUploadMapComponent],
 })
 export class CommandCenterSetupPageModule {}

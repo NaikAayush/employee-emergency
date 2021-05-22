@@ -1,0 +1,129 @@
+<div class="flex items-center flex-col w-full">
+  <h1
+    class="
+      text-base
+      tracking-tight
+      font-extrabold
+      text-gray-900
+      sm:text-5xl
+      md:text-6xl
+      mt-10
+      mb-10
+    "
+  >
+    <span class="block xl:inline">Upload </span>
+    <span class="block text-yellow-1100 xl:inline">Floor Map</span>
+  </h1>
+  <div class="form-group">
+    <!-- <label for="file">Choose File</label> -->
+    <!-- <input type="file" id="file" (change)="handleFileInput($event.target)"> -->
+
+    <input
+      #imageInput
+      hidden="true"
+      type="file"
+      onclick="this.value=null"
+      (change)="handleFileInput($event.target)"
+      accept="image/*"
+    />
+    <!-- <div class="rounded-md shadow"> -->
+    <button
+      (click)="imageInput.click()"
+      class="
+        w-full
+        flex
+        items-center
+        justify-center
+        px-8
+        py-3
+        border border-transparent
+        text-base
+        font-medium
+        rounded-md
+        text-white
+        bg-yellow-1100
+        hover:bg-yellow-1200
+        md:py-4
+        md:text-lg
+        md:px-10
+      "
+    >
+      Choose Map Image
+    </button>
+    <!-- <ion-button color="primary" (click)="imageInput.click()">
+      Choose Map Image
+    </ion-button> -->
+  </div>
+
+  <style>
+    .marker-radio-group {
+      display: flex;
+      flex-direction: column;
+      margin: 15px 0;
+    }
+
+    .marker-radio-button {
+      margin: 5px;
+    }
+  </style>
+
+  <div *ngIf="view" class="form-group flex flex-col items-center">
+    <label id="markerChoiceLabel">Choose marker to place</label>
+    <ion-radio-group
+      class="marker-radio-group"
+      name="markerChoice"
+      aria-labelledby="markerChoiceLabel"
+      [(ngModel)]="markerChoice"
+    >
+      <ion-item>
+        <ion-label>Entry</ion-label>
+        <ion-radio class="marker-radio-button" name="markerChoice" value="entry"
+          >Entry</ion-radio
+        ></ion-item
+      >
+      <ion-item>
+        <ion-label>Exit</ion-label>
+        <ion-radio
+          checked="true"
+          class="marker-radio-button"
+          name="markerChoice"
+          value="exit"
+          >Exit
+        </ion-radio>
+      </ion-item>
+      <ion-item>
+        <ion-label>Beacon</ion-label>
+        <ion-radio
+          class="marker-radio-button"
+          name="markerChoice"
+          value="beacon"
+          >Beacon</ion-radio
+        >
+      </ion-item>
+    </ion-radio-group>
+    <!-- <ion-button color="primary" (click)="submit()">Submit</ion-button> -->
+    <button
+      (click)="submit()"
+      class="
+        w-auto
+        flex
+        items-center
+        justify-center
+        px-8
+        py-3
+        border border-transparent
+        text-base
+        font-medium
+        rounded-md
+        text-white
+        bg-yellow-1100
+        hover:bg-yellow-1200
+        mb-10
+      "
+    >
+      Submit
+    </button>
+  </div>
+
+  <canvas id="mapFabricCanvas"></canvas>
+</div>
