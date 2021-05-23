@@ -1,0 +1,81 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>command-center-emergency</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div *ngIf="valid">
+    <div class="flex flex-col items-center justify-items-center p-20">
+      <p
+        class="
+          mt-2
+          text-3xl
+          leading-8
+          font-extrabold
+          tracking-tight
+          text-gray-900
+          sm:text-4xl
+        "
+      >
+        {{timer}}
+      </p>
+      <p
+        class="
+          mt-2
+          text-3xl
+          leading-8
+          font-medium
+          tracking-tight
+          text-gray-900
+          sm:text-4xl
+        "
+      >
+        seconds have been elapsed since the start of Emergency
+      </p>
+    </div>
+  </div>
+  <div class="flex flex-col items-center justify-items-center p-20">
+    <button
+      (click)="startEmergency()"
+      class="
+        inline-flex
+        items-center
+        justify-center
+        border border-transparent
+        text-2xl
+        font-bold
+        text-white
+        bg-red-600
+        hover:bg-red-500
+        mt-10
+        rounded-full
+        h-48
+        w-48
+      "
+    >
+      START EMERGENCY
+    </button>
+
+    <button
+      (click)="stopEmergency()"
+      class="
+        inline-flex
+        items-center
+        justify-center
+        border border-transparent
+        text-2xl
+        font-bold
+        text-white
+        bg-green-600
+        hover:bg-green-500
+        mt-20
+        rounded-full
+        h-48
+        w-48
+      "
+    >
+      STOP EMERGENCY
+    </button>
+  </div>
+</ion-content>

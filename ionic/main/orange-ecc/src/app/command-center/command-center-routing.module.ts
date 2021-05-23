@@ -36,6 +36,10 @@ const routes: Routes = [
     path: 'command-center-setup',
     loadChildren: () => import('./views/tabs/command-center-setup/command-center-setup.module').then( m => m.CommandCenterSetupPageModule)
   },
+  {
+    path: 'command-center-emergency',
+    loadChildren: () => import('./views/tabs/command-center-emergency/command-center-emergency.module').then( m => m.CommandCenterEmergencyPageModule)
+  },
 
 ];
 

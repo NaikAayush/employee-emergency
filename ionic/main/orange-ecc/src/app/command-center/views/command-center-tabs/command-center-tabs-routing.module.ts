@@ -37,6 +37,13 @@ const routes: Routes = [
           ).then((m) => m.CommandCenterSetupPageModule),
       },
       {
+        path: 'emergency',
+        loadChildren: () =>
+          import(
+            '../tabs/command-center-emergency/command-center-emergency.module'
+          ).then((m) => m.CommandCenterEmergencyPageModule),
+      },
+      {
         path: '',
         redirectTo: 'cc/cc-tabs/overview',
         pathMatch: 'full',
