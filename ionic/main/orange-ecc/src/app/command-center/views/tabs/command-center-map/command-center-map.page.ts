@@ -13,7 +13,7 @@ export class CommandCenterMapPage implements OnInit {
   private canvas: fabric.Canvas;
   uuidMap: string = 'a246ddf4-3ded-49b9-bacf-fbf7b700e49e';
   // user ids to monitor
-  userIds: string[] = ["592s1XmfNwYujg7Y1thbkDyOTZf2", "brr", "LxhvXHuCJxUXITPfzmYAnKJb6uf2"];
+  userIds: string[] = ["592s1XmfNwYujg7Y1thbkDyOTZf2", "brr", "LxhvXHuCJxUXITPfzmYAnKJb6uf2", "abc"];
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -120,7 +120,7 @@ export class CommandCenterMapPage implements OnInit {
     this.userIds.forEach((uid) => {
       const listenWs = new WebSocket(`${environment.wsEndpoint}listen?id=${uid}`);
 
-      listenWs.addEventListener('open', function () {
+      listenWs.addEventListener('open', function() {
         listenWs.send('Hello Server!');
       });
 
@@ -131,12 +131,17 @@ export class CommandCenterMapPage implements OnInit {
 
           if (this.userMarkers[uid]) {
             console.log("found");
-            this.userMarkers[uid].set({
-              left: data.x,
-              top: data.y,
-            });
-            this.userMarkers[uid].setCoords();
-            this.canvas.renderAll();
+            // this.userMarkers[uid].set({
+            //   // left: data.x,
+            //   top: data.y,
+            // });
+
+            fabric.util.animate({ startValue: this.userMarkers[uid].left, endValue: data.x, onChange: (val) => { this.userMarkers[uid].left = val; this.userMarkers[uid].setCoords(); this.canvas.renderAll(); } });
+
+            fabric.util.animate({ startValue: this.userMarkers[uid].top, endValue: data.y, onChange: (val) => { this.userMarkers[uid].top = val; this.userMarkers[uid].setCoords(); this.canvas.renderAll(); } });
+
+            // this.userMarkers[uid].setCoords();
+            // this.canvas.renderAll();
           } else {
             let color = "red";
 
@@ -161,6 +166,7 @@ export class CommandCenterMapPage implements OnInit {
             this.userMarkers[uid] = new fabric.Group([reect, text], {
               left: data.x,
               top: data.y,
+              selectable: false
             });
 
             this.canvas.add(this.userMarkers[uid]);
