@@ -131,17 +131,19 @@ export class CommandCenterMapPage implements OnInit {
 
           if (this.userMarkers[uid]) {
             console.log("found");
-            // this.userMarkers[uid].set({
-            //   // left: data.x,
-            //   top: data.y,
-            // });
 
-            fabric.util.animate({ startValue: this.userMarkers[uid].left, endValue: data.x, onChange: (val) => { this.userMarkers[uid].left = val; this.userMarkers[uid].setCoords(); this.canvas.renderAll(); } });
+            this.userMarkers[uid].animate("left", data.x, {
+              duration: 500,
+              onChange: this.canvas.requestRenderAll.bind(this.canvas),
+              easing: fabric.util.ease.easeInQuad
+            });
 
-            fabric.util.animate({ startValue: this.userMarkers[uid].top, endValue: data.y, onChange: (val) => { this.userMarkers[uid].top = val; this.userMarkers[uid].setCoords(); this.canvas.renderAll(); } });
+            this.userMarkers[uid].animate("top", data.y, {
+              duration: 500,
+              onChange: this.canvas.requestRenderAll.bind(this.canvas),
+              easing: fabric.util.ease.easeInQuad
+            });
 
-            // this.userMarkers[uid].setCoords();
-            // this.canvas.renderAll();
           } else {
             let color = "black";
 

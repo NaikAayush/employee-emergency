@@ -111,6 +111,8 @@ export class PathfindingService {
 
   async getPath(curpos: Point, targets: Point[], flipTarget = true, scaleTarget = false, getMinTarget = false) {
     const scale = this.origImg.height / this.imgMatrix.length;
+    console.log("scale", scale);
+
     const curposActual = {
       x: Math.round(curpos.x / scale),
       y: Math.round(curpos.y / scale),
