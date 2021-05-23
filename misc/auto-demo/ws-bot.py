@@ -99,6 +99,7 @@ async def emp_exit(uid, initial_pos):
     pos = initial_pos
 
     async with websockets.connect(uri + uid) as websocket:
+
         async def send(x, y, pause=0.5):
             pos["x"] = x
             pos["y"] = y
@@ -112,7 +113,11 @@ async def emp_exit(uid, initial_pos):
 
 async def main():
     # await asyncio.gather(send1("brr"), send2("abc"), send3("592s1XmfNwYujg7Y1thbkDyOTZf2"))
-    await asyncio.gather(emp_exit("emp1", {"name": "EMP 1", "x": 344, "y": 110}))
+    await asyncio.gather(
+        emp_exit("emp1", {"name": "EMP 1", "x": 344, "y": 110}),
+        emp_exit("emp2", {"name": "EMP 2", "x": 412.1, "y": 380.28}),
+        emp_exit("emp3", {"name": "EMP 3", "x": 387.6, "y": 302.95}),
+    )
 
 
 asyncio.run(main())
