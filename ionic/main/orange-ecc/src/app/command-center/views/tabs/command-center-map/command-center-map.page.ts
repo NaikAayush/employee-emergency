@@ -11,9 +11,9 @@ import { environment } from 'src/environments/environment';
 })
 export class CommandCenterMapPage implements OnInit {
   private canvas: fabric.Canvas;
-  uuidMap: string = '2ef08d0b-dc55-490f-9b98-4f33cb85a254';
+  uuidMap: string = '45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43';
   // user ids to monitor
-  userIds: string[] = ["emp1", "emp2", "emp3", "ert1", "ert2", "ert3"];
+  userIds: string[] = ["emp1", "emp2", "emp3", "emp4", "ert1", "ert2", "ert3"];
 
   // icons
   private exitIcon!: HTMLImageElement;
