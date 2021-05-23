@@ -128,7 +128,7 @@ export class EmployeeMapPage {
       this.enableDebugLogs();
     });
 
-    // this.startScanning();
+    this.startScanning();
     // interval(1000).subscribe((x) => {
     //   this.startWifiScan();
     // });
@@ -482,10 +482,10 @@ export class EmployeeMapPage {
     // );
 
     // easystarjs
-    const minPath = await this.pathfinding.getPath(
+    const minPath = (await this.pathfinding.getPath(
       curpos,
       this.pathfinding.exits
-    ) as Point[];
+    )) as Point[];
 
     const path = minPath;
     if (path == null) {

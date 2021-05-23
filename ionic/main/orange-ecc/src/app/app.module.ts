@@ -18,7 +18,11 @@ import { IBeacon } from '@ionic-native/ibeacon/ngx';
 import { WifiWizard2 } from '@ionic-native/wifi-wizard-2/ngx';
 import { Magnetometer } from '@ionic-native/magnetometer/ngx';
 import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
+import { FCM } from '@ionic-native/fcm/ngx';
+import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+
 import { HttpClientModule } from '@angular/common/http';
+import { StatusBar } from '@ionic-native/status-bar/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -40,6 +44,9 @@ import { HttpClientModule } from '@angular/common/http';
     WifiWizard2,
     Magnetometer,
     DeviceOrientation,
+    FCM,
+    SplashScreen,
+    StatusBar,
   ],
   bootstrap: [AppComponent],
 })
