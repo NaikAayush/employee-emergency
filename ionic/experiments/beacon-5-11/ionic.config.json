@@ -1,0 +1,8 @@
+{
+  "name": "beacon-5-11",
+  "integrations": {
+    "cordova": {},
+    "capacitor": {}
+  },
+  "type": "angular"
+}

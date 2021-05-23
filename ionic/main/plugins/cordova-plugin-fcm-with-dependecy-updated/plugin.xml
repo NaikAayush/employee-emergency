@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Licensed to the Apache Software Foundation (ASF) under one
+  or more contributor license agreements.  See the NOTICE file
+  distributed with this work for additional information
+  regarding copyright ownership.  The ASF licenses this file
+  to you under the Apache License, Version 2.0 (the
+  "License"); you may not use this file except in compliance
+  with the License.  You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+  Unless required by applicable law or agreed to in writing,
+  software distributed under the License is distributed on an
+  "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+  KIND, either express or implied.  See the License for the
+  specific language governing permissions and limitations
+  under the License.
+-->
+<plugin xmlns="http://apache.org/cordova/ns/plugins/1.0" id="cordova-plugin-fcm-with-dependecy-updated" version="7.2.0">
+	<name>Cordova FCM Push Plugin</name>
+	<description>Google Firebase Cloud Messaging Cordova Push Plugin fork with dependecy updated</description>
+	<license>MIT</license>
+	<keywords>notifications, push, firebase, fcm, ios, android, cordova, plugin</keywords>
+
+	<js-module src="www/FCMPlugin.js" name="FCMPlugin">
+		<clobbers target="FCM" />
+	</js-module>
+
+	<engines>
+		<engine name="cordova" version=">=9.0.0" />
+		<engine name="cordova-android" version=">=8.0.0" />
+		<engine name="cordova-ios" version=">=5.0.0" />
+	</engines>
+
+	<!-- ANDROID CONFIGURATION -->
+	<platform name="android">
+		<preference name="ANDROID_FCM_VERSION" default="19.0.0" />
+		<preference name="ANDROID_GRADLE_TOOLS_VERSION" default="3.5.3" />
+		<preference name="ANDROID_GOOGLE_SERVICES_VERSION" default="4.3.3" />
+		<preference name="ANDROID_DEFAULT_NOTIFICATION_ICON" default="@mipmap/ic_launcher" />
+
+		<config-file target="AndroidManifest.xml" parent="/manifest/application">
+			<activity android:name="com.gae.scaffolder.plugin.FCMPluginActivity" android:launchMode="singleTop">
+				<intent-filter>
+					<action android:name="FCM_PLUGIN_ACTIVITY" />
+					<category android:name="android.intent.category.DEFAULT" />
+				</intent-filter>
+			</activity>
+			<service 
+				android:name="com.gae.scaffolder.plugin.MyFirebaseMessagingService"
+				android:stopWithTask="false">
+				<intent-filter>
+					<action android:name="com.google.firebase.MESSAGING_EVENT"/>
+				</intent-filter>
+			</service>
+			<meta-data android:name="com.google.firebase.messaging.default_notification_icon" android:resource="$ANDROID_DEFAULT_NOTIFICATION_ICON" />
+		</config-file>
+		<config-file target="res/xml/config.xml" parent="/*">
+			<feature name="FCMPlugin">
+				<param name="android-package" value="com.gae.scaffolder.plugin.FCMPlugin"/>
+				<param name="onload" value="true" />
+			</feature>
+		</config-file>
+		<config-file target="config.xml" parent="/*">
+			<platform name="android">
+				<preference name="AndroidXEnabled" value="true" />
+			</platform>
+		</config-file>
+
+		<framework src="com.google.firebase:firebase-messaging:$ANDROID_FCM_VERSION" />
+
+		<framework src="src/android/FCMPlugin.gradle" custom="true" type="gradleReference"/>
+
+		<source-file src="src/android/com/gae/scaffolder/plugin/FCMPlugin.java" target-dir="src/com/gae/scaffolder/plugin" />
+		<source-file src="src/android/com/gae/scaffolder/plugin/FCMPluginChannelCreator.java" target-dir="src/com/gae/scaffolder/plugin" />
+		<source-file src="src/android/com/gae/scaffolder/plugin/MyFirebaseMessagingService.java" target-dir="src/com/gae/scaffolder/plugin" />
+		<source-file src="src/android/com/gae/scaffolder/plugin/FCMPluginActivity.java" target-dir="src/com/gae/scaffolder/plugin" />
+		<source-file src="src/android/com/gae/scaffolder/plugin/interfaces/OnFinishedListener.java" target-dir="src/com/gae/scaffolder/plugin/interfaces" />
+		<source-file src="src/android/com/gae/scaffolder/plugin/interfaces/TokenListeners.java" target-dir="src/com/gae/scaffolder/plugin/interfaces" />
+	</platform>
+
+	<!-- IOS CONFIGURATION -->
+	<platform name="ios">
+		<config-file target="config.xml" parent="/*">
+			<feature name="FCMPlugin">
+				<param name="ios-package" value="FCMPlugin"/>
+			</feature>
+		</config-file>
+
+		<!-- ENABLE PUSH CAPABILITY -->
+		<config-file parent="aps-environment" target="*/Entitlements-Debug.plist">
+			<string>development</string>
+		</config-file>
+		<config-file parent="aps-environment" target="*/Entitlements-Release.plist">
+			<string>production</string>
+		</config-file>
+		<config-file target="*-Info.plist" parent="UIBackgroundModes">
+			<array>
+				<string>remote-notification</string>
+			</array>
+		</config-file>
+		<config-file target="*-Info.plist" parent="FirebaseAppDelegateProxyEnabled">
+			<false/>
+		</config-file>
+
+		<resource-file src="src/ios/Assets/GoogleService-Info.plist" target="Resources/GoogleService-Info.plist" />
+
+		<header-file src="src/ios/FCMPlugin.h" />
+		<source-file src="src/ios/FCMPlugin.m" />
+
+		<header-file src="src/ios/AppDelegate+FCMPlugin.h" />
+		<source-file src="src/ios/AppDelegate+FCMPlugin.m" />
+
+		<header-file src="src/ios/FCMPluginIOS9Support.h" />
+		<source-file src="src/ios/FCMPluginIOS9Support.m" />
+
+		<header-file src="src/ios/FCMNotificationCenterDelegate.h" />
+		<source-file src="src/ios/FCMNotificationCenterDelegate.m" />
+
+		<!-- FIREBASE COCOAPODS-->
+		<podspec>
+			<config>
+                <source url="https://github.com/CocoaPods/Specs.git"/>
+			</config>
+			<pods>
+				<pod name="Firebase/Analytics" />
+				<pod name="Firebase/Messaging" />
+			</pods>
+		</podspec>
+	</platform>
+
+	<!-- COPY FCM CONFIG FILES TO PLATFORM BEFORE COMPILING -->
+	<hook src="scripts/copy_google_service_files.js" type="after_prepare" />
+	<hook src="scripts/copy_google_service_files.js" type="after_plugin_add" />
+	<hook src="scripts/install_ionic_dependencies.bat" type="after_plugin_install" />
+</plugin>

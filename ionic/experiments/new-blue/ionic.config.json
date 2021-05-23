@@ -1,0 +1,7 @@
+{
+  "name": "new-blue",
+  "integrations": {
+    "cordova": {}
+  },
+  "type": "angular"
+}

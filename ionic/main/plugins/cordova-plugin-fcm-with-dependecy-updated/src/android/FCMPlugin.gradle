@@ -1,0 +1,66 @@
+def PLUGIN_CONFIG = new Object()
+try {
+    PLUGIN_CONFIG = new groovy.json.JsonSlurper().parseText(file("${projectDir}/../../../package.json").text).cordova.plugins['cordova-plugin-fcm-with-dependecy-updated']
+} catch(Exception e) {}
+def ANDROID_FCM_VERSION = System.getenv('ANDROID_FCM_VERSION') ?: rootProject.hasProperty('ANDROID_FCM_VERSION') ? rootProject.ext.ANDROID_FCM_VERSION : PLUGIN_CONFIG.hasProperty("ANDROID_FCM_VERSION") ? PLUGIN_CONFIG.ANDROID_FCM_VERSION : null ?: '19.0.0'
+
+buildscript {
+    ext {
+        def PLUGIN_CONFIG = new Object()
+        try {
+            PLUGIN_CONFIG = new groovy.json.JsonSlurper().parseText(file("${projectDir}/../../../package.json").text).cordova.plugins['cordova-plugin-fcm-with-dependecy-updated']
+        } catch(Exception e) {
+            def WARNING_STYLE = "${(char)27}[33;49"+"m"
+            def DEFAULT_STYLE = "${(char)27}[39;49"+"m"
+            print(WARNING_STYLE+"FCMPlugin: Plugin install variables are not accessible, as package.json was unreachable/unreadable."+DEFAULT_STYLE)
+        }
+        ANDROID_GRADLE_TOOLS_VERSION = System.getenv('ANDROID_GRADLE_TOOLS_VERSION') ?: rootProject.hasProperty('ANDROID_GRADLE_TOOLS_VERSION') ? rootProject.ext.ANDROID_GRADLE_TOOLS_VERSION : PLUGIN_CONFIG.hasProperty("ANDROID_GRADLE_TOOLS_VERSION") ? PLUGIN_CONFIG.ANDROID_GRADLE_TOOLS_VERSION : null ?: '3.5.3'
+        ANDROID_GOOGLE_SERVICES_VERSION = System.getenv('ANDROID_GOOGLE_SERVICES_VERSION') ?: rootProject.hasProperty('ANDROID_GOOGLE_SERVICES_VERSION') ? rootProject.ext.ANDROID_GOOGLE_SERVICES_VERSION : PLUGIN_CONFIG.hasProperty("ANDROID_GOOGLE_SERVICES_VERSION") ? PLUGIN_CONFIG.ANDROID_GOOGLE_SERVICES_VERSION : null ?: '4.3.3'
+
+        ext.gradleNumberVersion = ANDROID_GRADLE_TOOLS_VERSION.substring(0, ANDROID_GRADLE_TOOLS_VERSION.lastIndexOf(".")).toFloat()
+    }
+    repositories {
+        mavenCentral()
+        jcenter()
+        mavenLocal()
+        if (gradleNumberVersion >= 3.4f) {
+            google()
+        }
+    }
+    dependencies {
+        /**
+         * PS: Avoid use "GRADLE_VERSION" because jitpack
+         * set this like a environment variable
+         */
+        classpath "com.android.tools.build:gradle:${ANDROID_GRADLE_TOOLS_VERSION}"
+
+        /**
+         * Reference: https://github.com/google/play-services-plugins/issues/22
+         *
+         * PS: 4.2.0 throws a NullPointerException when use gradle plugin
+         *     com.google.gms.googleservices.GoogleServicesPlugin class reference
+         *     instead of id(string)
+         */
+
+        classpath "com.google.gms:google-services:${ANDROID_GOOGLE_SERVICES_VERSION}"
+    }
+}
+repositories {
+    mavenCentral()
+    jcenter()
+    if (gradleNumberVersion >= 3.4f) {
+        google()
+    }
+}
+dependencies {
+    if (gradleNumberVersion >= 3.4f) {
+        implementation "com.google.firebase:firebase-messaging:${ANDROID_FCM_VERSION}"
+    } else {
+        compile "com.google.firebase:firebase-messaging:${ANDROID_FCM_VERSION}"
+    }
+}
+// apply plugin: 'com.google.gms.google-services'
+// class must be used instead of id(string) to be able to apply plugin from non-root gradle file
+if (!project.plugins.hasPlugin('com.google.gms.google-services')) {
+    apply plugin: com.google.gms.googleservices.GoogleServicesPlugin
+}
