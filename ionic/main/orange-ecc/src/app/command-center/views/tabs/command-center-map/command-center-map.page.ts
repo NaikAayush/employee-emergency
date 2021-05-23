@@ -13,7 +13,7 @@ export class CommandCenterMapPage implements OnInit {
   private canvas: fabric.Canvas;
   uuidMap: string = '45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43';
   // user ids to monitor
-  userIds: string[] = ["emp1", "emp2", "emp3", "emp4", "ert1", "ert2", "ert3"];
+  userIds: string[] = ['emp1', 'emp2', 'emp3', 'emp4', 'ert1', 'ert2', 'ert3'];
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -118,9 +118,11 @@ export class CommandCenterMapPage implements OnInit {
 
   private startMonitoring() {
     this.userIds.forEach((uid) => {
-      const listenWs = new WebSocket(`${environment.wsEndpoint}listen?id=${uid}`);
+      const listenWs = new WebSocket(
+        `${environment.wsEndpoint}listen?id=${uid}`
+      );
 
-      listenWs.addEventListener('open', function() {
+      listenWs.addEventListener('open', function () {
         listenWs.send('Hello Server!');
       });
 
@@ -130,51 +132,60 @@ export class CommandCenterMapPage implements OnInit {
           console.log('Message from server ', data);
 
           if (this.userMarkers[uid]) {
-            console.log("found");
+            console.log('found');
 
-            this.userMarkers[uid].animate("left", data.x, {
+            this.userMarkers[uid].animate('left', data.x, {
               duration: 500,
               onChange: this.canvas.requestRenderAll.bind(this.canvas),
-              easing: fabric.util.ease.easeInQuad
+              easing: fabric.util.ease.easeInQuad,
             });
 
-            this.userMarkers[uid].animate("top", data.y, {
+            this.userMarkers[uid].animate('top', data.y, {
               duration: 500,
               onChange: this.canvas.requestRenderAll.bind(this.canvas),
-              easing: fabric.util.ease.easeInQuad
+              easing: fabric.util.ease.easeInQuad,
             });
-
           } else {
-            let color = "black";
+            let color = 'black';
 
             if (data.ert) {
-              color = "purple";
+              color = 'purple';
             }
 
             let reect = new fabric.Rect({
               height: 10,
               width: 17,
               fill: color,
-              originX: "center",
-              originY: "center",
-              shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', offsetX: 1, offsetY: 1, blur: 5 })
+              originX: 'center',
+              originY: 'center',
+              shadow: new fabric.Shadow({
+                color: 'rgba(0,0,0,0.3)',
+                offsetX: 1,
+                offsetY: 1,
+                blur: 5,
+              }),
             });
             let text = new fabric.Text(data.name, {
               fontSize: 7,
               top: 0,
-              originX: "center",
-              originY: "center",
-              fill: "white",
-              shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', offsetX: 1, offsetY: 1, blur: 5 }),
+              originX: 'center',
+              originY: 'center',
+              fill: 'white',
+              shadow: new fabric.Shadow({
+                color: 'rgba(0,0,0,0.3)',
+                offsetX: 1,
+                offsetY: 1,
+                blur: 5,
+              }),
               cornerSize: 1,
               backgroundColor: color,
-              fontWeight: "bold"
+              fontWeight: 'bold',
             });
 
             this.userMarkers[uid] = new fabric.Group([reect, text], {
               left: data.x - 10,
               top: data.y - 5,
-              selectable: false
+              selectable: false,
             });
 
             this.canvas.add(this.userMarkers[uid]);
@@ -185,5 +196,4 @@ export class CommandCenterMapPage implements OnInit {
       });
     });
   }
-
 }
