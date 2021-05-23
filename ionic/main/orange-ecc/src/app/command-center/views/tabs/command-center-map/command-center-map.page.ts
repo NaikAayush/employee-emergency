@@ -15,6 +15,16 @@ export class CommandCenterMapPage implements OnInit {
   // user ids to monitor
   userIds: string[] = ['emp1', 'emp2', 'emp3', 'emp4', 'ert1', 'ert2', 'ert3'];
 
+  // stats
+  totalEmpNumber = 4;
+  totalERTNumber = 3;
+
+  totalEmpIncapacitated = 0;
+  totalERTIncapacitated = 0;
+
+  totalEmpExited = 0;
+  totalErtExited = 0;
+
   // icons
   private exitIcon!: HTMLImageElement;
   private entryIcon!: HTMLImageElement;
@@ -39,12 +49,21 @@ export class CommandCenterMapPage implements OnInit {
 
   // user markers
   private userMarkers: Record<string, fabric.Group>;
+  // to check if an employee is stuck
+  private lastChanged: Record<string, number> = {};
+  private exited: Record<string, boolean> = {};
 
   constructor(private pathfinding: PathfindingService) {
     this.userMarkers = {};
   }
 
   async ngOnInit() {
+    // setup last changed
+    this.userIds.forEach((uid) => {
+      this.lastChanged[uid] = new Date().getTime();
+      this.exited[uid] = false;
+    });
+
     // initialize canvas
     this.canvas = new fabric.Canvas('mapFabricCanvas');
     this.canvas.selection = false;
@@ -92,6 +111,65 @@ export class CommandCenterMapPage implements OnInit {
     this.addMarkers();
 
     this.startMonitoring();
+
+    setInterval(() => {
+      let empIncap = 0;
+      let ertIncap = 0;
+      let empExited = 0;
+      let ertExited = 0;
+
+      Object.entries(this.lastChanged).forEach(([key, value]) => {
+        const curTime = new Date().getTime();
+
+        if (this.exited[key]) {
+          if (key.startsWith('emp')) {
+            empExited++;
+          } else if (key.startsWith('ert')) {
+            ertExited++;
+          }
+        }
+
+        if (curTime - value > 5000 && !this.exited[key]) {
+          console.log('panikk emp is stuck', key);
+
+          if (key.startsWith('emp')) {
+            empIncap++;
+          } else if (key.startsWith('ert')) {
+            ertIncap++;
+          }
+
+          // fabric.util.animateColor("black", "red");
+          this.userMarkers[key].animate(
+            { scaleX: 2, scaleY: 2, fill: 'red' },
+            {
+              duration: 500,
+              onChange: this.canvas.requestRenderAll.bind(this.canvas),
+            }
+          );
+
+          // this.userMarkers[key].add(new fabric.Text("INCAPACITATED", {
+          //   fontSize: 5,
+          //   originY: "center",
+          //   originX: "center"
+          // }));
+        } else {
+          this.userMarkers[key].animate(
+            { scaleX: 1, scaleY: 1 },
+            {
+              duration: 500,
+              onChange: this.canvas.requestRenderAll.bind(this.canvas),
+            }
+          );
+          // console.log("size", this.userMarkers[key].size());
+        }
+      });
+
+      this.totalEmpIncapacitated = empIncap;
+      this.totalERTIncapacitated = ertIncap;
+
+      this.totalEmpExited = empExited;
+      this.totalErtExited = ertExited;
+    }, 2000);
   }
 
   private addMarkers() {
@@ -100,7 +178,7 @@ export class CommandCenterMapPage implements OnInit {
       .toPromise()
       .then(async (res) => {
         const mapData = res.data();
-        console.log(mapData);
+        // console.log(mapData);
 
         for (let marker of mapData.markers) {
           let iconImg = new fabric.Image(this.choicesInfo[marker.name].iconEl, {
@@ -129,23 +207,52 @@ export class CommandCenterMapPage implements OnInit {
       listenWs.addEventListener('message', (event) => {
         try {
           let data = JSON.parse(event.data);
-          console.log('Message from server ', data);
+
+          const x = data.x - 5;
+          const y = data.y - 5;
+
+          let exited = false;
+          for (let exit of this.pathfinding.exits) {
+            if (
+              Math.abs(exit.y * this.pathfinding.scale - x) < 50 &&
+              Math.abs(exit.x * this.pathfinding.scale - y) < 50
+            ) {
+              exited = true;
+              break;
+            }
+          }
+          this.exited[uid] = exited;
 
           if (this.userMarkers[uid]) {
-            console.log('found');
+            // this.userMarkers[uid].animate('left', x, {
+            //   duration: 500,
+            //   onChange: this.canvas.requestRenderAll.bind(this.canvas),
+            //   easing: fabric.util.ease.easeInQuad,
+            // });
 
-            this.userMarkers[uid].animate('left', data.x, {
-              duration: 500,
-              onChange: this.canvas.requestRenderAll.bind(this.canvas),
-              easing: fabric.util.ease.easeInQuad,
-            });
+            // this.userMarkers[uid].animate('top', y, {
+            //   duration: 500,
+            //   onChange: this.canvas.requestRenderAll.bind(this.canvas),
+            //   easing: fabric.util.ease.easeInQuad,
+            // });
 
-            this.userMarkers[uid].animate('top', data.y, {
-              duration: 500,
-              onChange: this.canvas.requestRenderAll.bind(this.canvas),
-              easing: fabric.util.ease.easeInQuad,
-            });
+            this.userMarkers[uid].animate(
+              { left: x, top: y },
+              {
+                duration: 500,
+                onChange: this.canvas.requestRenderAll.bind(this.canvas),
+                easing: fabric.util.ease.easeInQuad,
+              }
+            );
+
+            if (
+              Math.abs(this.userMarkers[uid].left - x) > 1 ||
+              Math.abs(this.userMarkers[uid].top - y) > 1
+            ) {
+              this.lastChanged[uid] = new Date().getTime();
+            }
           } else {
+            this.lastChanged[uid] = new Date().getTime();
             let color = 'black';
 
             if (data.ert) {
@@ -183,15 +290,15 @@ export class CommandCenterMapPage implements OnInit {
             });
 
             this.userMarkers[uid] = new fabric.Group([reect, text], {
-              left: data.x - 10,
-              top: data.y - 5,
+              left: x,
+              top: y,
               selectable: false,
             });
 
             this.canvas.add(this.userMarkers[uid]);
           }
         } catch (error) {
-          console.log('Bad data from WS', error);
+          console.log('Bad data from WS');
         }
       });
     });
