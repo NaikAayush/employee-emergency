@@ -134,7 +134,7 @@ export class EmployeeMapPage {
     // });
     //////////////////////////////////////////////
     this.handleSubmitClick(this.uuidMap);
-    // this.getDirection();
+    this.getDirection();
   }
 
   ngOnInit() {
@@ -181,7 +181,10 @@ export class EmployeeMapPage {
     // Watch the device compass heading change
     var subscription = this.deviceOrientation
       .watchHeading()
-      .subscribe((data: DeviceOrientationCompassHeading) => console.log(data));
+      .subscribe((data: DeviceOrientationCompassHeading) => {
+        this.headingAngle = data.magneticHeading;
+        console.log(data);
+      });
   }
 
   async startWifiScan() {
