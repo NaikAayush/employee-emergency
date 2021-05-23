@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FCM } from '@ionic-native/fcm/ngx';
+import { FCM } from 'cordova-plugin-fcm-with-dependecy-updated/ionic/ngx';
+
 import { Platform } from '@ionic/angular';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';

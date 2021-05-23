@@ -18,7 +18,7 @@ import { IBeacon } from '@ionic-native/ibeacon/ngx';
 import { WifiWizard2 } from '@ionic-native/wifi-wizard-2/ngx';
 import { Magnetometer } from '@ionic-native/magnetometer/ngx';
 import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
-import { FCM } from '@ionic-native/fcm/ngx';
+import { FCM } from 'cordova-plugin-fcm-with-dependecy-updated/ionic/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 
 import { HttpClientModule } from '@angular/common/http';
