@@ -14,7 +14,10 @@ const routes: Routes = [
   },
   {
     path: 'ert',
-    loadChildren: () => import('./ert/ert.module').then((m) => m.ErtPageModule),
+    loadChildren: () =>
+      import('./ert/views/ert-tabs/ert-tabs.module').then(
+        (m) => m.ErtTabsPageModule
+      ),
   },
   {
     path: 'cc',
