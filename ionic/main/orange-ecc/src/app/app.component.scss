@@ -1,3 +1,7 @@
+.split-pane-visible > ion-menu {
+  max-width: 304px !important;
+}
+
 ion-menu ion-content {
   --background: var(--ion-item-background, var(--ion-background-color, #fff));
 }

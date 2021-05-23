@@ -1,7 +1,13 @@
-<ion-header>
+<ion-header [translucent]="true">
   <ion-toolbar>
-    <ion-title>ert</ion-title>
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
+    <ion-title>ERT</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content> </ion-content>
+<ion-content>
+  <ion-button color="success" [routerLink]="['login']">SIGN IN</ion-button>
+  <ion-button color="warning" [routerLink]="['signup']">SIGN UP</ion-button>
+</ion-content>
