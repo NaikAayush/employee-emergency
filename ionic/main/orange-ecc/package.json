@@ -38,6 +38,7 @@
     "@tailwindcss/forms": "^0.3.2",
     "@tailwindcss/typography": "^0.4.0",
     "@types/fabric": "^4.2.5",
+    "chart.js": "^3.2.1",
     "com.unarin.cordova.beacon": "^3.8.1",
     "cordova-ios": "^5.1.1",
     "cordova-plugin-ibeacon": "^3.8.1",
