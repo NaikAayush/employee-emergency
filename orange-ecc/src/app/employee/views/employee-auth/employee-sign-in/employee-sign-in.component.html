@@ -7,47 +7,96 @@
   </ion-toolbar>
 </ion-header>
 
-<div *ngIf="auth.user$ | async; then authenticated else guest">
+<div *ngIf="auth.user$ | async; then authenticated; else guest">
   <!-- template will replace this div -->
 </div>
 
 <ion-content>
   <ng-template #guest>
-    <div class="min-h-screen flex items-center justify-center bg-white dark:bg-gray-800 py-12 px-4 sm:px-6 lg:px-8">
+    <div
+      class="
+        min-h-screen
+        flex
+        items-center
+        justify-center
+        bg-white
+        dark:bg-gray-800
+        py-12
+        px-4
+        sm:px-6
+        lg:px-8
+      "
+    >
       <div class="max-w-md w-full">
         <div>
-          <img src="assets/ey-logo.png" class="mx-auto h-20 w-auto mb-6" id="logo">
+          <img
+            src="assets/ey-logo.png"
+            class="mx-auto h-20 w-auto mb-6"
+            id="logo"
+          />
           <h3 class="mt-6 text-center text-3xl font-semibold text-gray-900">
             Sign In
           </h3>
         </div>
 
-        <form [formGroup]="signInForm" (ngSubmit)="onSubmit()" class="px-8 pt-6 pb-8 mb-24">
+        <form
+          [formGroup]="signInForm"
+          (ngSubmit)="onSubmit()"
+          class="px-8 pt-6 pb-8 mb-24"
+        >
           <div class="mb-4">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="email">
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="email"
+            >
               Email
             </label>
-            <input [ngClass]="emailClass()" formControlName="email" class="email" type="email" placeholder="Email">
+            <input
+              [ngClass]="emailClass()"
+              formControlName="email"
+              class="email"
+              type="email"
+              placeholder="Email"
+            />
           </div>
           <div class="mb-6">
-            <label class="block text-gray-700 text-sm font-bold mb-2" for="password">
+            <label
+              class="block text-gray-700 text-sm font-bold mb-2"
+              for="password"
+            >
               Password
             </label>
-            <input formControlName="password" (focusout)="checkPwd($event)" class="pwd" type="password"
-              placeholder="******************">
+            <input
+              formControlName="password"
+              (focusout)="checkPwd()"
+              class="pwd"
+              type="password"
+              placeholder="******************"
+            />
             <p [ngClass]="pwdErrorClass()">Please enter a password.</p>
           </div>
           <div class="flex items-center justify-between">
-            <button class="submit-button" type="submit" [disabled]="!signInForm.valid">
+            <button
+              class="submit-button"
+              type="submit"
+              [disabled]="!signInForm.valid"
+            >
               Sign In
             </button>
-            <a class="inline-block align-baseline font-bold text-sm text-gray-600 hover:text-gray-900" href="#">
+            <a
+              class="
+                inline-block
+                align-baseline
+                font-bold
+                text-sm text-gray-600
+                hover:text-gray-900
+              "
+              href="#"
+            >
               Forgot Password?
             </a>
           </div>
         </form>
-
-
       </div>
     </div>
     <!-- <section class="bg-white {-- h-full --}">
@@ -97,5 +146,4 @@
       <button (click)="auth.signOut()">Logout</button>
     </div>
   </ng-template>
-
 </ion-content>
