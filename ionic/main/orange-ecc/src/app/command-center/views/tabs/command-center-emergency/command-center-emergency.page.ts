@@ -34,8 +34,8 @@ export class CommandCenterEmergencyPage implements OnInit {
         {
           to: environment.FCMToken,
           notification: {
-            body: 'Body of Your Notification',
-            title: 'Title of Your Notification',
+            body: 'Please use the app to vacate the office area quickly',
+            title: 'Emergency Activated!',
           },
         },
         {

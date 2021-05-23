@@ -37,6 +37,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'bot',
+        loadChildren: () =>
+          import('../tabs/employee-chatbot/employee-chatbot.module').then(
+            (m) => m.EmployeeChatbotPageModule
+          ),
+      },
+      {
         path: '',
         redirectTo: 'employee/employee-tabs/sos',
         pathMatch: 'full',

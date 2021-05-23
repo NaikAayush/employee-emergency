@@ -57,7 +57,11 @@ const routes: Routes = [
       import('./views/tabs/employee-chat/employee-chat.module').then(
         (m) => m.EmployeeChatPageModule
       ),
+  },  {
+    path: 'employee-chatbot',
+    loadChildren: () => import('./views/tabs/employee-chatbot/employee-chatbot.module').then( m => m.EmployeeChatbotPageModule)
   },
+
 ];
 
 @NgModule({

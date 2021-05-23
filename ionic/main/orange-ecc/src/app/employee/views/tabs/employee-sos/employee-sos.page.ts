@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { ToastController } from '@ionic/angular';
 
 @Component({
   selector: 'app-employee-sos',
@@ -6,10 +7,15 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./employee-sos.page.scss'],
 })
 export class EmployeeSosPage implements OnInit {
+  constructor(public toastController: ToastController) {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {
+  async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'ERT has been alerted! Please stay calm',
+      duration: 5000,
+    });
+    toast.present();
   }
-
 }

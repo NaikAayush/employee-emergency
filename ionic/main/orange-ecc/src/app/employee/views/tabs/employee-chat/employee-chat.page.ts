@@ -59,8 +59,8 @@ export class EmployeeChatPage implements OnInit {
         (e) => e.data
       );
 
-      const data: any = await (conn.asObservable().pipe(take(2))).toPromise();
-      console.log("aaa got data", data);
+      const data: any = await conn.asObservable().pipe(take(2)).toPromise();
+      console.log('aaa got data', data);
 
       try {
         let data2 = JSON.parse(data);
@@ -75,8 +75,14 @@ export class EmployeeChatPage implements OnInit {
 
     await this.pathfinding.initialize(this.uuidMap);
     console.log(this.curPos, this.ertLocations);
-    let minTarget = await this.pathfinding.getPath(this.curPos, this.ertLocations, false, true, true) as Point;
-    console.log("got min target", minTarget);
+    let minTarget = (await this.pathfinding.getPath(
+      this.curPos,
+      this.ertLocations,
+      false,
+      true,
+      true
+    )) as Point;
+    console.log('got min target', minTarget);
 
     this.nearestErt = this.ertUids[0];
     if (minTarget) {
@@ -85,11 +91,12 @@ export class EmployeeChatPage implements OnInit {
 
         if (ertLoc.x == minTarget.x && ertLoc.y == minTarget.y) {
           this.nearestErt = this.ertUids[i];
-          console.log("got nearest ert", i, this.nearestErt);
+          console.log('got nearest ert', i, this.nearestErt);
           break;
         }
       }
     }
+    this.handleSubmitClick('sam');
   }
 
   public handleSubmitClick(senderUid_: string) {
