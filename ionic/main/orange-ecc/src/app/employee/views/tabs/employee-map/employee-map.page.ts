@@ -174,15 +174,30 @@ export class EmployeeMapPage {
 
   async getDirection() {
     this.deviceOrientation.getCurrentHeading().then(
-      (data: DeviceOrientationCompassHeading) => console.log(data),
+      (data: DeviceOrientationCompassHeading) => {
+        console.log(data);
+      },
       (error: any) => console.log(error)
     );
-
+    // localhost:8100/employee/employee-tabs
     // Watch the device compass heading change
     var subscription = this.deviceOrientation
       .watchHeading()
       .subscribe((data: DeviceOrientationCompassHeading) => {
         this.headingAngle = data.magneticHeading;
+        if (this.drawnCurrentLocation) {
+          console.log(this.headingAngle);
+          this.drawnCurrentLocation.angle = this.headingAngle;
+          // this.drawnCurrentLocation.setAngle(this.headingAngle);
+          this.drawnCurrentLocation.setCoords();
+          this.canvas.requestRenderAll();
+        }
+        // this.headingAngle = data.magneticHeading;
+        // this.drawnCurrentLocation.angle = this.headingAngle;
+        // console.log(this.headingAngle);
+        // this.drawnCurrentLocation.setAngle(this.headingAngle);
+        // this.drawnCurrentLocation.setCoords();
+        // this.canvas.requestRenderAll();
         console.log(data);
       });
   }
@@ -452,6 +467,7 @@ export class EmployeeMapPage {
       this.drawnCurrentLocation.left = pos[0];
       this.drawnCurrentLocation.top = pos[1];
       this.drawnCurrentLocation.setCoords();
+      this.canvas.requestRenderAll();
     } else {
       this.drawnCurrentLocation = new fabric.Image(this.navIcon, {
         left: pos[0],
