@@ -8,6 +8,61 @@
 </ion-header>
 
 <ion-content>
-  <ion-button color="success" [routerLink]="['login']">SIGN IN</ion-button>
-  <ion-button color="warning" [routerLink]="['signup']">SIGN UP</ion-button>
+  <h2 class="mt-6 text-center text-4xl font-bold text-gray-900">
+    Employee Login
+  </h2>
+  <div class="w-full space-y-8 flex flex-col items-center">
+    <img
+      class="mx-auto h-auto w-auto"
+      src="assets/home/login.png"
+      alt="Workflow"
+    />
+
+    <button
+      class="
+        w-auto
+        flex
+        items-center
+        justify-center
+        px-8
+        py-3
+        border border-transparent
+        text-base
+        font-medium
+        rounded-md
+        text-white
+        bg-red-400
+        hover:bg-red-300
+        md:py-4
+        md:text-lg
+        md:px-10
+      "
+      [routerLink]="['login']"
+    >
+      SIGN IN
+    </button>
+    <button
+      class="
+        w-auto
+        flex
+        items-center
+        justify-center
+        px-8
+        py-3
+        border border-transparent
+        text-base
+        font-medium
+        rounded-md
+        text-white
+        bg-yellow-400
+        hover:bg-yellow-300
+        md:py-4
+        md:text-lg
+        md:px-10
+      "
+      [routerLink]="['signup']"
+    >
+      SIGN UP
+    </button>
+  </div>
 </ion-content>
