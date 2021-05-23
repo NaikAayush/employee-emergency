@@ -1,0 +1,63 @@
+{
+  "prepare_queue": {
+    "installed": [],
+    "uninstalled": []
+  },
+  "config_munge": {
+    "files": {}
+  },
+  "installed_plugins": {
+    "com.unarin.cordova.beacon": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-androidx": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-androidx-adapter": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-device": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-device-orientation": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-fcm-with-dependecy-updated": {
+      "ANDROID_FCM_VERSION": "19.0.0",
+      "ANDROID_GRADLE_TOOLS_VERSION": "3.5.3",
+      "ANDROID_GOOGLE_SERVICES_VERSION": "4.3.3",
+      "ANDROID_DEFAULT_NOTIFICATION_ICON": "@mipmap/ic_launcher",
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-ionic-keyboard": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-ionic-webview": {
+      "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+",
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-magnetometer": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-splashscreen": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-statusbar": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-plugin-whitelist": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "cordova-support-google-services": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    },
+    "wifiwizard2": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    }
+  },
+  "dependent_plugins": {
+    "es6-promise-plugin": {
+      "PACKAGE_NAME": "com.naikaayush.eyapp"
+    }
+  }
+}

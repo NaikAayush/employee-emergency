@@ -1,0 +1,64 @@
+{
+  "_from": "cordova-plugin-magnetometer",
+  "_id": "cordova-plugin-magnetometer@1.0.0",
+  "_inBundle": false,
+  "_integrity": "sha1-f+JUbOKUC3R1EHQ+eX0bQ72TEUU=",
+  "_location": "/cordova-plugin-magnetometer",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "tag",
+    "registry": true,
+    "raw": "cordova-plugin-magnetometer",
+    "name": "cordova-plugin-magnetometer",
+    "escapedName": "cordova-plugin-magnetometer",
+    "rawSpec": "",
+    "saveSpec": null,
+    "fetchSpec": "latest"
+  },
+  "_requiredBy": [
+    "#DEV:/",
+    "#USER"
+  ],
+  "_resolved": "https://registry.npmjs.org/cordova-plugin-magnetometer/-/cordova-plugin-magnetometer-1.0.0.tgz",
+  "_shasum": "7fe2546ce2940b747510743e797d1b43bd931145",
+  "_spec": "cordova-plugin-magnetometer",
+  "_where": "C:\\Aayush\\Git\\ey-gds-orange\\ionic\\main\\orange-ecc",
+  "author": {
+    "name": "Rameez Raja / Steven de Salas"
+  },
+  "bugs": {
+    "url": "https://github.com/sdesalas/cordova-plugin-magnetometer/issues"
+  },
+  "bundleDependencies": false,
+  "cordova": {
+    "id": "cordova-plugin-magnetometer",
+    "platforms": [
+      "android",
+      "ios"
+    ]
+  },
+  "deprecated": false,
+  "description": "Cordova Magnetometer Plugin",
+  "homepage": "https://github.com/sdesalas/cordova-plugin-magnetometer#readme",
+  "keywords": [
+    "cordova",
+    "magnetometer",
+    "ecosystem:cordova",
+    "compass",
+    "device-orientation",
+    "metal-detector",
+    "metal",
+    "detector",
+    "magneto",
+    "meter",
+    "cordova-ios",
+    "cordova-android"
+  ],
+  "license": "MIT",
+  "name": "cordova-plugin-magnetometer",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sdesalas/cordova-plugin-magnetometer.git"
+  },
+  "version": "1.0.0"
+}
