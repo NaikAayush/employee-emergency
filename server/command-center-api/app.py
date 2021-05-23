@@ -72,6 +72,7 @@ class Map:
     entries: List[Marker]
     beacons: List[Marker]
     others: List[Marker]
+    true_exits: Any
 
     def get_markers(self):
         for m in self.exits:
@@ -261,7 +262,7 @@ def get_map_data(id_: str):
         else:
             others.append(marker_obj)
 
-    return Map(id_=id_, exits=exits, entries=entries, beacons=beacons, others=others)
+    return Map(id_=id_, exits=exits, entries=entries, beacons=beacons, others=others, true_exits=doc_ref["exits"])
 
 
 def set_map_data(id_: str, data: dict):
@@ -389,6 +390,53 @@ async def nearestExit(id_: str, source: Point):
         )
         path, runs = finder.find_path(start, end, grid)
 
+        print(shortest_path, shortest_runs, shortest_dist)
+
+        if len(path) != 0 and (shortest_dist is None or len(path) < shortest_dist):
+            shortest_dist = len(path)
+            shortest_path = path
+            shortest_runs = runs
+
+    return {
+        "message": "Success",
+        "path": shortest_path,
+        "runs": shortest_runs,
+        "grid": {"height": grid.height, "width": grid.width},
+    }
+
+
+@app.post("/map/nearestExitSmol")
+async def nearestExitSmol(id_: str, source: Point):
+    grid = get_grid(id_)
+
+    if isinstance(grid, HTTPException):
+        return grid
+
+    map_data = get_map_data(id_)
+    if isinstance(map_data, HTTPException):
+        return map_data
+
+    start = get_nearest_node(grid, source)
+    shortest_path = None
+    shortest_dist = None
+    shortest_runs = None
+
+    print(map_data)
+
+    scale = processing.map.IMAGE_WIDTH / processing.map.MAP_WIDTH
+
+    print("true_exits", map_data.true_exits)
+
+    for exit in map_data.true_exits:
+        grid.cleanup()
+        print(exit)
+
+        end = grid.node(round(exit["y"]), round(exit["x"]))
+        print("start", start)
+        print("end", end)
+        path, runs = finder.find_path(start, end, grid)
+
+        print("path, runs", path, runs)
         print(shortest_path, shortest_runs, shortest_dist)
 
         if len(path) != 0 and (shortest_dist is None or len(path) < shortest_dist):
