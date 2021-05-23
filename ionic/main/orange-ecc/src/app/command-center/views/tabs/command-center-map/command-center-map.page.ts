@@ -11,9 +11,9 @@ import { environment } from 'src/environments/environment';
 })
 export class CommandCenterMapPage implements OnInit {
   private canvas: fabric.Canvas;
-  uuidMap: string = 'a246ddf4-3ded-49b9-bacf-fbf7b700e49e';
+  uuidMap: string = '2ef08d0b-dc55-490f-9b98-4f33cb85a254';
   // user ids to monitor
-  userIds: string[] = ["592s1XmfNwYujg7Y1thbkDyOTZf2", "brr", "LxhvXHuCJxUXITPfzmYAnKJb6uf2", "abc"];
+  userIds: string[] = ["emp1", "emp2", "emp3", "ert1", "ert2", "ert3"];
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -143,29 +143,35 @@ export class CommandCenterMapPage implements OnInit {
             // this.userMarkers[uid].setCoords();
             // this.canvas.renderAll();
           } else {
-            let color = "red";
+            let color = "black";
 
             if (data.ert) {
-              color = "blue";
+              color = "purple";
             }
 
             let reect = new fabric.Rect({
               height: 10,
-              width: 10,
+              width: 17,
               fill: color,
               originX: "center",
-              originY: "center"
+              originY: "center",
+              shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', offsetX: 1, offsetY: 1, blur: 5 })
             });
             let text = new fabric.Text(data.name, {
-              fontSize: 10,
-              top: 10,
+              fontSize: 7,
+              top: 0,
               originX: "center",
-              originY: "center"
+              originY: "center",
+              fill: "white",
+              shadow: new fabric.Shadow({ color: 'rgba(0,0,0,0.3)', offsetX: 1, offsetY: 1, blur: 5 }),
+              cornerSize: 1,
+              backgroundColor: color,
+              fontWeight: "bold"
             });
 
             this.userMarkers[uid] = new fabric.Group([reect, text], {
-              left: data.x,
-              top: data.y,
+              left: data.x - 10,
+              top: data.y - 5,
               selectable: false
             });
 

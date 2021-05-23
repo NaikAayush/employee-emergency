@@ -46,7 +46,7 @@ export class EmployeeMapPage {
   //////////////////////////////////////////////
   //////////////////////////////////////////////
   // uuidMap of the map to download
-  uuidMap: string = 'a246ddf4-3ded-49b9-bacf-fbf7b700e49e';
+  uuidMap: string = '2ef08d0b-dc55-490f-9b98-4f33cb85a254';
   private canvas: fabric.Canvas;
 
   // icons
