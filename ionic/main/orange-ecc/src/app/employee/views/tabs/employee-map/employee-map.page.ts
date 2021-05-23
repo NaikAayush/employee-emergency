@@ -73,7 +73,7 @@ export class EmployeeMapPage {
   private choices = ['exit', 'entry', 'beacon'];
 
   // current position
-  currentPos: Point;
+  currentPos: Point = new Point(517, 115);
   drawnPath: fabric.Rect[] = [];
 
   //////////////////////////////////////////////
@@ -402,6 +402,8 @@ export class EmployeeMapPage {
     this.canvas.add(orig_img_f);
 
     this.addMarkers();
+
+    this.getNearestExit();
   }
 
   private addMarkers() {
@@ -463,6 +465,8 @@ export class EmployeeMapPage {
     console.log('Got trilatered position', pos);
 
     // draw dot/image
+    this.currentPos.x = pos[0];
+    this.currentPos.y = pos[1];
     if (this.drawnCurrentLocation) {
       this.drawnCurrentLocation.left = pos[0];
       this.drawnCurrentLocation.top = pos[1];
@@ -489,6 +493,8 @@ export class EmployeeMapPage {
       y: pos[0],
       name: this.userUuid,
     });
+
+    this.getNearestExit();
   }
 
   private async getNearestExit() {
