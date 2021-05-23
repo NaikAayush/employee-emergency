@@ -20,6 +20,7 @@ import { Magnetometer } from '@ionic-native/magnetometer/ngx';
 import { DeviceOrientation } from '@ionic-native/device-orientation/ngx';
 import { FCM } from 'cordova-plugin-fcm-with-dependecy-updated/ionic/ngx';
 import { SplashScreen } from '@ionic-native/splash-screen/ngx';
+import { CameraPreview } from '@ionic-native/camera-preview/ngx';
 
 import { HttpClientModule } from '@angular/common/http';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
@@ -47,6 +48,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
     FCM,
     SplashScreen,
     StatusBar,
+    CameraPreview,
   ],
   bootstrap: [AppComponent],
 })
