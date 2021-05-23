@@ -1,7 +1,0 @@
-{
-  "name": "ionicapp",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "angular"
-}

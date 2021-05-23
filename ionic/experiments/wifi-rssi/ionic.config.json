@@ -1,7 +1,0 @@
-{
-  "name": "wifi-rssi",
-  "integrations": {
-    "cordova": {}
-  },
-  "type": "angular"
-}
