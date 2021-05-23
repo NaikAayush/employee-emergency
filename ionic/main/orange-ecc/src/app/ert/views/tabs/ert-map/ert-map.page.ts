@@ -89,7 +89,7 @@ export class ErtMapPage implements OnInit {
 
   // ERT Stuff
   private userMarkers: Record<string, fabric.Group> = {};
-  private employeeLocs: Point[] = [{ x: 317.51, y: 99.16 }];
+  private employeeLocs: Point[] = [{ x: 590.44, y: 386.66 }];
 
   //////////////////////////////////////////////
   //////////////////////////////////////////////
