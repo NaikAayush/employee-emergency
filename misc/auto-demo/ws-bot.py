@@ -1,15 +1,20 @@
 import asyncio
 import json
+import os
 import random
 from pprint import pprint
 
+import dotenv
 import numpy as np
 import requests
 import websockets
 
-uri = "ws://35.244.26.150:5050/update?id="
-apiUri = "http://35.244.26.150:8000"
-mapId = "2ef08d0b-dc55-490f-9b98-4f33cb85a254"
+dotenv.load_dotenv()
+
+uri = f"{os.getenv('WS_HOST')}/update?id="
+apiUri = os.getenv('API_HOST')
+# apiUri = "http://127.0.0.1:8000"
+mapId = "45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43"
 scale = 5.380952380952381
 
 
@@ -75,17 +80,21 @@ async def send2(name):
 
 def _post_nearest_exit_path(initial_pos):
     r = requests.post(
-        f"{apiUri}/map/nearestExit",
+        f"{apiUri}/map/nearestExitSmol",
         params={"id_": mapId},
-        json={"x": initial_pos["x"] / scale, "y": initial_pos["y"] / scale},
+        json={
+            "x": round(initial_pos["x"] / scale),
+            "y": round(initial_pos["y"] / scale),
+        },
     )
+    print(r.text)
 
     resp = r.json()
     # pprint(resp)
 
     if "path" in resp:
         path = resp["path"]
-        path = [[x * scale - 10, y * scale - 10] for (x, y) in path]
+        path = [[x * scale - 10, y * scale - 5] for (x, y) in path]
         return path
     else:
         return []
@@ -115,7 +124,7 @@ async def main():
     # await asyncio.gather(send1("brr"), send2("abc"), send3("592s1XmfNwYujg7Y1thbkDyOTZf2"))
     await asyncio.gather(
         emp_exit("emp1", {"name": "EMP 1", "x": 344, "y": 110}),
-        emp_exit("emp2", {"name": "EMP 2", "x": 412.1, "y": 380.28}),
+        emp_exit("emp2", {"name": "EMP 2", "x": 279.30, "y": 433.96}),
         emp_exit("emp3", {"name": "EMP 3", "x": 387.6, "y": 302.95}),
     )
 
