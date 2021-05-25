@@ -13,6 +13,7 @@ export class HomePage {
   beaconData = [];
   pluginDataNew;
   pluginDataNew1;
+  brr;
   beaconUuid: String;
   scanStatus: boolean = false;
   private delegate: any = null;
@@ -96,8 +97,29 @@ export class HomePage {
 
     // Subscribe to some of the delegate's event handlers
 
+    // {uuid: "74278bda-b644-4520-8f0c-720eaf059935", major: "11", minor: "2", proximity: "ProximityNear", rssi: -67, …}
+    // {uuid: "74278bda-b644-4520-8f0c-720eaf059935", major: "11", minor: "3", proximity: "ProximityImmediate", rssi: -50, …}
+
     this.delegate.didRangeBeaconsInRegion().subscribe(
       async (pluginResult: IBeaconPluginResult) => {
+        const data1: any = pluginResult.beacons;
+        console.log(data1);
+        var temp = [];
+        console.log(temp);
+        for (var i = 1; i <= 3; i++) {
+          for (var j = 0; j < data1.length; j++) {
+            if (data1[j].minor == i) {
+              if (temp[i - 1]) {
+                temp[i - 1] = (temp[i - 1] + data1[j].accuracy) / 2;
+              } else {
+                temp[i - 1] = data1[j].accuracy;
+              }
+            }
+          }
+        }
+        this.brr = temp;
+        console.log(this.brr);
+        console.log(temp);
         // var data = pluginResult.beacons;
         // for (let i = 1; i <= 3; i++) {
         //   for (let j = 0; j < data.length; j++) {

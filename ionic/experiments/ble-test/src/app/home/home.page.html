@@ -14,4 +14,10 @@
       <p>Distance: {{item.accuracy}}</p>
     </li>
   </ul>
+  <ul>
+    <li *ngFor="let item of brr; let i = index">
+      <p>Beacon: {{i+1}}</p>
+      <p>Distance: {{item}}</p>
+    </li>
+  </ul>
 </ion-content>
