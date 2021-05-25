@@ -1,0 +1,17 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-title> Blank </ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <p>beacon works!</p>
+  <p>{{pluginDataNew.beacons.length}}</p>
+  <ul>
+    <li *ngFor="let item of pluginDataNew.beacons; let i = index">
+      <p>Major: {{item.major}}</p>
+      <p>Minor: {{item.minor}}</p>
+      <p>Distance: {{item.accuracy}}</p>
+    </li>
+  </ul>
+</ion-content>
