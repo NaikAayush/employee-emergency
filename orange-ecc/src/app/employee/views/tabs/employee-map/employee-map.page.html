@@ -12,6 +12,10 @@
   <div class="mt-72">
       <div>{{ displacementX }}</div>
       <div>{{ displacementY }}</div>
-      <div>{{ displacementZ }}</div>
+      <div>{{ currentPos.x }}</div>
+      <div>{{ currentPos.y }}</div>
+      <div>{{ stepCount }}</div>
   </div>
+
+  <ion-button (click)="resetInertialPos2()">Reset</ion-button>
 </ion-content>

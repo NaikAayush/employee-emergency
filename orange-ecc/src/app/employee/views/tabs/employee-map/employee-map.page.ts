@@ -32,6 +32,33 @@ import { WebsocketService } from 'src/app/employee/services/websocket/websocket.
 import { WebSocketSubject } from 'rxjs/webSocket';
 import { PathfindingService } from 'src/app/employee/services/pathfinding/pathfinding.service';
 
+class AccHistory {
+  accHistory: number[]
+  pointer: number
+
+  constructor (public size: number = 10) {
+    this.pointer = 0;
+    this.accHistory = new Array(size).fill(0.0);
+  }
+
+  addValue(val: number) {
+    this.accHistory[this.pointer] = val;
+
+    let ptr = this.pointer;
+    ++ptr;
+
+    this.pointer = ptr % this.size;
+  }
+
+  getAt(ind: number) {
+    return this.accHistory[(this.pointer + ind) % this.size]
+  }
+
+  getBack(ind: number) {
+    return this.accHistory[(this.pointer - 1 - ind + this.size) % this.size]
+  }
+}
+
 @Component({
   selector: 'app-employee-map',
   templateUrl: './employee-map.page.html',
@@ -116,8 +143,8 @@ export class EmployeeMapPage {
   displacementY: number = 0;
   displacementZ: number = 0;
 
-  actualDisplacementX: number = 0;
-  acutalDisplacementY: number = 0;
+  accHistory: AccHistory;
+  stepCount: number = 0;
 
   z = [
     {
@@ -162,6 +189,7 @@ export class EmployeeMapPage {
   }
 
   ngOnInit() {
+    this.accHistory = new AccHistory();
     //SETUP BEACON LOCATIONS
 
     //SETUP BEACON LOCATIONS
@@ -200,7 +228,7 @@ export class EmployeeMapPage {
       (event) => {
         this.headingAngle = event.alpha;
         if (this.drawnCurrentLocation) {
-          console.log(this.headingAngle);
+          // console.log(this.headingAngle);
           this.drawnCurrentLocation.angle = this.headingAngle;
           // this.drawnCurrentLocation.setAngle(this.headingAngle);
           this.drawnCurrentLocation.setCoords();
@@ -228,15 +256,18 @@ export class EmployeeMapPage {
           this.lastAcc[2],
           this.acceleration.z
         );
+
+        this.accHistory.addValue(this.lastAcc[2]);
+
         // this.accelerate(event.acceleration.z, event.timeStamp);
         const xTerm = Math.cos(this.toRadians(this.headingAngle));
         const yTerm = Math.sin(this.toRadians(this.headingAngle));
 
         const interval = event.interval / 1000;
+        this.accXSum += this.lastAcc[2] * interval * xTerm;
+        this.accYSum += this.lastAcc[2] * interval * yTerm;
 
-        if (this.lastAcc[2] < 0.1) {
-          this.accXSum += this.lastAcc[2] * interval * xTerm;
-          this.accYSum += this.lastAcc[2] * interval * yTerm;
+        if (true) {
           // this.accZSum += this.lastAcc[2] * interval;
 
           this.displacementX += interval * this.accXSum * xTerm;
@@ -255,28 +286,65 @@ export class EmployeeMapPage {
           //   this.displacementZ * Math.sin(this.toRadians(this.headingAngle));
           this.currentPos.x = this.initialPos.x + this.displacementY * 100;
           this.currentPos.y = this.initialPos.y + this.displacementX * 100;
+
+          // step counter, didnt work
+//           for (let t = 0; t < 5; ++t) {
+//             if(this.accHistory.getBack(t) - this.accHistory.getBack(0) > 5) {
+//               console.log("Step!");
+//               this.stepCount++;
+//             }
+//           }
+
           // console.log(this.currentPos);
 
-          if (this.drawnCurrentLocation) {
-            this.drawnCurrentLocation.left = this.currentPos.x;
-            this.drawnCurrentLocation.top = this.currentPos.y;
-            this.drawnCurrentLocation.setCoords();
-            this.canvas.requestRenderAll();
-          }
-
-          this.changeRef.detectChanges();
           // Process event.acceleration, event.accelerationIncludingGravity,
           // event.rotationRate and event.interval
+          this.drawPosition();
         }
       },
       true
     );
   }
 
+  resetInertialPos2() {
+    this.resetInertialPos(this.initialPos);
+  }
+
+  resetInertialPos(pos: Point) {
+    this.initialPos.x = pos.x;
+    this.initialPos.y = pos.y;
+
+    this.currentPos.x = pos.x;
+    this.currentPos.y = pos.y;
+
+    this.lastAcc = [0.0, 0.0, 0.0];
+
+    this.accXSum = 0.0;
+    this.accYSum = 0.0;
+    this.accZSum = 0.0;
+
+    this.displacementX = 0.0;
+    this.displacementY = 0.0;
+    this.displacementZ = 0.0;
+
+    this.drawPosition();
+  }
+
+  drawPosition() {
+    if (this.drawnCurrentLocation) {
+      this.drawnCurrentLocation.left = this.currentPos.x;
+      this.drawnCurrentLocation.top = this.currentPos.y;
+      this.drawnCurrentLocation.setCoords();
+      this.canvas.requestRenderAll();
+      this.changeRef.detectChanges();
+    }
+  }
+
   private lowPassFilter(old_value: number, new_value: number) {
-    const a = 0.5;
+    // const a = 0.5;
     // if (new_value < 0.1) return 0;
-    return old_value + a * (new_value - old_value);
+    // return old_value + a * (new_value - old_value);
+    return new_value;
   }
 
   private toRadians(angle: number) {
@@ -567,6 +635,8 @@ export class EmployeeMapPage {
     this.drawnCurrentLocation.scaleToHeight(20);
     this.drawnCurrentLocation.scaleToWidth(20);
     this.canvas.add(this.drawnCurrentLocation);
+
+    this.resetInertialPos(this.initialPos);
   }
 
   private addMarkers() {

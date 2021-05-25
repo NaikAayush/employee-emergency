@@ -3,7 +3,7 @@
     <name>Orange ECC</name>
     <description>An awesome Ionic/Cordova app.</description>
     <author email="hi@ionicframework.com" href="http://ionicframework.com/">Ionic Framework Team</author>
-    <content src="index.html" />
+    <content original-src="index.html" src="http://localhost:8100" />
     <access origin="*" />
     <allow-intent href="http://*/*" />
     <allow-intent href="https://*/*" />
@@ -198,4 +198,5 @@
     <allow-navigation href="http://localhost:8103" sessionid="8f1e327d" />
     <allow-navigation href="http://localhost:8101" sessionid="0ad2a706" />
     <allow-navigation href="http://localhost:8102" sessionid="b2b8ea8b" />
+    <allow-navigation href="http://localhost:8100" sessionid="d0bdaa4b" />
 </widget>
