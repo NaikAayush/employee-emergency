@@ -8,6 +8,7 @@ import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 
 import { WifiWizard2 } from '@ionic-native/wifi-wizard-2/ngx';
+import { IBeacon } from '@ionic-native/ibeacon/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -16,6 +17,7 @@ import { WifiWizard2 } from '@ionic-native/wifi-wizard-2/ngx';
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     WifiWizard2,
+    IBeacon,
   ],
   bootstrap: [AppComponent],
 })

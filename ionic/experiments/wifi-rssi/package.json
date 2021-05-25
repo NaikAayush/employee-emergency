@@ -19,9 +19,10 @@
     "@angular/platform-browser": "~11.2.0",
     "@angular/platform-browser-dynamic": "~11.2.0",
     "@angular/router": "~11.2.0",
+    "@ionic-native/core": "^5.33.0",
     "@ionic-native/wifi-wizard-2": "^5.32.1",
+    "@ionic-native/ibeacon": "https://github.com/NaikAayush/ionic5ibeacon.git",
     "@ionic/angular": "^5.5.2",
-    "cordova-android": "9.1.0",
     "rxjs": "~6.6.0",
     "tslib": "^2.0.0",
     "zone.js": "~0.10.2"
@@ -42,7 +43,9 @@
     "@types/node": "^12.11.1",
     "@typescript-eslint/eslint-plugin": "4.16.1",
     "@typescript-eslint/parser": "4.16.1",
+    "cordova-android": "^8.1.0",
     "cordova-plugin-device": "2.0.2",
+    "cordova-plugin-ibeacon": "^3.8.1",
     "cordova-plugin-ionic-keyboard": "^2.0.5",
     "cordova-plugin-ionic-webview": "^4.0.0",
     "cordova-plugin-splashscreen": "5.0.2",
@@ -64,7 +67,8 @@
     "karma-jasmine-html-reporter": "^1.5.0",
     "protractor": "~7.0.0",
     "ts-node": "~8.3.0",
-    "typescript": "~4.0.2"
+    "typescript": "~4.0.2",
+    "wifiwizard2": "^3.1.1"
   },
   "description": "An Ionic project",
   "cordova": {
@@ -77,7 +81,8 @@
       "cordova-plugin-ionic-webview": {
         "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
       },
-      "cordova-plugin-ionic-keyboard": {}
+      "cordova-plugin-ionic-keyboard": {},
+      "com.unarin.cordova.beacon": {}
     },
     "platforms": [
       "android"
