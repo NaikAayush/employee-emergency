@@ -304,6 +304,10 @@ export class EmployeeMapPage {
       },
       true
     );
+
+    setInterval(() => {
+      this.resetInertialPos(this.currentPos);
+    }, 1000);
   }
 
   resetInertialPos2() {
