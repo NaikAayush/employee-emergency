@@ -73,7 +73,8 @@ export class EmployeeMapPage {
   private choices = ['exit', 'entry', 'beacon'];
 
   // current position
-  currentPos: Point = new Point(517, 115);
+  currentPos: Point = new Point(644, 308);
+  initialPos: Point = new Point(644, 308);
   drawnPath: fabric.Rect[] = [];
 
   //////////////////////////////////////////////
@@ -104,6 +105,25 @@ export class EmployeeMapPage {
   public iosDevice: boolean = false;
   options: WifiScanResultsOptions;
 
+  // accelerometer
+  acceleration: DeviceMotionEventAcceleration;
+  accXSum: number = 0;
+  accYSum: number = 0;
+  accZSum: number = 0;
+
+  displacementX: number = 0;
+  displacementY: number = 0;
+  displacementZ: number = 0;
+
+  z = [
+    {
+      position: 0,
+      velocity: 0,
+      acceleration: 0,
+      time: undefined,
+    },
+  ];
+
   constructor(
     private firestore: AngularFirestore,
     private storage: AngularFireStorage,
@@ -128,7 +148,7 @@ export class EmployeeMapPage {
       this.enableDebugLogs();
     });
 
-    this.startScanning();
+    // this.startScanning();
     // interval(1000).subscribe((x) => {
     //   this.startWifiScan();
     // });
@@ -170,6 +190,66 @@ export class EmployeeMapPage {
     // download nav icon
     this.navIcon = new Image();
     this.navIcon.src = this.navIconSrc;
+
+    window.addEventListener(
+      'devicemotion',
+      (event) => {
+        // console.log(event.acceleration.x, event.acceleration.y, event.acceleration.z);
+        // console.log(event.interval);
+        this.acceleration = event.acceleration;
+        this.accelerate(event.acceleration.z, event.timeStamp);
+        // const interval = event.interval / 1000;
+        // this.accXSum += event.acceleration.x * interval;
+        // this.accYSum += event.acceleration.y * interval;
+        // this.accZSum += event.acceleration.z * interval;
+
+        // this.displacementX += interval * this.accXSum;
+        // this.displacementY += interval * this.accYSum;
+        // this.displacementZ += interval * this.accZSum;
+
+        this.changeRef.detectChanges();
+        // Process event.acceleration, event.accelerationIncludingGravity,
+        // event.rotationRate and event.interval
+      },
+      true
+    );
+  }
+
+  eulerStep(state0, state1) {
+    var interval = (state1.time - state0.time) / 1000; // convert ms to s
+    if (interval) {
+      state1.position = state0.position + state0.velocity * interval;
+      state1.velocity = state0.velocity + state0.acceleration * interval;
+    }
+    return Object.assign({}, state1);
+  }
+
+  accelerate(a: number, t: number) {
+    var newZ = Object.assign({}, this.z[0]);
+
+    newZ.acceleration = Math.abs(a) > 0.1 ? a : 0; // noise filter
+    newZ.time = t;
+    newZ = this.eulerStep(this.z[0], newZ);
+
+    newZ.velocity *= 0.9; // friction
+    newZ.velocity = Math.abs(newZ.velocity) < 0.01 ? 0 : newZ.velocity; // noise filter
+    newZ.position *= 0.999; // tend back to zero
+
+    this.z.unshift(newZ);
+    this.displacementZ = this.z[0].position;
+
+    this.currentPos.y = this.initialPos.y + this.z[0].position * 100;
+    // console.log(this.currentPos);
+
+    if (this.drawnCurrentLocation) {
+      this.drawnCurrentLocation.left = this.currentPos.x;
+      this.drawnCurrentLocation.top = this.currentPos.y;
+      this.drawnCurrentLocation.setCoords();
+      this.canvas.requestRenderAll();
+    } else {
+    }
+
+    // this.getNearestExit();
   }
 
   async getDirection() {
@@ -404,6 +484,19 @@ export class EmployeeMapPage {
     this.addMarkers();
 
     this.getNearestExit();
+
+    this.drawnCurrentLocation = new fabric.Image(this.navIcon, {
+      left: this.currentPos.x,
+      top: this.currentPos.y,
+      // height: 20,
+      // width: 20,
+      // fill: 'red',
+      selectable: false,
+      angle: this.headingAngle,
+    });
+    this.drawnCurrentLocation.scaleToHeight(20);
+    this.drawnCurrentLocation.scaleToWidth(20);
+    this.canvas.add(this.drawnCurrentLocation);
   }
 
   private addMarkers() {
