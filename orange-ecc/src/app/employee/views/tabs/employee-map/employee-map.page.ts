@@ -74,7 +74,7 @@ export class EmployeeMapPage {
 
   // current position
   currentPos: Point = new Point(644, 308);
-  initialPos: Point = new Point(644, 308);
+  initialPos: Point = new Point(300, 250);
   drawnPath: fabric.Rect[] = [];
 
   //////////////////////////////////////////////
@@ -107,6 +107,7 @@ export class EmployeeMapPage {
 
   // accelerometer
   acceleration: DeviceMotionEventAcceleration;
+  lastAcc = [0.0, 0.0, 0.0];
   accXSum: number = 0;
   accYSum: number = 0;
   accZSum: number = 0;
@@ -114,6 +115,9 @@ export class EmployeeMapPage {
   displacementX: number = 0;
   displacementY: number = 0;
   displacementZ: number = 0;
+
+  actualDisplacementX: number = 0;
+  acutalDisplacementY: number = 0;
 
   z = [
     {
@@ -192,27 +196,91 @@ export class EmployeeMapPage {
     this.navIcon.src = this.navIconSrc;
 
     window.addEventListener(
+      'deviceorientationabsolute',
+      (event) => {
+        this.headingAngle = event.alpha;
+        if (this.drawnCurrentLocation) {
+          console.log(this.headingAngle);
+          this.drawnCurrentLocation.angle = this.headingAngle;
+          // this.drawnCurrentLocation.setAngle(this.headingAngle);
+          this.drawnCurrentLocation.setCoords();
+          this.canvas.requestRenderAll();
+        }
+      },
+      true
+    );
+
+    window.addEventListener(
       'devicemotion',
       (event) => {
         // console.log(event.acceleration.x, event.acceleration.y, event.acceleration.z);
         // console.log(event.interval);
         this.acceleration = event.acceleration;
-        this.accelerate(event.acceleration.z, event.timeStamp);
-        // const interval = event.interval / 1000;
-        // this.accXSum += event.acceleration.x * interval;
-        // this.accYSum += event.acceleration.y * interval;
-        // this.accZSum += event.acceleration.z * interval;
+        this.lastAcc[0] = this.lowPassFilter(
+          this.lastAcc[0],
+          this.acceleration.x
+        );
+        this.lastAcc[1] = this.lowPassFilter(
+          this.lastAcc[1],
+          this.acceleration.y
+        );
+        this.lastAcc[2] = this.lowPassFilter(
+          this.lastAcc[2],
+          this.acceleration.z
+        );
+        // this.accelerate(event.acceleration.z, event.timeStamp);
+        const xTerm = Math.cos(this.toRadians(this.headingAngle));
+        const yTerm = Math.sin(this.toRadians(this.headingAngle));
 
-        // this.displacementX += interval * this.accXSum;
-        // this.displacementY += interval * this.accYSum;
-        // this.displacementZ += interval * this.accZSum;
+        const interval = event.interval / 1000;
 
-        this.changeRef.detectChanges();
-        // Process event.acceleration, event.accelerationIncludingGravity,
-        // event.rotationRate and event.interval
+        if (this.lastAcc[2] < 0.1) {
+          this.accXSum += this.lastAcc[2] * interval * xTerm;
+          this.accYSum += this.lastAcc[2] * interval * yTerm;
+          // this.accZSum += this.lastAcc[2] * interval;
+
+          this.displacementX += interval * this.accXSum * xTerm;
+          this.displacementY += interval * this.accYSum * yTerm;
+          // this.displacementZ += interval * this.accZSum;
+
+          // this.actualDisplacementX +=
+          // this.displacementZ * Math.cos(this.toRadians(this.headingAngle));
+          // this.acutalDisplacementY +=
+          // this.displacementZ * Math.sin(this.toRadians(this.headingAngle));
+
+          // this.currentPos.x = this.initialPos.x + this.displacementX;
+          // const xChange =
+          // this.displacementZ * Math.cos(this.toRadians(this.headingAngle));
+          // const yChange =
+          //   this.displacementZ * Math.sin(this.toRadians(this.headingAngle));
+          this.currentPos.x = this.initialPos.x + this.displacementY * 100;
+          this.currentPos.y = this.initialPos.y + this.displacementX * 100;
+          // console.log(this.currentPos);
+
+          if (this.drawnCurrentLocation) {
+            this.drawnCurrentLocation.left = this.currentPos.x;
+            this.drawnCurrentLocation.top = this.currentPos.y;
+            this.drawnCurrentLocation.setCoords();
+            this.canvas.requestRenderAll();
+          }
+
+          this.changeRef.detectChanges();
+          // Process event.acceleration, event.accelerationIncludingGravity,
+          // event.rotationRate and event.interval
+        }
       },
       true
     );
+  }
+
+  private lowPassFilter(old_value: number, new_value: number) {
+    const a = 0.5;
+    // if (new_value < 0.1) return 0;
+    return old_value + a * (new_value - old_value);
+  }
+
+  private toRadians(angle: number) {
+    return angle * (Math.PI / 180);
   }
 
   eulerStep(state0, state1) {
@@ -488,6 +556,8 @@ export class EmployeeMapPage {
     this.drawnCurrentLocation = new fabric.Image(this.navIcon, {
       left: this.currentPos.x,
       top: this.currentPos.y,
+      originX: 'center',
+      originY: 'center',
       // height: 20,
       // width: 20,
       // fill: 'red',
