@@ -33,12 +33,11 @@ def _make_paths_better(img: np.ndarray):
     """
     # img_gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
 
-    kernel = np.ones((1,DILATE_SIZE_HOR), np.uint8)  # horizontal kernel
+    kernel = np.ones((1, DILATE_SIZE_HOR), np.uint8)  # horizontal kernel
     d_im = cv2.dilate(img, kernel, iterations=1)
     e_im = cv2.erode(d_im, kernel, iterations=1)
 
-
-    kernel = np.ones((DILATE_SIZE_VERT,1), np.uint8)  # vertical kernel
+    kernel = np.ones((DILATE_SIZE_VERT, 1), np.uint8)  # vertical kernel
     d_im = cv2.dilate(e_im, kernel, iterations=1)
     e_im = cv2.erode(d_im, kernel, iterations=1)
 
@@ -54,11 +53,14 @@ def _resize_image(img: np.ndarray, nearest=True, width=IMAGE_WIDTH):
 
 def process_map(img: np.ndarray) -> Tuple[np.ndarray, np.ndarray]:
     smol_img = _resize_image(img, nearest=False)
-    processed_img = _resize_image(_make_paths_better(_get_yellow(smol_img)), width=MAP_WIDTH)
+    processed_img = _resize_image(
+        _make_paths_better(_get_yellow(smol_img)), width=MAP_WIDTH
+    )
     return smol_img, processed_img
 
 
 if __name__ == "__main__":
+
     def draw_img(img):
 
         cv2.imshow("image", img)
