@@ -44,8 +44,8 @@ const routes: Routes = [
     path: 'cc-sim',
     loadChildren: () =>
       import(
-        './command-center-simulation/command-center-simulation.module'
-      ).then((m) => m.CommandCenterSimulationPageModule),
+        './command-center-simulation/views/command-center-simulation-tabs/command-center-simulation-tabs.module'
+      ).then((m) => m.CommandCenterSimulationTabsPageModule),
   },
 ];
 

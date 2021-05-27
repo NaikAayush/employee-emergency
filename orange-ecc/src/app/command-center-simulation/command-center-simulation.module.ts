@@ -7,14 +7,16 @@ import { IonicModule } from '@ionic/angular';
 import { CommandCenterSimulationPageRoutingModule } from './command-center-simulation-routing.module';
 
 import { CommandCenterSimulationPage } from './command-center-simulation.page';
+import { CommandCenterSimulationTabsPageModule } from './views/command-center-simulation-tabs/command-center-simulation-tabs.module';
 
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    CommandCenterSimulationPageRoutingModule
+    CommandCenterSimulationPageRoutingModule,
+    CommandCenterSimulationTabsPageModule,
   ],
-  declarations: [CommandCenterSimulationPage]
+  declarations: [CommandCenterSimulationPage],
 })
 export class CommandCenterSimulationPageModule {}
