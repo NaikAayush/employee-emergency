@@ -2,6 +2,7 @@ import asyncio
 import json
 import logging
 import os
+from typing import Sequence
 
 import dotenv
 import numpy as np
@@ -11,6 +12,8 @@ from app.pathfinder import Point, nearestExitSmol, shortestpath
 from fastapi.exceptions import HTTPException
 from numpy.random import default_rng
 
+logger = logging.getLogger("simulator")
+logger.setLevel(logging.INFO)
 
 dotenv.load_dotenv()
 
@@ -56,7 +59,7 @@ async def _get_nearest_exit_path(mapId, initial_pos):
             return []
 
 
-async def _get_shortest_path(mapId, initial_pos, other_pos):
+async def _get_shortest_path(mapId, initial_pos: dict, other_pos: dict):
     # r = requests.post(
     #     f"{apiUri}/map/shortestpathtest",
     #     params={"id_": mapId},
@@ -84,11 +87,21 @@ async def _get_shortest_path(mapId, initial_pos, other_pos):
 
     if not isinstance(resp, HTTPException):
         if "path" in resp:
-            path = resp["path"]
+            path: list = resp["path"]
             # path = [[x * scale - 10, y * scale - 5] for (x, y) in path]
             return path
         else:
             return []
+
+    return []
+
+
+async def _get_nearest_point(mapId, source: dict, dests: Sequence[dict]):
+    paths = await asyncio.gather(
+        *(_get_shortest_path(mapId, source, dest) for dest in dests)
+    )
+
+    return min(range(len(dests)), key=lambda i: len(paths[i]))
 
 
 async def _go_to_path(uid, pos, path):
@@ -97,7 +110,7 @@ async def _go_to_path(uid, pos, path):
         async def send(x, y, pause=0.5):
             pos["x"] = x * scale - 10
             pos["y"] = y * scale - 5
-            logging.info("Go to path: sending for uid %s: %s", uid, pos)
+            logger.debug("Go to path: sending for uid %s: %s", uid, pos)
             await websocket.send(json.dumps(pos))
             pos["x"] = x
             pos["y"] = y
@@ -130,7 +143,7 @@ async def ert_rescue(mapId, uid: str, empuid: str, pos, rescue_pos):
         async def send(x, y, pause=0.5):
             pos["x"] = x * scale - 10
             pos["y"] = y * scale - 5
-            logging.info("ERT rescue: sending for uid %s: %s", uid, pos)
+            logger.debug("ERT rescue: sending for uid %s: %s", uid, pos)
             await websocket.send(json.dumps(pos))
             pos["x"] = x
             pos["y"] = y
@@ -158,7 +171,7 @@ async def fix_coords(mapId, coords, idx, valid_idxs):
     )
 
     if not path:
-        logging.warning("Coords %s are invalid, re-calculating", coords[idx])
+        logger.warning("Coords %s are invalid, re-calculating", coords[idx])
         coords[idx] = rng.choice(valid_idxs)
         await fix_coords(mapId, coords, idx, valid_idxs)
 
@@ -173,29 +186,35 @@ async def fix_all_coords(mapId, valid_idxs, *coords):
 
 
 async def simulate(mapId, num_emp, num_incap_emp, num_ert):
+    logger.info("Start simulation")
     map_arr = data.get_map_img(mapId)
 
     if isinstance(map_arr, HTTPException):
         return map_arr
+
+    logger.info("Got map array")
 
     # pprint(map_arr)
     # pprint(map_arr[map_arr > 0])
     # pprint(np.argwhere(map_arr > 0))
     valid_idxs = np.argwhere(map_arr > 0)
 
-    emp_coords = rng.choice(valid_idxs, size=num_emp)
-    emp_incap_coords = rng.choice(valid_idxs, size=num_incap_emp)
-    ert_coords = rng.choice(valid_idxs, size=num_ert)
+    emp_coords: np.ndarray = rng.choice(valid_idxs, size=num_emp)
+    emp_incap_coords: np.ndarray = rng.choice(valid_idxs, size=num_incap_emp)
+    ert_coords: np.ndarray = rng.choice(valid_idxs, size=num_ert)
+    logger.info("Got all coords")
 
     await fix_all_coords(mapId, valid_idxs, emp_coords, emp_incap_coords, ert_coords)
 
-    logging.debug("Emp coords: %s", emp_coords)
-    logging.debug("Emp incap coords: %s", emp_incap_coords)
-    logging.debug("ERT coords: %s", ert_coords)
+    logger.info("Fixed all coords")
+
+    logger.debug("Emp coords: %s", emp_coords)
+    logger.debug("Emp incap coords: %s", emp_incap_coords)
+    logger.debug("ERT coords: %s", ert_coords)
 
     emps = []
     for i in range(1, num_emp + 1):
-        logging.warning("Adding emp%s", i)
+        logger.info("Adding emp%s", i)
         emps.append(
             emp_exit(
                 mapId,
@@ -207,10 +226,11 @@ async def simulate(mapId, num_emp, num_incap_emp, num_ert):
                 },
             )
         )
+    logger.info("Made employee coroutines")
 
     erts = []
     for i in range(1, num_ert + 1 - num_incap_emp):
-        logging.warning("Adding ert%s", i)
+        logger.info("Adding ert%s", i)
 
         erts.append(
             emp_exit(
@@ -224,13 +244,24 @@ async def simulate(mapId, num_emp, num_incap_emp, num_ert):
                 },
             )
         )
+    logger.info("Made ERT coroutines")
+
+    emp_incap_coords_l = [{"x": c[1], "y": c[0]} for c in emp_incap_coords.tolist()]
+    emp_incap_coords_final = []
+    for x, y in ert_coords.tolist()[num_ert - num_incap_emp :]:
+        min_ind = await _get_nearest_point(mapId, {"x": x, "y": y}, emp_incap_coords_l)
+        emp_incap_coords_final.append(
+            [emp_incap_coords_l[min_ind]["y"], emp_incap_coords_l[min_ind]["x"]]
+        )
+        emp_incap_coords_l.pop(min_ind)
+    logger.info("Emp incap final coords: %s", emp_incap_coords_final)
 
     rescue_erts = []
     for i in range(num_incap_emp):
         ert_num = num_ert - num_incap_emp + i + 1
         emp_num = num_emp + i + 1
 
-        logging.warning("Adding ert%s rescuing emp%s", ert_num, emp_num)
+        logger.info("Adding ert%s rescuing emp%s", ert_num, emp_num)
 
         rescue_erts.append(
             ert_rescue(
@@ -245,11 +276,12 @@ async def simulate(mapId, num_emp, num_incap_emp, num_ert):
                 },
                 {
                     "name": f"EMP {emp_num}",
-                    "x": int(emp_incap_coords[i][1]),
-                    "y": int(emp_incap_coords[i][0]),
+                    "x": int(emp_incap_coords_final[i][1]),
+                    "y": int(emp_incap_coords_final[i][0]),
                 },
             )
         )
+    logger.info("Made rescue ERT coroutines")
 
     await asyncio.gather(*emps, *erts, *rescue_erts)
 
