@@ -123,7 +123,7 @@ async def ert_rescue(mapId, uid: str, empuid: str, pos, rescue_pos):
     await _go_to_path(empuid, rescue_pos, [[p["x"], p["y"]] for p in [rescue_pos]])
     await _go_to_path(uid, pos, [[p["x"], p["y"]] for p in [pos]])
 
-    await asyncio.sleep(1)
+    await asyncio.sleep(10)
 
     async with websockets.connect(uri + uid) as websocket:
 
