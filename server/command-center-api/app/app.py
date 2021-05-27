@@ -1,3 +1,5 @@
+from pydantic.main import BaseModel
+from app.simulator import simulator
 import base64
 
 from fastapi import FastAPI, UploadFile, File, HTTPException
@@ -89,3 +91,14 @@ async def shortestpath(id_: str, source: pathfinder.Point, dest: pathfinder.Poin
 @app.post("/map/nearestExit")
 async def nearestExit(id_: str, source: pathfinder.Point):
     return await pathfinder.nearestExit(id_, source)
+
+
+class SimulationParams(BaseModel):
+    num_emp: int
+    num_incap_emp: int
+    num_ert: int
+
+
+@app.post("/simulate")
+async def simulate(id_: str, params: SimulationParams):
+    return await simulator.simulate(id_, params.num_emp, params.num_incap_emp, params.num_ert)
