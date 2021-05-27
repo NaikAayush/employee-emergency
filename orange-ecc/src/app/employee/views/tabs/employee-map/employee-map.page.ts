@@ -145,7 +145,7 @@ export class EmployeeMapPage {
       // resolved promise does not return a value
       () => console.log('Geofence Plugin Ready'),
       (err) => console.log(err)
-    )
+    );
   }
 
   ngOnInit() {
@@ -185,22 +185,29 @@ export class EmployeeMapPage {
     //options describing geofence
     let fence = {
       id: '69ca1b88-6fbe-4e80-a4d4-ff4d3748acdb', //any unique ID
-      latitude: 37.285951, //center of geofence radius
-      longitude: -121.936650,
-      radius: 100, //radius to edge of geofence in meters
+      latitude: 12.908004, //center of geofence radius 12.908004, 77.670520
+      longitude: 77.67052,
+      radius: 1, //radius to edge of geofence in meters
       transitionType: 3, //see 'Transition Types' below
-      notification: { //notification settings
+      notification: {
+        //notification settings
         id: 1, //any unique ID
         title: 'You crossed a fence', //notification title
         text: 'You just arrived to yush home.', //notification body
-        openAppOnClick: true //open app when notification is tapped
-      }
-    }
+        openAppOnClick: true, //open app when notification is tapped
+      },
+    };
 
     this.geofence.addOrUpdate(fence).then(
       () => console.log('Geofence added'),
       (err) => console.log('Geofence failed to add', err)
     );
+
+    this.geofence.onTransitionReceived().subscribe((geofences) => {
+      geofences.forEach((geo) => {
+        console.log('Geofence transition detected', geo);
+      });
+    });
   }
 
   async getDirection() {
@@ -333,8 +340,8 @@ export class EmployeeMapPage {
             return a.accuracy > b.accuracy
               ? -1
               : a.accuracy < b.accuracy
-                ? 1
-                : 0;
+              ? 1
+              : 0;
           });
           const beaconData3 = beaconData2.slice(0, 3);
 
