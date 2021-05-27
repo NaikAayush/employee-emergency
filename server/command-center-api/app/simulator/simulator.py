@@ -1,7 +1,7 @@
 import asyncio
 import json
+import logging
 import os
-# from pprint import pprint
 
 import dotenv
 import numpy as np
@@ -10,6 +10,7 @@ from app import data
 from app.pathfinder import Point, nearestExitSmol, shortestpath
 from fastapi.exceptions import HTTPException
 from numpy.random import default_rng
+
 
 dotenv.load_dotenv()
 
@@ -48,7 +49,6 @@ async def _get_nearest_exit_path(mapId, initial_pos):
         if "path" in resp:
             path = resp["path"]
             if path is None:
-                print("ono path is None for ", initial_pos)
                 return []
             # path = [[x * scale - 10, y * scale - 5] for (x, y) in path]
             return path
@@ -78,14 +78,14 @@ async def _get_shortest_path(mapId, initial_pos, other_pos):
 
     resp = await shortestpath(
         mapId,
-        Point(x=round(initial_pos["x"] / scale), y=round(initial_pos["y"] / scale)),
-        Point(x=round(other_pos["x"] / scale), y=round(other_pos["y"] / scale)),
+        Point(x=round(initial_pos["x"]), y=round(initial_pos["y"])),
+        Point(x=round(other_pos["x"]), y=round(other_pos["y"])),
     )
 
     if not isinstance(resp, HTTPException):
         if "path" in resp:
             path = resp["path"]
-            path = [[x * scale - 10, y * scale - 5] for (x, y) in path]
+            # path = [[x * scale - 10, y * scale - 5] for (x, y) in path]
             return path
         else:
             return []
@@ -97,8 +97,10 @@ async def _go_to_path(uid, pos, path):
         async def send(x, y, pause=0.5):
             pos["x"] = x * scale - 10
             pos["y"] = y * scale - 5
-            print(f"sending for uid {uid}: ", pos)
+            logging.info("Go to path: sending for uid %s: %s", uid, pos)
             await websocket.send(json.dumps(pos))
+            pos["x"] = x
+            pos["y"] = y
             await asyncio.sleep(pause)
 
         await send(pos["x"], pos["y"])
@@ -117,32 +119,32 @@ async def emp_exit(mapId, uid, initial_pos):
     await _go_to_path(uid, pos, path)
 
 
-async def ert_rescue(mapId, uid, pos, rescue_pos):
-    await _go_to_path("emp4", rescue_pos, [[p["x"], p["y"]] for p in [rescue_pos]])
+async def ert_rescue(mapId, uid: str, empuid: str, pos, rescue_pos):
+    await _go_to_path(empuid, rescue_pos, [[p["x"], p["y"]] for p in [rescue_pos]])
     await _go_to_path(uid, pos, [[p["x"], p["y"]] for p in [pos]])
 
-    await asyncio.sleep(10)
+    await asyncio.sleep(1)
 
     async with websockets.connect(uri + uid) as websocket:
 
         async def send(x, y, pause=0.5):
+            pos["x"] = x * scale - 10
+            pos["y"] = y * scale - 5
+            logging.info("ERT rescue: sending for uid %s: %s", uid, pos)
+            await websocket.send(json.dumps(pos))
             pos["x"] = x
             pos["y"] = y
-            print(f"sending for uid {uid}: ", pos)
-            await websocket.send(json.dumps(pos))
             await asyncio.sleep(pause)
 
         await send(pos["x"], pos["y"])
 
         path = await _get_shortest_path(mapId, pos, rescue_pos)
 
-        # pprint(path)
-
         for x, y in path:
             await send(x, y, 0.5)
 
         await asyncio.gather(
-            emp_exit(mapId, "emp4", {"name": "EMP 4", **rescue_pos}),
+            emp_exit(mapId, empuid, {"name": "EMP 4", **rescue_pos}),
             emp_exit(mapId, uid, pos),
         )
 
@@ -150,7 +152,27 @@ async def ert_rescue(mapId, uid, pos, rescue_pos):
 rng = default_rng()
 
 
-async def simulate(mapId, num_emp, num_ert):
+async def fix_coords(mapId, coords, idx, valid_idxs):
+    path = await _get_nearest_exit_path(
+        mapId, {"x": coords[idx][1], "y": coords[idx][0]}
+    )
+
+    if not path:
+        logging.warning("Coords %s are invalid, re-calculating", coords[idx])
+        coords[idx] = rng.choice(valid_idxs)
+        await fix_coords(mapId, coords, idx, valid_idxs)
+
+
+async def fix_all_coords(mapId, valid_idxs, *coords):
+    fixers = []
+    for coord in coords:
+        for i in range(len(coord)):
+            fixers.append(fix_coords(mapId, coord, i, valid_idxs))
+
+    return await asyncio.gather(*fixers)
+
+
+async def simulate(mapId, num_emp, num_incap_emp, num_ert):
     map_arr = data.get_map_img(mapId)
 
     if isinstance(map_arr, HTTPException):
@@ -162,13 +184,18 @@ async def simulate(mapId, num_emp, num_ert):
     valid_idxs = np.argwhere(map_arr > 0)
 
     emp_coords = rng.choice(valid_idxs, size=num_emp)
+    emp_incap_coords = rng.choice(valid_idxs, size=num_incap_emp)
     ert_coords = rng.choice(valid_idxs, size=num_ert)
 
-    print(emp_coords)
-    print(ert_coords)
+    await fix_all_coords(mapId, valid_idxs, emp_coords, emp_incap_coords, ert_coords)
+
+    logging.debug("Emp coords: %s", emp_coords)
+    logging.debug("Emp incap coords: %s", emp_incap_coords)
+    logging.debug("ERT coords: %s", ert_coords)
 
     emps = []
     for i in range(1, num_emp + 1):
+        logging.warning("Adding emp%s", i)
         emps.append(
             emp_exit(
                 mapId,
@@ -182,7 +209,9 @@ async def simulate(mapId, num_emp, num_ert):
         )
 
     erts = []
-    for i in range(1, num_ert + 1):
+    for i in range(1, num_ert + 1 - num_incap_emp):
+        logging.warning("Adding ert%s", i)
+
         erts.append(
             emp_exit(
                 mapId,
@@ -191,10 +220,38 @@ async def simulate(mapId, num_emp, num_ert):
                     "name": f"ERT {i}",
                     "x": int(ert_coords[i - 1][1]),
                     "y": int(ert_coords[i - 1][0]),
+                    "ert": True,
                 },
             )
         )
-    await asyncio.gather(*emps, *erts)
+
+    rescue_erts = []
+    for i in range(num_incap_emp):
+        ert_num = num_ert - num_incap_emp + i + 1
+        emp_num = num_emp + i + 1
+
+        logging.warning("Adding ert%s rescuing emp%s", ert_num, emp_num)
+
+        rescue_erts.append(
+            ert_rescue(
+                mapId,
+                f"ert{ert_num}",
+                f"emp{emp_num}",
+                {
+                    "name": f"ERT {ert_num}",
+                    "x": int(ert_coords[ert_num - 1][1]),
+                    "y": int(ert_coords[ert_num - 1][0]),
+                    "ert": True,
+                },
+                {
+                    "name": f"EMP {emp_num}",
+                    "x": int(emp_incap_coords[i][1]),
+                    "y": int(emp_incap_coords[i][0]),
+                },
+            )
+        )
+
+    await asyncio.gather(*emps, *erts, *rescue_erts)
 
 
 # async def main():
@@ -213,4 +270,4 @@ async def simulate(mapId, num_emp, num_ert):
 #     )
 
 if __name__ == "__main__":
-    asyncio.run(simulate("45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43", 5, 5))
+    asyncio.run(simulate("45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43", 5, 2, 5))

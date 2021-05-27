@@ -274,21 +274,21 @@ async def nearestExitSmol(id_: str, source: Point):
 
     for exit in map_data.true_exits:
         grid.cleanup()
-        print(exit)
+        logging.info("Calcuating shortest path to %s", exit)
 
         end = grid.node(round(exit["y"]), round(exit["x"]))
         # print("start", start)
         # print("end", end)
         path, runs = finder.find_path(start, end, grid)
 
-        print("path, runs", path, runs)
+        # print("path, runs", path, runs)
 
         if len(path) != 0 and (shortest_dist is None or len(path) < shortest_dist):
             shortest_dist = len(path)
             shortest_path = path
             shortest_runs = runs
 
-    print("shortest:", shortest_path, shortest_runs, shortest_dist)
+    logging.info("shortest: %s %s %s", shortest_path, shortest_runs, shortest_dist)
 
     return {
         "message": "Success",
