@@ -23,6 +23,13 @@ const routes: Routes = [
           ),
       },
       {
+        path: 'status',
+        loadChildren: () =>
+          import('../tabs/ert-status/ert-status.module').then(
+            (m) => m.ErtStatusPageModule
+          ),
+      },
+      {
         path: '',
         redirectTo: 'ert/ert-tabs/chat',
         pathMatch: 'full',

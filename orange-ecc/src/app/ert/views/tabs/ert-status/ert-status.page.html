@@ -1,0 +1,89 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-title>ERT Status</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <div class="flex flex-col h-full content-between">
+    <div
+      class="
+        text-center
+        w-full
+        h-1/2
+        mx-auto
+        py-12
+        px-4
+        sm:px-6
+        lg:py-16
+        lg:px-8
+        z-20
+      "
+    >
+      <h2
+        class="text-3xl font-extrabold text-black dark:text-white sm:text-4xl"
+      >
+        <span class="block"> Are you available for this emergency? </span>
+      </h2>
+    </div>
+    <div>
+      <img src="assets/ert-status.png" alt="" />
+    </div>
+    <div class="flex flex-wrap h-full content-end">
+      <button
+        (click)="presentToast()"
+        type="button"
+        class="
+          py-2
+          px-4
+          flex
+          justify-center
+          items-center
+          bg-red-600
+          hover:bg-red-700
+          focus:ring-red-500 focus:ring-offset-red-200
+          text-white
+          w-1/2
+          h-1/2
+          transition
+          ease-in
+          duration-200
+          text-center text-2xl
+          font-semibold
+          shadow-md
+          focus:outline-none
+          focus:ring-2 focus:ring-offset-2
+        "
+      >
+        REJECT
+      </button>
+      <button
+        (click)="presentToast()"
+        type="button"
+        class="
+          py-2
+          px-4
+          flex
+          justify-center
+          items-center
+          bg-green-600
+          hover:bg-green-700
+          focus:ring-green-500 focus:ring-offset-green-200
+          text-white
+          w-1/2
+          h-1/2
+          transition
+          ease-in
+          duration-200
+          text-center text-2xl
+          font-semibold
+          shadow-md
+          focus:outline-none
+          focus:ring-2 focus:ring-offset-2
+        "
+      >
+        ACCEPT
+      </button>
+    </div>
+  </div>
+</ion-content>

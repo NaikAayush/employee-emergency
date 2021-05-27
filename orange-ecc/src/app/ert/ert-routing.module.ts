@@ -43,7 +43,11 @@ const routes: Routes = [
       import('./views/tabs/ert-map/ert-map.module').then(
         (m) => m.ErtMapPageModule
       ),
+  },  {
+    path: 'ert-status',
+    loadChildren: () => import('./views/tabs/ert-status/ert-status.module').then( m => m.ErtStatusPageModule)
   },
+
 ];
 
 @NgModule({
