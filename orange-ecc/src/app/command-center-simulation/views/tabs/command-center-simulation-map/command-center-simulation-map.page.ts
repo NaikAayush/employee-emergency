@@ -79,7 +79,7 @@ export class CommandCenterSimulationMapPage implements OnInit {
 
   async ngOnInit() {
     // initialize canvas
-    this.canvas = new fabric.Canvas('mapFabricCanvas');
+    this.canvas = new fabric.Canvas('mapFabricCanvas', { renderOnAddRemove: false });
     this.canvas.selection = false;
 
     this.canvas.height = 0;
@@ -311,8 +311,7 @@ export class CommandCenterSimulationMapPage implements OnInit {
               { left: x, top: y },
               {
                 duration: 200,
-                onChange: this.canvas.requestRenderAll.bind(this.canvas),
-                easing: fabric.util.ease.easeInQuad,
+                onChange: this.canvas.requestRenderAll.bind(this.canvas)
               }
             );
 
