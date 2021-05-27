@@ -1,5 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { fabric } from 'fabric';
+import { ApiService } from 'src/app/command-center/views/tabs/command-center-setup/services/api.service';
 import { environment } from 'src/environments/environment';
 import { PathfindingService } from '../../../../employee/services/pathfinding/pathfinding.service';
 import { ChoiceInfo } from '../../../../employee/views/tabs/employee-map/models/choice-info';
@@ -69,17 +70,14 @@ export class CommandCenterSimulationMapPage implements OnInit {
   private lastChanged: Record<string, number> = {};
   private exited: Record<string, boolean> = {};
 
-  constructor(private pathfinding: PathfindingService) {
+  constructor(
+    private pathfinding: PathfindingService,
+    private api: ApiService
+  ) {
     this.userMarkers = {};
   }
 
   async ngOnInit() {
-    // setup last changed
-    this.userIds.forEach((uid) => {
-      this.lastChanged[uid] = new Date().getTime();
-      this.exited[uid] = false;
-    });
-
     // initialize canvas
     this.canvas = new fabric.Canvas('mapFabricCanvas');
     this.canvas.selection = false;
@@ -125,8 +123,6 @@ export class CommandCenterSimulationMapPage implements OnInit {
     this.canvas.add(orig_img_f);
 
     this.addMarkers();
-
-    this.startMonitoring();
 
     setInterval(() => {
       let empIncap = 0;
@@ -186,6 +182,32 @@ export class CommandCenterSimulationMapPage implements OnInit {
       this.totalEmpExited = empExited;
       this.totalErtExited = ertExited;
     }, 2000);
+
+    this.setupSimulation(this.noEmp, this.noErt, this.noIncapEmp);
+  }
+
+  setupSimulation(numEmp: number, numErt: number, numEmpImm: number) {
+    // setup last changed
+    this.userIds.forEach((uid) => {
+      this.lastChanged[uid] = new Date().getTime();
+      this.exited[uid] = false;
+    });
+
+    this.startMonitoring();
+  }
+
+  async startSimulation() {
+    const resp = await this.api.post(`/simulate?id_=${this.uuidMap}`, {
+      num_emp: this.noEmp,
+      num_incap_emp: this.noIncapEmp,
+      num_ert: this.noErt,
+    });
+    console.log("Response from simulate: ", resp);
+  }
+
+  async simulate() {
+    this.setupSimulation(this.noEmp, this.noErt, this.noIncapEmp);
+    await this.startSimulation();
   }
 
   private addMarkers() {
