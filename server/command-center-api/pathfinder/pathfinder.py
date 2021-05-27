@@ -4,7 +4,7 @@ import math
 import processing.map
 from data import data
 from dataclasses import dataclass
-from typing import Dict, List
+from typing import Any, Dict, List
 from fastapi.exceptions import HTTPException
 
 from pydantic import BaseModel
@@ -32,6 +32,7 @@ class Marker(BaseModel):
     height: int
     width: int
 
+
 @dataclass
 class POI:
     """Points of interest - same as marker, but only point"""
@@ -47,6 +48,7 @@ class Map:
     entries: List[Marker]
     beacons: List[Marker]
     others: List[Marker]
+    true_exits: Any
 
     def get_markers(self):
         for m in self.exits:
@@ -100,7 +102,14 @@ def get_map_data(id_: str):
         else:
             others.append(marker_obj)
 
-    return Map(id_=id_, exits=exits, entries=entries, beacons=beacons, others=others)
+    return Map(
+        id_=id_,
+        exits=exits,
+        entries=entries,
+        beacons=beacons,
+        others=others,
+        true_exits=doc_ref["exits"] if "exits" in doc_ref else None,
+    )
 
 
 def set_map_data(id_: str, data_: dict):
@@ -168,7 +177,7 @@ async def processMarkers(id_: str):
     map_img[map_img > 0] = 1
     # map_arr = dict(((str(i), j) for i, j in enumerate(map_img.tolist())))
     map_arr = map_img.tolist()
-    map_arr_s = json.dumps(map_arr, separators=(',', ':'))
+    map_arr_s = json.dumps(map_arr, separators=(",", ":"))
     # print(map_arr_s)
     print(len(map_arr))
     print(len(map_arr[0]))
@@ -221,10 +230,58 @@ async def nearestExit(id_: str, source: Point):
         print(exit)
 
         end = get_nearest_node(
-            grid, Point(x=(exit.top + exit.height / 2)/scale, y=(exit.left + exit.width / 2)/scale)
+            grid,
+            Point(
+                x=(exit.top + exit.height / 2) / scale,
+                y=(exit.left + exit.width / 2) / scale,
+            ),
         )
         path, runs = finder.find_path(start, end, grid)
 
+        print(shortest_path, shortest_runs, shortest_dist)
+
+        if len(path) != 0 and (shortest_dist is None or len(path) < shortest_dist):
+            shortest_dist = len(path)
+            shortest_path = path
+            shortest_runs = runs
+
+    return {
+        "message": "Success",
+        "path": shortest_path,
+        "runs": shortest_runs,
+        "grid": {"height": grid.height, "width": grid.width},
+    }
+
+
+async def nearestExitSmol(id_: str, source: Point):
+    grid = data.get_grid(id_)
+
+    if isinstance(grid, HTTPException):
+        return grid
+
+    map_data = get_map_data(id_)
+    if isinstance(map_data, HTTPException):
+        return map_data
+
+    start = get_nearest_node(grid, source)
+    shortest_path = None
+    shortest_dist = None
+    shortest_runs = None
+
+    print(map_data)
+
+    print("true_exits", map_data.true_exits)
+
+    for exit in map_data.true_exits:
+        grid.cleanup()
+        print(exit)
+
+        end = grid.node(round(exit["y"]), round(exit["x"]))
+        print("start", start)
+        print("end", end)
+        path, runs = finder.find_path(start, end, grid)
+
+        print("path, runs", path, runs)
         print(shortest_path, shortest_runs, shortest_dist)
 
         if len(path) != 0 and (shortest_dist is None or len(path) < shortest_dist):
