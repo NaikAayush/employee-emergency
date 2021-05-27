@@ -1,8 +1,6 @@
 import json
 import logging
 import math
-import processing.map
-from data import data
 from dataclasses import dataclass
 from typing import Any, Dict, List
 from fastapi.exceptions import HTTPException
@@ -14,6 +12,8 @@ from pathfinding.core.diagonal_movement import DiagonalMovement
 from pathfinding.core.grid import Grid
 from pathfinding.finder.a_star import AStarFinder
 
+import app.processing.map as map_
+from app import data
 
 class Point(BaseModel):
     x: float
@@ -223,7 +223,7 @@ async def nearestExit(id_: str, source: Point):
 
     print(map_data)
 
-    scale = processing.map.IMAGE_WIDTH / processing.map.MAP_WIDTH
+    scale = map_.IMAGE_WIDTH / map_.MAP_WIDTH
 
     for exit in map_data.exits:
         grid.cleanup()
@@ -268,26 +268,27 @@ async def nearestExitSmol(id_: str, source: Point):
     shortest_dist = None
     shortest_runs = None
 
-    print(map_data)
+    # print(map_data)
 
-    print("true_exits", map_data.true_exits)
+    # print("true_exits", map_data.true_exits)
 
     for exit in map_data.true_exits:
         grid.cleanup()
         print(exit)
 
         end = grid.node(round(exit["y"]), round(exit["x"]))
-        print("start", start)
-        print("end", end)
+        # print("start", start)
+        # print("end", end)
         path, runs = finder.find_path(start, end, grid)
 
         print("path, runs", path, runs)
-        print(shortest_path, shortest_runs, shortest_dist)
 
         if len(path) != 0 and (shortest_dist is None or len(path) < shortest_dist):
             shortest_dist = len(path)
             shortest_path = path
             shortest_runs = runs
+
+    print("shortest:", shortest_path, shortest_runs, shortest_dist)
 
     return {
         "message": "Success",

@@ -9,10 +9,13 @@ import firebase_admin
 import numpy as np
 from fastapi.exceptions import HTTPException
 from firebase_admin import firestore, storage
-from pathfinder import pathfinder
 from pathfinding.core.grid import Grid
 from PIL import Image
+from dotenv import load_dotenv
 
+from app.pathfinder import pathfinder
+
+load_dotenv()
 _fire_encoded = os.getenv("FIREBASE_SERVICE_ACCOUNT")
 assert _fire_encoded is not None, "FIREBASE_SERVICE_ACCOUNT has to be in env"
 _creds = firebase_admin.credentials.Certificate(

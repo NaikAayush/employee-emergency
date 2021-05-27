@@ -7,11 +7,10 @@ from PIL import Image
 import cv2
 import numpy as np
 
-from dotenv import load_dotenv
 
-from processing.map import process_map
-from pathfinder import pathfinder
-from data import data
+from app.processing.map import process_map
+from app.pathfinder import pathfinder
+from app.data import data
 
 
 # FastAPI stuff
@@ -23,10 +22,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-
-# Firebase stuff
-load_dotenv()
 
 
 @app.get("/")

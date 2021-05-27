@@ -1,20 +1,26 @@
 import asyncio
 import json
 import os
-from pprint import pprint
+# from pprint import pprint
 
 import dotenv
 import numpy as np
 import websockets
-import data
+from app import data
+from app.pathfinder import Point, nearestExitSmol, shortestpath
 from fastapi.exceptions import HTTPException
 from numpy.random import default_rng
-from pathfinder import Point, nearestExitSmol, shortestpath
 
 dotenv.load_dotenv()
 
-uri = f"{os.getenv('WS_HOST')}/update?id="
-apiUri = os.getenv("API_HOST")
+ws_host = os.getenv("WS_HOST")
+if ws_host is None:
+    raise Exception("WS_HOST not found in .env")
+uri = f"{ws_host}/update?id="
+
+# apiUri = os.getenv("API_HOST")
+# if apiUri is None:
+#     raise Exception("API_HOST not found in .env")
 # apiUri = "http://127.0.0.1:8000"
 # mapId = "45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43"
 scale = 5.380952380952381
@@ -35,13 +41,16 @@ async def _get_nearest_exit_path(mapId, initial_pos):
 
     resp = await nearestExitSmol(
         mapId,
-        Point(x=round(initial_pos["x"] / scale), y=round(initial_pos["y"] / scale)),
+        Point(x=round(initial_pos["x"]), y=round(initial_pos["y"])),
     )
 
     if not isinstance(resp, HTTPException):
         if "path" in resp:
             path = resp["path"]
-            path = [[x * scale - 10, y * scale - 5] for (x, y) in path]
+            if path is None:
+                print("ono path is None for ", initial_pos)
+                return []
+            # path = [[x * scale - 10, y * scale - 5] for (x, y) in path]
             return path
         else:
             return []
@@ -86,20 +95,22 @@ async def _go_to_path(uid, pos, path):
     async with websockets.connect(uri + uid) as websocket:
 
         async def send(x, y, pause=0.5):
-            pos["x"] = x
-            pos["y"] = y
+            pos["x"] = x * scale - 10
+            pos["y"] = y * scale - 5
             print(f"sending for uid {uid}: ", pos)
             await websocket.send(json.dumps(pos))
             await asyncio.sleep(pause)
 
+        await send(pos["x"], pos["y"])
+
         for x, y in path:
-            await send(x, y, 0.5)
+            await send(x, y)
 
 
 async def emp_exit(mapId, uid, initial_pos):
-    path = _get_nearest_exit_path(mapId, initial_pos)
+    path = await _get_nearest_exit_path(mapId, initial_pos)
 
-    pprint(path)
+    # pprint(path)
     # print(r.json())
     pos = initial_pos
 
@@ -125,7 +136,7 @@ async def ert_rescue(mapId, uid, pos, rescue_pos):
 
         path = await _get_shortest_path(mapId, pos, rescue_pos)
 
-        pprint(path)
+        # pprint(path)
 
         for x, y in path:
             await send(x, y, 0.5)
@@ -145,9 +156,45 @@ async def simulate(mapId, num_emp, num_ert):
     if isinstance(map_arr, HTTPException):
         return map_arr
 
-    emp_coords = rng.choice(np.argwhere(map_arr == 1))
+    # pprint(map_arr)
+    # pprint(map_arr[map_arr > 0])
+    # pprint(np.argwhere(map_arr > 0))
+    valid_idxs = np.argwhere(map_arr > 0)
 
-    pprint(emp_coords)
+    emp_coords = rng.choice(valid_idxs, size=num_emp)
+    ert_coords = rng.choice(valid_idxs, size=num_ert)
+
+    print(emp_coords)
+    print(ert_coords)
+
+    emps = []
+    for i in range(1, num_emp + 1):
+        emps.append(
+            emp_exit(
+                mapId,
+                f"emp{i}",
+                {
+                    "name": f"EMP {i}",
+                    "x": int(emp_coords[i - 1][1]),
+                    "y": int(emp_coords[i - 1][0]),
+                },
+            )
+        )
+
+    erts = []
+    for i in range(1, num_ert + 1):
+        erts.append(
+            emp_exit(
+                mapId,
+                f"ert{i}",
+                {
+                    "name": f"ERT {i}",
+                    "x": int(ert_coords[i - 1][1]),
+                    "y": int(ert_coords[i - 1][0]),
+                },
+            )
+        )
+    await asyncio.gather(*emps, *erts)
 
 
 # async def main():
