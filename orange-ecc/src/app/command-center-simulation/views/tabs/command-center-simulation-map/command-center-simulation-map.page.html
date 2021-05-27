@@ -1,9 +1,22 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>command-center-simulation-map</ion-title>
+    <ion-title>command-center-simulation</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+
+<div>
+    <div>Total number of employees: {{ totalEmpNumber }}</div>
+    <div>Total number of ERTs: {{ totalERTNumber }}</div>
+
+    <div>Number of Incapacitated employees: {{ totalEmpIncapacitated }}</div>
+    <div>Number of Incapacitated ERTs: {{ totalERTIncapacitated }}</div>
+
+    <div>Number of rescued employees: {{ totalEmpExited }}</div>
+    <div>Number of rescued ERTs: {{ totalErtExited }}</div>
+</div>
+
+<canvas id="mapFabricCanvas"></canvas>
 
 </ion-content>
