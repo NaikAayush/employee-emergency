@@ -1,10 +1,135 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>command-center-emergency</ion-title>
+    <ion-title>Command Center Emergency</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
+  <div *ngIf="valid" class="bg-red-500 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between flex-wrap">
+        <div class="w-0 flex-1 flex items-center">
+          <span class="flex p-2 rounded-lg bg-red-500 dark:bg-black">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              class="h-6 w-6 text-white"
+              viewBox="0 0 1792 1792"
+            >
+              <path
+                d="M1024 1375v-190q0-14-9.5-23.5t-22.5-9.5h-192q-13 0-22.5 9.5t-9.5 23.5v190q0 14 9.5 23.5t22.5 9.5h192q13 0 22.5-9.5t9.5-23.5zm-2-374l18-459q0-12-10-19-13-11-24-11h-220q-11 0-24 11-10 7-10 21l17 457q0 10 10 16.5t24 6.5h185q14 0 23.5-6.5t10.5-16.5zm-14-934l768 1408q35 63-2 126-17 29-46.5 46t-63.5 17h-1536q-34 0-63.5-17t-46.5-46q-37-63-2-126l768-1408q17-31 47-49t65-18 65 18 47 49z"
+              ></path>
+            </svg>
+          </span>
+          <p class="ml-3 font-medium text-white truncate">
+            <span class="hidden md:inline"> Emergency is Active </span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div *ngIf="!valid" class="bg-green-500 dark:bg-gray-800">
+    <div class="max-w-7xl mx-auto py-3 px-3 sm:px-6 lg:px-8">
+      <div class="flex items-center justify-between flex-wrap">
+        <div class="w-0 flex-1 flex items-center">
+          <span class="flex p-2 rounded-lg bg-green-500 dark:bg-black">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              width="20"
+              height="20"
+              fill="currentColor"
+              class="h-6 w-6 text-white"
+              viewBox="0 0 1792 1792"
+            >
+              <path d=""></path>
+            </svg>
+          </span>
+          <p class="ml-3 font-medium text-white truncate">
+            <span class="hidden md:inline"> No Emergency. All Good</span>
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="flex flex-row justify-around m-20">
+    <div class="shadow-lg rounded-2xl p-4 py-6 bg-white">
+      <div class="flex flex-col items-center justify-center">
+        <button
+          (click)="startEmergency()"
+          class="
+            w-64
+            h-64
+            bg-red-500
+            hover:bg-red-600
+            active:bg-red-700
+            focus:outline-none
+            rounded-full
+            relative
+            border border-transparent
+            text-2xl
+            font-bold
+            text-white
+          "
+        >
+          START
+        </button>
+      </div>
+    </div>
+
+    <div class="shadow-lg rounded-2xl p-4 py-6 bg-white">
+      <div class="flex flex-col items-center justify-center">
+        <button
+          (click)="stopEmergency()"
+          class="
+            w-64
+            h-64
+            bg-green-500
+            hover:bg-green-600
+            active:bg-green-700
+            focus:outline-none
+            rounded-full
+            relative
+            border border-transparent
+            text-2xl
+            font-bold
+            text-white
+          "
+        >
+          STOP
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div
+    *ngIf="valid"
+    class="
+      p-6
+      bg-white
+      shadow-xl
+      rounded-lg
+      flex flex-col
+      items-center
+      dark:bg-gray-800
+      w-auto
+      m-20
+    "
+  >
+    <div class="flex flex-col items-center">
+      <span class="text-bold text-gray-700 dark:text-gray-400">
+        Time Elapsed
+      </span>
+      <span class="text-yellow-500 text-4xl mt-2 font-black">
+        {{hours}} : {{minutes}} : {{seconds}}
+      </span>
+      <span class="text-gray-700 text-xl mt-2 font-black"> HH : MM : SS </span>
+    </div>
+  </div>
+  <!--   
   <div *ngIf="valid">
     <div class="flex flex-col items-center justify-items-center p-20">
       <p
@@ -77,5 +202,5 @@
     >
       STOP EMERGENCY
     </button>
-  </div>
+  </div> -->
 </ion-content>

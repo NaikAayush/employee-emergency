@@ -10,6 +10,9 @@ import { environment } from 'src/environments/environment';
 })
 export class CommandCenterEmergencyPage implements OnInit {
   timer = 0;
+  hours;
+  minutes;
+  seconds;
   valid = false;
   constructor(private http: HttpClient, private afs: AngularFirestore) {}
 
@@ -21,6 +24,10 @@ export class CommandCenterEmergencyPage implements OnInit {
       console.log(start.timer.seconds);
       const diff = time - start.timer.seconds;
       this.timer = Math.round(diff);
+      this.hours = Math.floor(this.timer / 3600);
+      this.timer %= 3600;
+      this.minutes = Math.floor(this.timer / 60);
+      this.seconds = this.timer % 60;
     });
     // const x: any = await this.fireGet();
     // console.log(x.timer.seconds);
@@ -69,6 +76,7 @@ export class CommandCenterEmergencyPage implements OnInit {
   }
   async stopEmergency() {
     this.valid = false;
+    this.timer = 0;
     return new Promise<any>((resolve, reject) => {
       this.afs
         .collection('timer')
