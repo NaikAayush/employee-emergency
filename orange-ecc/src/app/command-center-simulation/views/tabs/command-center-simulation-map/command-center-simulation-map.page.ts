@@ -10,6 +10,9 @@ import { ChoiceInfo } from '../../../../employee/views/tabs/employee-map/models/
   styleUrls: ['./command-center-simulation-map.page.scss'],
 })
 export class CommandCenterSimulationMapPage implements OnInit {
+  noEmp = 10;
+  noErt = 5;
+  noIncapEmp = 2;
   private canvas: fabric.Canvas;
   uuidMap: string = '45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43';
   // user ids to monitor
@@ -99,7 +102,7 @@ export class CommandCenterSimulationMapPage implements OnInit {
     // this.canvas.width = orig_img.width;
     this.canvas.setDimensions(
       {
-        width: '100%',
+        width: '80%',
         height: '',
       },
       {

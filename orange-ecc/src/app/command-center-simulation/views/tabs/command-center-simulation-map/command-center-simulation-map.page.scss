@@ -1,0 +1,12 @@
+@media screen and (-webkit-min-device-pixel-ratio: 0) {
+  input[type="range"]::-webkit-slider-thumb {
+    width: 20px;
+    -webkit-appearance: none;
+    appearance: none;
+    height: 20px;
+    cursor: ew-resize;
+    background: #fff;
+    box-shadow: -405px 0 0 400px #10b981;
+    border-radius: 50%;
+  }
+}

@@ -4,9 +4,198 @@
   </ion-toolbar>
 </ion-header>
 
-<ion-content>
+<ion-content class="m-10">
+  <div>
+    <div
+      class="
+        flex flex-col
+        justify-around
+        items-center
+        bg-white
+        rounded-lg
+        w-full
+        shadow
+        p-4
+      "
+    >
+      <h1 class="font-bold text-xl text-black dark:text-white mb-10">
+        Simulation
+      </h1>
+      <div class="flex flex-row justify-around items-center w-full">
+        <div>
+          <div
+            class="
+              flex flex-col
+              items-center
+              bg-white
+              rounded-lg
+              w-56
+              shadow
+              p-4
+              m-auto
+            "
+          >
+            <div
+              class="
+                flex flex-col
+                p-2
+                font-bold
+                text-xl text-black
+                dark:text-white
+              "
+            >
+              Employees
+            </div>
+            <div class="flex flex-row items-center">
+              <input
+                class="
+                  rounded-lg
+                  overflow-hidden
+                  appearance-none
+                  bg-green-200
+                  h-4
+                  w-200
+                  m-4
+                "
+                type="range"
+                min="0"
+                max="50"
+                step="5"
+                [(ngModel)]="noEmp"
+              />
+              <span
+                class="font-bold text-md text-black dark:text-white ml-2 w-6"
+                >{{noEmp}}</span
+              >
+            </div>
+          </div>
+        </div>
 
-<div>
+        <div>
+          <div
+            class="
+              flex flex-col
+              items-center
+              bg-white
+              rounded-lg
+              w-56
+              shadow
+              p-4
+              m-auto
+            "
+          >
+            <div
+              class="
+                flex flex-col
+                p-2
+                font-bold
+                text-xl text-black
+                dark:text-white
+              "
+            >
+              ERTs
+            </div>
+            <div class="flex flex-row items-center">
+              <input
+                class="
+                  rounded-lg
+                  overflow-hidden
+                  appearance-none
+                  bg-green-200
+                  h-4
+                  w-200
+                  m-4
+                "
+                type="range"
+                min="0"
+                max="20"
+                step="5"
+                [(ngModel)]="noErt"
+              />
+              <span
+                class="font-bold text-md text-black dark:text-white ml-2 w-6"
+                >{{noErt}}</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <div>
+          <div
+            class="
+              flex flex-col
+              items-center
+              bg-white
+              rounded-lg
+              w-56
+              shadow
+              p-4
+              m-auto
+            "
+          >
+            <div
+              class="
+                flex flex-col
+                p-2
+                text-center
+                font-bold
+                text-xl text-black
+                dark:text-white
+              "
+            >
+              Immobilized
+            </div>
+            <div class="flex flex-row items-center">
+              <input
+                class="
+                  rounded-lg
+                  overflow-hidden
+                  appearance-none
+                  bg-green-200
+                  h-4
+                  w-200
+                  m-4
+                "
+                type="range"
+                min="0"
+                max="20"
+                step="5"
+                [(ngModel)]="noIncapEmp"
+              />
+              <span
+                class="font-bold text-md text-black dark:text-white ml-2 w-6"
+                >{{noIncapEmp}}</span
+              >
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="
+            py-2
+            px-4
+            bg-indigo-600
+            hover:bg-indigo-700
+            focus:ring-indigo-500 focus:ring-offset-indigo-200
+            text-white
+            w-min
+            h-10
+            transition
+            ease-in
+            duration-200
+            text-center text-base
+            font-semibold
+            shadow-md
+            focus:outline-none
+            focus:ring-2 focus:ring-offset-2
+            rounded-lg
+          "
+        >
+          Simulate
+        </button>
+      </div>
+    </div>
     <div>Total number of employees: {{ totalEmpNumber }}</div>
     <div>Total number of ERTs: {{ totalERTNumber }}</div>
 
@@ -15,8 +204,8 @@
 
     <div>Number of rescued employees: {{ totalEmpExited }}</div>
     <div>Number of rescued ERTs: {{ totalErtExited }}</div>
-</div>
-
-<canvas id="mapFabricCanvas"></canvas>
-
+  </div>
+  <div class="flex flex-col items-center">
+    <canvas id="mapFabricCanvas"></canvas>
+  </div>
 </ion-content>
