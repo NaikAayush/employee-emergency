@@ -13,7 +13,7 @@ import { EmployeeMapPage } from './employee-map.page';
     CommonModule,
     FormsModule,
     IonicModule,
-    EmployeeMapPageRoutingModule
+    EmployeeMapPageRoutingModule,
   ],
   declarations: [EmployeeMapPage]
 })

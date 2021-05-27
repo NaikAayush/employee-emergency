@@ -24,6 +24,7 @@ import { CameraPreview } from '@ionic-native/camera-preview/ngx';
 
 import { HttpClientModule } from '@angular/common/http';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
+import { Geofence } from '@ionic-native/geofence/ngx';
 
 @NgModule({
   declarations: [AppComponent],
@@ -49,6 +50,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
     SplashScreen,
     StatusBar,
     CameraPreview,
+    Geofence
   ],
   bootstrap: [AppComponent],
 })

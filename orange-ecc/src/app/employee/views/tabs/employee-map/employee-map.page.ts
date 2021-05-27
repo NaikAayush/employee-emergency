@@ -1,5 +1,6 @@
 import { Component, ChangeDetectorRef, Input } from '@angular/core';
 import { IBeacon, IBeaconPluginResult } from '@ionic-native/ibeacon/ngx';
+import { Geofence } from '@ionic-native/geofence/ngx';
 import { Platform } from '@ionic/angular';
 import {
   WifiScanResultsOptions,
@@ -115,6 +116,9 @@ export class EmployeeMapPage {
     private magnetometer: Magnetometer,
     private deviceOrientation: DeviceOrientation,
 
+    // geofence
+    private geofence: Geofence,
+
     // trilateration
     private trilateration: TrilaterationService,
     // ws
@@ -135,6 +139,13 @@ export class EmployeeMapPage {
     //////////////////////////////////////////////
     this.handleSubmitClick(this.uuidMap);
     this.getDirection();
+
+    // initialize the plugin
+    geofence.initialize().then(
+      // resolved promise does not return a value
+      () => console.log('Geofence Plugin Ready'),
+      (err) => console.log(err)
+    )
   }
 
   ngOnInit() {
@@ -170,12 +181,32 @@ export class EmployeeMapPage {
     // download nav icon
     this.navIcon = new Image();
     this.navIcon.src = this.navIconSrc;
+
+    //options describing geofence
+    let fence = {
+      id: '69ca1b88-6fbe-4e80-a4d4-ff4d3748acdb', //any unique ID
+      latitude: 37.285951, //center of geofence radius
+      longitude: -121.936650,
+      radius: 100, //radius to edge of geofence in meters
+      transitionType: 3, //see 'Transition Types' below
+      notification: { //notification settings
+        id: 1, //any unique ID
+        title: 'You crossed a fence', //notification title
+        text: 'You just arrived to yush home.', //notification body
+        openAppOnClick: true //open app when notification is tapped
+      }
+    }
+
+    this.geofence.addOrUpdate(fence).then(
+      () => console.log('Geofence added'),
+      (err) => console.log('Geofence failed to add', err)
+    );
   }
 
   async getDirection() {
     this.deviceOrientation.getCurrentHeading().then(
       (data: DeviceOrientationCompassHeading) => {
-        console.log(data);
+        // console.log(data);
       },
       (error: any) => console.log(error)
     );
@@ -186,7 +217,7 @@ export class EmployeeMapPage {
       .subscribe((data: DeviceOrientationCompassHeading) => {
         this.headingAngle = data.magneticHeading;
         if (this.drawnCurrentLocation) {
-          console.log(this.headingAngle);
+          // console.log(this.headingAngle);
           this.drawnCurrentLocation.angle = this.headingAngle;
           // this.drawnCurrentLocation.setAngle(this.headingAngle);
           this.drawnCurrentLocation.setCoords();
@@ -198,7 +229,7 @@ export class EmployeeMapPage {
         // this.drawnCurrentLocation.setAngle(this.headingAngle);
         // this.drawnCurrentLocation.setCoords();
         // this.canvas.requestRenderAll();
-        console.log(data);
+        // console.log(data);
       });
   }
 
@@ -302,8 +333,8 @@ export class EmployeeMapPage {
             return a.accuracy > b.accuracy
               ? -1
               : a.accuracy < b.accuracy
-              ? 1
-              : 0;
+                ? 1
+                : 0;
           });
           const beaconData3 = beaconData2.slice(0, 3);
 
