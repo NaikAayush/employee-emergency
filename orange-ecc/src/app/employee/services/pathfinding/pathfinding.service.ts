@@ -25,6 +25,8 @@ export class PathfindingService {
   // uuid
   public uuidMap: string;
 
+  public scale = 5;
+
   origImg: HTMLImageElement;
 
   constructor(private firestore: AngularFirestore, private storage: AngularFireStorage) {
@@ -107,6 +109,8 @@ export class PathfindingService {
 
     this.exits = data.exits;
     console.log(this.exits);
+
+    this.scale = this.origImg.height / this.imgMatrix.length;
   }
 
   async getPath(curpos: Point, targets: Point[], flipTarget = true, scaleTarget = false, getMinTarget = false) {

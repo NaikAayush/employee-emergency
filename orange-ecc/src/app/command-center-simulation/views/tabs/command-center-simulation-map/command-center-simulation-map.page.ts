@@ -13,11 +13,24 @@ export class CommandCenterSimulationMapPage implements OnInit {
   private canvas: fabric.Canvas;
   uuidMap: string = '45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43';
   // user ids to monitor
-  userIds: string[] = ['emp1', 'emp2', 'emp3', 'emp4', 'ert1', 'ert2', 'ert3'];
+  userIds: string[] = [
+    'emp1',
+    'emp2',
+    'emp3',
+    'emp4',
+    'emp5',
+    'emp6',
+    'emp7',
+    'ert1',
+    'ert2',
+    'ert3',
+    'ert4',
+    'ert5',
+  ];
 
   // stats
-  totalEmpNumber = 4;
-  totalERTNumber = 3;
+  totalEmpNumber = 5;
+  totalERTNumber = 5;
 
   totalEmpIncapacitated = 0;
   totalERTIncapacitated = 0;
