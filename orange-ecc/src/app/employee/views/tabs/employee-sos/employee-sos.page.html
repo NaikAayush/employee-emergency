@@ -5,9 +5,9 @@
 </ion-header>
 
 <ion-content>
-  <div class="h-full flex flex-col items-center justify-items-center">
+  <div class="h-full flex flex-col items-center justify-between">
     <button
-      (click)="presentToast()"
+      (click)="sos()"
       class="
         inline-flex
         items-center
@@ -27,8 +27,35 @@
     >
       SOS
     </button>
-    <p class="mt-10 max-w-2xl text-xl text-gray-500 lg:mx-auto">
+    <p class="mt-10 max-w-2xl text-xl text-center text-gray-500 lg:mx-auto">
       Call for help
     </p>
+    <button
+      (click)="safe()"
+      type="button"
+      class="
+        py-2
+        px-4
+        flex
+        justify-center
+        items-center
+        h-1/4
+        bg-green-600
+        hover:bg-green-700
+        focus:ring-green-500 focus:ring-offset-green-200
+        text-white
+        w-full
+        transition
+        ease-in
+        duration-200
+        text-center text-base
+        font-semibold
+        shadow-md
+        focus:outline-none
+        focus:ring-2 focus:ring-offset-2
+      "
+    >
+      Mark as Safe
+    </button>
   </div>
 </ion-content>

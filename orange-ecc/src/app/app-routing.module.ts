@@ -8,6 +8,16 @@ const routes: Routes = [
     pathMatch: 'full',
   },
   {
+    path: 'ert',
+    redirectTo: 'ert/login',
+    pathMatch: 'full',
+  },
+  {
+    path: 'employee',
+    redirectTo: 'employee/login',
+    pathMatch: 'full',
+  },
+  {
     path: 'employee',
     loadChildren: () =>
       import('./employee/employee.module').then((m) => m.EmployeePageModule),

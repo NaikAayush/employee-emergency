@@ -11,9 +11,16 @@ export class EmployeeSosPage implements OnInit {
 
   ngOnInit() {}
 
-  async presentToast() {
+  async sos() {
+    await this.presentToast('ERT has been alerted! Please stay calm');
+  }
+  async safe() {
+    await this.presentToast('You have been marked as safe');
+  }
+
+  async presentToast(msg) {
     const toast = await this.toastController.create({
-      message: 'ERT has been alerted! Please stay calm',
+      message: msg,
       duration: 5000,
     });
     toast.present();
