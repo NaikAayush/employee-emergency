@@ -172,7 +172,6 @@ export class CommandCenterUploadMapComponent implements OnInit {
   handleFileInput(target: any) {
     this.view = true;
     this.mapId = uuidv4();
-    console.log("map uuid", this.mapId);
     this.mapDoc = this.firestore.doc<MapInfo>('map/' + this.mapId);
 
     let files: FileList = target.files as FileList;

@@ -11,19 +11,9 @@ import { environment } from 'src/environments/environment';
 })
 export class CommandCenterMapPage implements OnInit {
   private canvas: fabric.Canvas;
-  uuidMap: string = '45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43';
+  uuidMap: string = 'a246ddf4-3ded-49b9-bacf-fbf7b700e49e';
   // user ids to monitor
-  userIds: string[] = ['emp1', 'emp2', 'emp3', 'emp4', 'ert1', 'ert2', 'ert3'];
-
-  // stats
-  totalEmpNumber = 4;
-  totalERTNumber = 3;
-
-  totalEmpIncapacitated = 0;
-  totalERTIncapacitated = 0;
-
-  totalEmpExited = 0;
-  totalErtExited = 0;
+  userIds: string[] = ["592s1XmfNwYujg7Y1thbkDyOTZf2", "brr", "LxhvXHuCJxUXITPfzmYAnKJb6uf2", "abc"];
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -49,21 +39,12 @@ export class CommandCenterMapPage implements OnInit {
 
   // user markers
   private userMarkers: Record<string, fabric.Group>;
-  // to check if an employee is stuck
-  private lastChanged: Record<string, number> = {};
-  private exited: Record<string, boolean> = {};
 
   constructor(private pathfinding: PathfindingService) {
     this.userMarkers = {};
   }
 
   async ngOnInit() {
-    // setup last changed
-    this.userIds.forEach((uid) => {
-      this.lastChanged[uid] = new Date().getTime();
-      this.exited[uid] = false;
-    });
-
     // initialize canvas
     this.canvas = new fabric.Canvas('mapFabricCanvas');
     this.canvas.selection = false;
@@ -111,65 +92,6 @@ export class CommandCenterMapPage implements OnInit {
     this.addMarkers();
 
     this.startMonitoring();
-
-    setInterval(() => {
-      let empIncap = 0;
-      let ertIncap = 0;
-      let empExited = 0;
-      let ertExited = 0;
-
-      Object.entries(this.lastChanged).forEach(([key, value]) => {
-        const curTime = new Date().getTime();
-
-        if (this.exited[key]) {
-          if (key.startsWith('emp')) {
-            empExited++;
-          } else if (key.startsWith('ert')) {
-            ertExited++;
-          }
-        }
-
-        if (curTime - value > 5000 && !this.exited[key]) {
-          console.log('panikk emp is stuck', key);
-
-          if (key.startsWith('emp')) {
-            empIncap++;
-          } else if (key.startsWith('ert')) {
-            ertIncap++;
-          }
-
-          // fabric.util.animateColor("black", "red");
-          this.userMarkers[key].animate(
-            { scaleX: 2, scaleY: 2, fill: 'red' },
-            {
-              duration: 500,
-              onChange: this.canvas.requestRenderAll.bind(this.canvas),
-            }
-          );
-
-          // this.userMarkers[key].add(new fabric.Text("INCAPACITATED", {
-          //   fontSize: 5,
-          //   originY: "center",
-          //   originX: "center"
-          // }));
-        } else {
-          this.userMarkers[key].animate(
-            { scaleX: 1, scaleY: 1 },
-            {
-              duration: 500,
-              onChange: this.canvas.requestRenderAll.bind(this.canvas),
-            }
-          );
-          // console.log("size", this.userMarkers[key].size());
-        }
-      });
-
-      this.totalEmpIncapacitated = empIncap;
-      this.totalERTIncapacitated = ertIncap;
-
-      this.totalEmpExited = empExited;
-      this.totalErtExited = ertExited;
-    }, 2000);
   }
 
   private addMarkers() {
@@ -178,7 +100,7 @@ export class CommandCenterMapPage implements OnInit {
       .toPromise()
       .then(async (res) => {
         const mapData = res.data();
-        // console.log(mapData);
+        console.log(mapData);
 
         for (let marker of mapData.markers) {
           let iconImg = new fabric.Image(this.choicesInfo[marker.name].iconEl, {
@@ -196,111 +118,64 @@ export class CommandCenterMapPage implements OnInit {
 
   private startMonitoring() {
     this.userIds.forEach((uid) => {
-      const listenWs = new WebSocket(
-        `${environment.wsEndpoint}listen?id=${uid}`
-      );
+      const listenWs = new WebSocket(`${environment.wsEndpoint}listen?id=${uid}`);
 
-      listenWs.addEventListener('open', function () {
+      listenWs.addEventListener('open', function() {
         listenWs.send('Hello Server!');
       });
 
       listenWs.addEventListener('message', (event) => {
         try {
           let data = JSON.parse(event.data);
-
-          const x = data.x - 5;
-          const y = data.y - 5;
-
-          let exited = false;
-          for (let exit of this.pathfinding.exits) {
-            if (
-              Math.abs(exit.y * this.pathfinding.scale - x) < 50 &&
-              Math.abs(exit.x * this.pathfinding.scale - y) < 50
-            ) {
-              exited = true;
-              break;
-            }
-          }
-          this.exited[uid] = exited;
+          console.log('Message from server ', data);
 
           if (this.userMarkers[uid]) {
-            // this.userMarkers[uid].animate('left', x, {
-            //   duration: 500,
-            //   onChange: this.canvas.requestRenderAll.bind(this.canvas),
-            //   easing: fabric.util.ease.easeInQuad,
+            console.log("found");
+            // this.userMarkers[uid].set({
+            //   // left: data.x,
+            //   top: data.y,
             // });
 
-            // this.userMarkers[uid].animate('top', y, {
-            //   duration: 500,
-            //   onChange: this.canvas.requestRenderAll.bind(this.canvas),
-            //   easing: fabric.util.ease.easeInQuad,
-            // });
+            fabric.util.animate({ startValue: this.userMarkers[uid].left, endValue: data.x, onChange: (val) => { this.userMarkers[uid].left = val; this.userMarkers[uid].setCoords(); this.canvas.renderAll(); } });
 
-            this.userMarkers[uid].animate(
-              { left: x, top: y },
-              {
-                duration: 500,
-                onChange: this.canvas.requestRenderAll.bind(this.canvas),
-                easing: fabric.util.ease.easeInQuad,
-              }
-            );
+            fabric.util.animate({ startValue: this.userMarkers[uid].top, endValue: data.y, onChange: (val) => { this.userMarkers[uid].top = val; this.userMarkers[uid].setCoords(); this.canvas.renderAll(); } });
 
-            if (
-              Math.abs(this.userMarkers[uid].left - x) > 1 ||
-              Math.abs(this.userMarkers[uid].top - y) > 1
-            ) {
-              this.lastChanged[uid] = new Date().getTime();
-            }
+            // this.userMarkers[uid].setCoords();
+            // this.canvas.renderAll();
           } else {
-            this.lastChanged[uid] = new Date().getTime();
-            let color = 'black';
+            let color = "red";
 
             if (data.ert) {
-              color = 'purple';
+              color = "blue";
             }
 
             let reect = new fabric.Rect({
               height: 10,
-              width: 17,
+              width: 10,
               fill: color,
-              originX: 'center',
-              originY: 'center',
-              shadow: new fabric.Shadow({
-                color: 'rgba(0,0,0,0.3)',
-                offsetX: 1,
-                offsetY: 1,
-                blur: 5,
-              }),
+              originX: "center",
+              originY: "center"
             });
             let text = new fabric.Text(data.name, {
-              fontSize: 7,
-              top: 0,
-              originX: 'center',
-              originY: 'center',
-              fill: 'white',
-              shadow: new fabric.Shadow({
-                color: 'rgba(0,0,0,0.3)',
-                offsetX: 1,
-                offsetY: 1,
-                blur: 5,
-              }),
-              cornerSize: 1,
-              backgroundColor: color,
-              fontWeight: 'bold',
+              fontSize: 10,
+              top: 10,
+              originX: "center",
+              originY: "center"
             });
 
             this.userMarkers[uid] = new fabric.Group([reect, text], {
-              left: x,
-              top: y,
-              selectable: false,
+              left: data.x,
+              top: data.y,
+              selectable: false
             });
 
             this.canvas.add(this.userMarkers[uid]);
           }
         } catch (error) {
-          console.log('Bad data from WS');
+          console.log('Bad data from WS', error);
         }
       });
     });
   }
+
 }
