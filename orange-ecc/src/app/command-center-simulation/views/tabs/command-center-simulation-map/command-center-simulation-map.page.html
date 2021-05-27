@@ -6,6 +6,7 @@
 
 <ion-content class="m-10">
   <div>
+    <!-- Sliders Start -->
     <div
       class="
         flex flex-col
@@ -196,16 +197,238 @@
         </button>
       </div>
     </div>
-    <div>Total number of employees: {{ totalEmpNumber }}</div>
+    <!-- Sliders End -->
+    <!-- Dashboard Start -->
+    <div class="flex flex-row justify-around mt-6">
+      <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+        <div class="flex items-center">
+          <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+            Number of total employees
+          </p>
+        </div>
+        <div class="flex flex-col justify-start">
+          <p
+            class="
+              text-gray-800 text-4xl text-center
+              dark:text-white
+              font-bold
+              my-4
+            "
+          >
+            {{totalEmpNumber}}
+          </p>
+          <input
+            class="
+              aa
+              rounded-lg
+              overflow-hidden
+              appearance-none
+              bg-green-200
+              h-4
+              w-200
+              m-4
+            "
+            type="range"
+            min="0"
+            max="50"
+            step="5"
+            [(ngModel)]="totalEmpNumber"
+          />
+        </div>
+      </div>
+      <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+        <div class="flex items-center">
+          <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+            Number of total ERTs present
+          </p>
+        </div>
+        <div class="flex flex-col justify-start">
+          <p
+            class="
+              text-gray-800 text-4xl text-center
+              dark:text-white
+              font-bold
+              my-4
+            "
+          >
+            {{totalERTNumber}}
+          </p>
+          <input
+            class="
+              aa
+              rounded-lg
+              overflow-hidden
+              appearance-none
+              bg-green-200
+              h-4
+              w-200
+              m-4
+            "
+            type="range"
+            min="0"
+            max="50"
+            step="5"
+            [(ngModel)]="totalERTNumber"
+            disabled
+          />
+        </div>
+      </div>
+      <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+        <div class="flex items-center">
+          <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+            Number of Incapacitated employees
+          </p>
+        </div>
+        <div class="flex flex-col justify-start">
+          <p
+            class="
+              text-gray-800 text-4xl text-center
+              dark:text-white
+              font-bold
+              my-4
+            "
+          >
+            {{totalEmpIncapacitated}}
+          </p>
+          <input
+            class="
+              aa
+              rounded-lg
+              overflow-hidden
+              appearance-none
+              bg-green-200
+              h-4
+              w-200
+              m-4
+            "
+            type="range"
+            min="0"
+            max="50"
+            step="5"
+            [(ngModel)]="totalEmpIncapacitated"
+          />
+        </div>
+      </div>
+      <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+        <div class="flex items-center">
+          <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+            Number of Incapacitated ERTs
+          </p>
+        </div>
+        <div class="flex flex-col justify-start">
+          <p
+            class="
+              text-gray-800 text-4xl text-center
+              dark:text-white
+              font-bold
+              my-4
+            "
+          >
+            {{totalERTIncapacitated}}
+          </p>
+          <input
+            class="
+              aa
+              rounded-lg
+              overflow-hidden
+              appearance-none
+              bg-green-200
+              h-4
+              w-200
+              m-4
+            "
+            type="range"
+            min="0"
+            max="50"
+            step="5"
+            [(ngModel)]="totalERTIncapacitated"
+          />
+        </div>
+      </div>
+      <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+        <div class="flex items-center">
+          <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+            Number of rescued employees
+          </p>
+        </div>
+        <div class="flex flex-col justify-start">
+          <p
+            class="
+              text-gray-800 text-4xl text-center
+              dark:text-white
+              font-bold
+              my-4
+            "
+          >
+            {{totalEmpExited}}
+          </p>
+          <input
+            class="
+              aa
+              rounded-lg
+              overflow-hidden
+              appearance-none
+              bg-green-200
+              h-4
+              w-200
+              m-4
+            "
+            type="range"
+            min="0"
+            max="50"
+            step="5"
+            [(ngModel)]="totalEmpExited"
+          />
+        </div>
+      </div>
+      <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+        <div class="flex items-center">
+          <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+            Number of total rescued ERTs
+          </p>
+        </div>
+        <div class="flex flex-col justify-start">
+          <p
+            class="
+              text-gray-800 text-4xl text-center
+              dark:text-white
+              font-bold
+              my-4
+            "
+          >
+            {{totalErtExited}}
+          </p>
+          <input
+            class="
+              aa
+              rounded-lg
+              overflow-hidden
+              appearance-none
+              bg-green-200
+              h-4
+              w-200
+              m-4
+            "
+            type="range"
+            min="0"
+            max="50"
+            step="5"
+            [(ngModel)]="totalErtExited"
+          />
+        </div>
+      </div>
+    </div>
+    <!-- Dashboard End -->
+    <!-- <div>Total number of employees: {{ totalEmpNumber }}</div>
     <div>Total number of ERTs: {{ totalERTNumber }}</div>
 
     <div>Number of Incapacitated employees: {{ totalEmpIncapacitated }}</div>
     <div>Number of Incapacitated ERTs: {{ totalERTIncapacitated }}</div>
 
     <div>Number of rescued employees: {{ totalEmpExited }}</div>
-    <div>Number of rescued ERTs: {{ totalErtExited }}</div>
+    <div>Number of rescued ERTs: {{ totalErtExited }}</div> -->
   </div>
-  <div class="flex flex-col items-center">
+  <div class="flex flex-col items-center mt-10">
     <canvas id="mapFabricCanvas"></canvas>
   </div>
 </ion-content>
