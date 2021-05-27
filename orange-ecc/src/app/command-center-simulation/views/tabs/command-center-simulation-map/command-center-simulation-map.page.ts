@@ -152,12 +152,15 @@ export class CommandCenterSimulationMapPage implements OnInit {
 
           // fabric.util.animateColor("black", "red");
           this.userMarkers[key].animate(
-            { scaleX: 2, scaleY: 2, fill: 'red' },
+            { scaleX: 2, scaleY: 2 },
             {
               duration: 500,
               onChange: this.canvas.requestRenderAll.bind(this.canvas),
             }
           );
+          if (key.startsWith('emp')) {
+            this.userMarkers[key].getObjects()[1].backgroundColor = "red";
+          }
 
           // this.userMarkers[key].add(new fabric.Text("INCAPACITATED", {
           //   fontSize: 5,
@@ -172,6 +175,10 @@ export class CommandCenterSimulationMapPage implements OnInit {
               onChange: this.canvas.requestRenderAll.bind(this.canvas),
             }
           );
+          if (key.startsWith('emp')) {
+            const objs = this.userMarkers[key].getObjects();
+            objs[1].backgroundColor = objs[0].fill as string;
+          }
           // console.log("size", this.userMarkers[key].size());
         }
       });
@@ -183,10 +190,36 @@ export class CommandCenterSimulationMapPage implements OnInit {
       this.totalErtExited = ertExited;
     }, 2000);
 
-    this.setupSimulation(this.noEmp, this.noErt, this.noIncapEmp);
+    // this.setupSimulation(this.noEmp, this.noErt, this.noIncapEmp);
   }
 
   setupSimulation(numEmp: number, numErt: number, numEmpImm: number) {
+    this.totalEmpNumber = numEmp + numEmpImm;
+    this.totalERTNumber = numErt;
+
+    this.totalERTIncapacitated = 0;
+    this.totalEmpIncapacitated = 0;
+
+    this.totalEmpExited = 0;
+    this.totalErtExited = 0;
+
+    const userIds = [];
+    for (let i = 1; i <= this.totalEmpNumber; ++i) {
+      userIds.push(`emp${i}`);
+    }
+    for (let i = 1; i <= this.totalERTNumber; ++i) {
+      userIds.push(`ert${i}`);
+    }
+
+    for (let uid of this.userIds) {
+      this.canvas.remove(this.userMarkers[uid]);
+    }
+
+    this.userMarkers = {}
+    this.userIds = userIds;
+
+    console.log("Monitoring UIDs", this.userIds);
+
     // setup last changed
     this.userIds.forEach((uid) => {
       this.lastChanged[uid] = new Date().getTime();
@@ -252,8 +285,8 @@ export class CommandCenterSimulationMapPage implements OnInit {
           let exited = false;
           for (let exit of this.pathfinding.exits) {
             if (
-              Math.abs(exit.y * this.pathfinding.scale - x) < 50 &&
-              Math.abs(exit.x * this.pathfinding.scale - y) < 50
+              Math.abs(exit.y * this.pathfinding.scale - x) < 20 &&
+              Math.abs(exit.x * this.pathfinding.scale - y) < 20
             ) {
               exited = true;
               break;
@@ -277,7 +310,7 @@ export class CommandCenterSimulationMapPage implements OnInit {
             this.userMarkers[uid].animate(
               { left: x, top: y },
               {
-                duration: 500,
+                duration: 200,
                 onChange: this.canvas.requestRenderAll.bind(this.canvas),
                 easing: fabric.util.ease.easeInQuad,
               }
