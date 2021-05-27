@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 export class AppComponent {
   public appPages = [
     { title: 'Command Center', url: '/cc', icon: 'business' },
+    { title: 'Simulation', url: '/cc-sim', icon: 'pulse' },
     { title: 'ERT', url: '/ert', icon: 'people' },
     { title: 'Employee', url: '/employee', icon: 'body' },
     { title: 'Employee Tabs', url: '/employee/employee-tabs', icon: 'body' },

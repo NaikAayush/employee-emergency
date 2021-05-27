@@ -40,6 +40,13 @@ const routes: Routes = [
     loadChildren: () =>
       import('./test/test.module').then((m) => m.TestPageModule),
   },
+  {
+    path: 'cc-sim',
+    loadChildren: () =>
+      import(
+        './command-center-simulation/command-center-simulation.module'
+      ).then((m) => m.CommandCenterSimulationPageModule),
+  },
 ];
 
 @NgModule({
