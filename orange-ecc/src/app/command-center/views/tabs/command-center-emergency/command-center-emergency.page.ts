@@ -14,6 +14,8 @@ export class CommandCenterEmergencyPage implements OnInit {
   minutes;
   seconds;
   valid = false;
+  charlie;
+  charlieA;
   constructor(private http: HttpClient, private afs: AngularFirestore) {}
 
   async ngOnInit() {
@@ -28,6 +30,10 @@ export class CommandCenterEmergencyPage implements OnInit {
       this.timer %= 3600;
       this.minutes = Math.floor(this.timer / 60);
       this.seconds = this.timer % 60;
+      this.charlie = await this.fireGetERTCharlie();
+      this.charlieA = this.charlie.availability;
+      console.log(this.charlie);
+      console.log(this.charlieA);
     });
     // const x: any = await this.fireGet();
     // console.log(x.timer.seconds);
@@ -41,8 +47,34 @@ export class CommandCenterEmergencyPage implements OnInit {
         {
           to: environment.FCMToken,
           notification: {
+            body: 'Attention ERT, Mark your availability!',
+            title: 'Emergency Activated!',
+            click_action: 'FCM_PLUGIN_ACTIVITY',
+          },
+          data: {
+            type: 'ert',
+          },
+        },
+        {
+          headers: {
+            Authorization: environment.AuthToken,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .toPromise();
+    await this.http
+      .post(
+        'https://fcm.googleapis.com/fcm/send',
+        {
+          to: environment.FCMToken,
+          notification: {
             body: 'Please use the app to vacate the office area quickly',
             title: 'Emergency Activated!',
+            click_action: 'FCM_PLUGIN_ACTIVITY',
+          },
+          data: {
+            type: 'employee',
           },
         },
         {
@@ -67,6 +99,12 @@ export class CommandCenterEmergencyPage implements OnInit {
           (err) => reject(err)
         );
     });
+  }
+
+  async fireGetERTCharlie() {
+    return await (
+      await this.afs.collection('ert').doc('charlie').get().toPromise()
+    ).data();
   }
 
   async fireGet() {

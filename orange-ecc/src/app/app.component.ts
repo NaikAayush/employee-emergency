@@ -50,7 +50,11 @@ export class AppComponent {
         console.log(data);
         if (data.wasTapped) {
           if (data.type == 'ert') {
-            this.router.navigateByUrl('/ert/ert-tabs');
+            this.router.navigateByUrl('/ert/ert-tabs/ert/ert-tabs/status');
+          } else {
+            this.router.navigateByUrl(
+              '/employee/employee-tabs/employee/employee-tabs/map'
+            );
           }
 
           console.log('Received in background');

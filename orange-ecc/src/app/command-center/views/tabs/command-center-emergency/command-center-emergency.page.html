@@ -142,16 +142,7 @@
         overflow-hidden
       "
     >
-      <p
-        class="
-          text-gray-600
-          font-light
-          dark:text-white
-          text-xl
-          font-medium
-          mb-6
-        "
-      >
+      <p class="text-gray-600 dark:text-white text-xl font-medium mb-6">
         ERT Status
       </p>
       <div class="grid grid-cols-3 gap-4">
@@ -164,16 +155,17 @@
                 class="mx-auto object-cover rounded-full h-10 w-10"
               />
             </a>
-            <svg
+            <img
+              *ngIf="charlieA"
+              src="assets/ert-status/correct.png"
               width="10"
               height="10"
-              fill="currentColor"
               class="
                 fill-current
                 text-white
                 bg-blue-600
                 rounded-full
-                p-1
+                p-0
                 absolute
                 bottom-0
                 right-0
@@ -182,13 +174,27 @@
                 -mx-1
                 -my-1
               "
-              viewBox="0 0 1792 1792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z"
-              ></path>
-            </svg>
+            />
+            <img
+              *ngIf="!charlieA"
+              src="assets/ert-status/wrong.png"
+              width="10"
+              height="10"
+              class="
+                fill-current
+                text-white
+                bg-blue-600
+                rounded-full
+                p-0
+                absolute
+                bottom-0
+                right-0
+                w-4
+                h-4
+                -mx-1
+                -my-1
+              "
+            />
           </div>
           <span class="text-gray-600 dark:text-gray-400 text-xs mt-2">
             Charlie R
@@ -203,16 +209,16 @@
                 class="mx-auto object-cover rounded-full h-10 w-10"
               />
             </a>
-            <svg
+            <img
+              src="assets/ert-status/wrong.png"
               width="10"
               height="10"
-              fill="currentColor"
               class="
                 fill-current
                 text-white
                 bg-blue-600
                 rounded-full
-                p-1
+                p-0
                 absolute
                 bottom-0
                 right-0
@@ -221,13 +227,7 @@
                 -mx-1
                 -my-1
               "
-              viewBox="0 0 1792 1792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z"
-              ></path>
-            </svg>
+            />
           </div>
           <span class="text-gray-600 dark:text-gray-400 text-xs mt-2">
             Bilal Ouid
@@ -242,16 +242,16 @@
                 class="mx-auto object-cover rounded-full h-10 w-10"
               />
             </a>
-            <svg
+            <img
+              src="assets/ert-status/wrong.png"
               width="10"
               height="10"
-              fill="currentColor"
               class="
                 fill-current
                 text-white
                 bg-blue-600
                 rounded-full
-                p-1
+                p-0
                 absolute
                 bottom-0
                 right-0
@@ -260,13 +260,7 @@
                 -mx-1
                 -my-1
               "
-              viewBox="0 0 1792 1792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z"
-              ></path>
-            </svg>
+            />
           </div>
           <span class="text-gray-600 dark:text-gray-400 text-xs mt-2">
             Aschi Ish
@@ -281,16 +275,16 @@
                 class="mx-auto object-cover rounded-full h-10 w-10"
               />
             </a>
-            <svg
+            <img
+              src="assets/ert-status/wrong.png"
               width="10"
               height="10"
-              fill="currentColor"
               class="
                 fill-current
                 text-white
                 bg-blue-600
                 rounded-full
-                p-1
+                p-0
                 absolute
                 bottom-0
                 right-0
@@ -299,13 +293,7 @@
                 -mx-1
                 -my-1
               "
-              viewBox="0 0 1792 1792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z"
-              ></path>
-            </svg>
+            />
           </div>
           <span class="text-gray-600 dark:text-gray-400 text-xs mt-2">
             Babet Cla
@@ -320,16 +308,16 @@
                 class="mx-auto object-cover rounded-full h-10 w-10"
               />
             </a>
-            <svg
+            <img
+              src="assets/ert-status/wrong.png"
               width="10"
               height="10"
-              fill="currentColor"
               class="
                 fill-current
                 text-white
                 bg-blue-600
                 rounded-full
-                p-1
+                p-0
                 absolute
                 bottom-0
                 right-0
@@ -338,13 +326,7 @@
                 -mx-1
                 -my-1
               "
-              viewBox="0 0 1792 1792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z"
-              ></path>
-            </svg>
+            />
           </div>
           <span class="text-gray-600 dark:text-gray-400 text-xs mt-2">
             Luc Suro
@@ -359,16 +341,16 @@
                 class="mx-auto object-cover rounded-full h-10 w-10"
               />
             </a>
-            <svg
+            <img
+              src="assets/ert-status/wrong.png"
               width="10"
               height="10"
-              fill="currentColor"
               class="
                 fill-current
                 text-white
                 bg-blue-600
                 rounded-full
-                p-1
+                p-0
                 absolute
                 bottom-0
                 right-0
@@ -377,13 +359,7 @@
                 -mx-1
                 -my-1
               "
-              viewBox="0 0 1792 1792"
-              xmlns="http://www.w3.org/2000/svg"
-            >
-              <path
-                d="M1671 566q0 40-28 68l-724 724-136 136q-28 28-68 28t-68-28l-136-136-362-362q-28-28-28-68t28-68l136-136q28-28 68-28t68 28l294 295 656-657q28-28 68-28t68 28l136 136q28 28 28 68z"
-              ></path>
-            </svg>
+            />
           </div>
           <span class="text-gray-600 dark:text-gray-400 text-xs mt-2">
             John Jan
