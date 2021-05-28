@@ -32,6 +32,8 @@ import { TrilaterationService } from 'src/app/employee/services/trilateration/tr
 import { WebsocketService } from 'src/app/employee/services/websocket/websocket.service';
 import { WebSocketSubject } from 'rxjs/webSocket';
 import { PathfindingService } from 'src/app/employee/services/pathfinding/pathfinding.service';
+import { ToastController } from '@ionic/angular';
+import { Geolocation } from '@ionic-native/geolocation/ngx';
 
 @Component({
   selector: 'app-employee-map',
@@ -42,12 +44,15 @@ export class EmployeeMapPage {
   data;
   beaconListData: MarkerInfo[] = [];
   mainBeaconData = [];
+  lat;
+  long;
   //////////////////////////////////////////////
   //////////////////////////////////////////////
   //////////////////////////////////////////////
   //////////////////////////////////////////////
   // uuidMap of the map to download
-  uuidMap: string = 'f206100a-62d2-4e55-a15f-1f8b331fdada';
+  // uuidMap: string = 'f206100a-62d2-4e55-a15f-1f8b331fdada';
+  uuidMap: string = 'd27ee365-6bb6-44eb-8436-44ee722f8168';
   private canvas: fabric.Canvas;
 
   // icons
@@ -125,7 +130,9 @@ export class EmployeeMapPage {
     private socket: WebsocketService,
 
     // pathfinding
-    private pathfinding: PathfindingService
+    private pathfinding: PathfindingService,
+    public toastController: ToastController,
+    private geolocation: Geolocation
   ) {
     this.platform.ready().then(() => {
       this.requestLocPermissoin();
@@ -146,6 +153,20 @@ export class EmployeeMapPage {
       () => console.log('Geofence Plugin Ready'),
       (err) => console.log(err)
     );
+
+    let watch = this.geolocation.watchPosition();
+    watch.subscribe((data: any) => {
+      console.log('You are safe');
+      console.log(data);
+      this.lat = data.coords.latitude;
+      this.long = data.coords.longitude;
+      if (this.lat > 12.90812) {
+        this.presentToast();
+      }
+      // data can be a set of coordinates, or an error (if an error occurred).
+      // data.coords.latitude
+      // data.coords.longitude
+    });
   }
 
   ngOnInit() {
@@ -206,10 +227,18 @@ export class EmployeeMapPage {
     this.geofence.onTransitionReceived().subscribe((geofences) => {
       geofences.forEach((geo) => {
         console.log('Geofence transition detected', geo);
+        this.presentToast();
       });
     });
   }
 
+  async presentToast() {
+    const toast = await this.toastController.create({
+      message: 'You are safe.',
+      duration: 2000,
+    });
+    toast.present();
+  }
   async getDirection() {
     this.deviceOrientation.getCurrentHeading().then(
       (data: DeviceOrientationCompassHeading) => {
@@ -520,8 +549,8 @@ export class EmployeeMapPage {
         selectable: false,
         angle: this.headingAngle,
       });
-      this.drawnCurrentLocation.scaleToHeight(20);
-      this.drawnCurrentLocation.scaleToWidth(20);
+      this.drawnCurrentLocation.scaleToHeight(40);
+      this.drawnCurrentLocation.scaleToWidth(40);
       this.canvas.add(this.drawnCurrentLocation);
     }
 

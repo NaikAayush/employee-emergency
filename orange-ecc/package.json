@@ -30,6 +30,7 @@
     "@ionic-native/device-orientation": "^5.33.0",
     "@ionic-native/fcm": "^5.33.0",
     "@ionic-native/geofence": "^5.33.0",
+    "@ionic-native/geolocation": "^5.33.0",
     "@ionic-native/ibeacon": "https://github.com/NaikAayush/ionic5ibeacon.git",
     "@ionic-native/magnetometer": "^5.33.0",
     "@ionic-native/splash-screen": "^5.33.0",
@@ -76,6 +77,7 @@
     "cordova-plugin-device-orientation": "^2.0.1",
     "cordova-plugin-fcm-with-dependecy-updated": "^7.2.0",
     "cordova-plugin-geofence": "git+https://github.com/compelling/cordova-plugin-geofence.git",
+    "cordova-plugin-geolocation": "^4.1.0",
     "cordova-plugin-ionic-keyboard": "^2.2.0",
     "cordova-plugin-ionic-webview": "^4.2.1",
     "cordova-plugin-magnetometer": "^1.0.0",
@@ -132,7 +134,10 @@
         "ANDROID_SUPPORT_V4_VERSION": "27.+"
       },
       "cordova-plugin-camera-preview": {},
-      "cordova-plugin-geofence": {}
+      "cordova-plugin-geofence": {},
+      "cordova-plugin-geolocation": {
+        "GPS_REQUIRED": "true"
+      }
     },
     "platforms": [
       "ios",
