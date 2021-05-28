@@ -69,28 +69,28 @@ export class CommandCenterEmergencyPage implements OnInit {
         }
       )
       .toPromise();
-    // await this.http
-    //   .post(
-    //     'https://fcm.googleapis.com/fcm/send',
-    //     {
-    //       to: environment.FCMToken,
-    //       notification: {
-    //         body: 'Please use the app to vacate the office area quickly',
-    //         title: 'Emergency Activated!',
-    //         click_action: 'FCM_PLUGIN_ACTIVITY',
-    //       },
-    //       data: {
-    //         type: 'employee',
-    //       },
-    //     },
-    //     {
-    //       headers: {
-    //         Authorization: environment.AuthToken,
-    //         'Content-Type': 'application/json',
-    //       },
-    //     }
-    //   )
-    //   .toPromise();
+    await this.http
+      .post(
+        'https://fcm.googleapis.com/fcm/send',
+        {
+          to: environment.FCMToken,
+          notification: {
+            body: 'Please use the app to vacate the office area quickly',
+            title: 'Emergency Activated!',
+            click_action: 'FCM_PLUGIN_ACTIVITY',
+          },
+          data: {
+            type: 'employee',
+          },
+        },
+        {
+          headers: {
+            Authorization: environment.AuthToken,
+            'Content-Type': 'application/json',
+          },
+        }
+      )
+      .toPromise();
     this.fireCreate({ timer: new Date() });
   }
 

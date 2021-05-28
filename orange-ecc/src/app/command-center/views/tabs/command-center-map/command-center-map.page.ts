@@ -10,10 +10,21 @@ import { environment } from 'src/environments/environment';
   styleUrls: ['./command-center-map.page.scss'],
 })
 export class CommandCenterMapPage implements OnInit {
+  totalEmpNumber = 10;
+  totalERTNumber = 5;
+  totalERTIncapacitated = 2;
+  totalEmpIncapacitated = 3;
+  totalEmpExited = 2;
+  totalErtExited = 1;
   private canvas: fabric.Canvas;
   uuidMap: string = 'a246ddf4-3ded-49b9-bacf-fbf7b700e49e';
   // user ids to monitor
-  userIds: string[] = ["592s1XmfNwYujg7Y1thbkDyOTZf2", "brr", "LxhvXHuCJxUXITPfzmYAnKJb6uf2", "abc"];
+  userIds: string[] = [
+    '592s1XmfNwYujg7Y1thbkDyOTZf2',
+    'brr',
+    'LxhvXHuCJxUXITPfzmYAnKJb6uf2',
+    'abc',
+  ];
 
   // icons
   private exitIcon!: HTMLImageElement;
@@ -118,9 +129,11 @@ export class CommandCenterMapPage implements OnInit {
 
   private startMonitoring() {
     this.userIds.forEach((uid) => {
-      const listenWs = new WebSocket(`${environment.wsEndpoint}listen?id=${uid}`);
+      const listenWs = new WebSocket(
+        `${environment.wsEndpoint}listen?id=${uid}`
+      );
 
-      listenWs.addEventListener('open', function() {
+      listenWs.addEventListener('open', function () {
         listenWs.send('Hello Server!');
       });
 
@@ -130,43 +143,59 @@ export class CommandCenterMapPage implements OnInit {
           console.log('Message from server ', data);
 
           if (this.userMarkers[uid]) {
-            console.log("found");
+            console.log('found');
             // this.userMarkers[uid].set({
             //   // left: data.x,
             //   top: data.y,
             // });
 
-            fabric.util.animate({ startValue: this.userMarkers[uid].left, endValue: data.x, onChange: (val) => { this.userMarkers[uid].left = val; this.userMarkers[uid].setCoords(); this.canvas.renderAll(); } });
+            fabric.util.animate({
+              startValue: this.userMarkers[uid].left,
+              endValue: data.x,
+              onChange: (val) => {
+                this.userMarkers[uid].left = val;
+                this.userMarkers[uid].setCoords();
+                this.canvas.renderAll();
+              },
+            });
 
-            fabric.util.animate({ startValue: this.userMarkers[uid].top, endValue: data.y, onChange: (val) => { this.userMarkers[uid].top = val; this.userMarkers[uid].setCoords(); this.canvas.renderAll(); } });
+            fabric.util.animate({
+              startValue: this.userMarkers[uid].top,
+              endValue: data.y,
+              onChange: (val) => {
+                this.userMarkers[uid].top = val;
+                this.userMarkers[uid].setCoords();
+                this.canvas.renderAll();
+              },
+            });
 
             // this.userMarkers[uid].setCoords();
             // this.canvas.renderAll();
           } else {
-            let color = "red";
+            let color = 'red';
 
             if (data.ert) {
-              color = "blue";
+              color = 'blue';
             }
 
             let reect = new fabric.Rect({
               height: 10,
               width: 10,
               fill: color,
-              originX: "center",
-              originY: "center"
+              originX: 'center',
+              originY: 'center',
             });
             let text = new fabric.Text(data.name, {
               fontSize: 10,
               top: 10,
-              originX: "center",
-              originY: "center"
+              originX: 'center',
+              originY: 'center',
             });
 
             this.userMarkers[uid] = new fabric.Group([reect, text], {
               left: data.x,
               top: data.y,
-              selectable: false
+              selectable: false,
             });
 
             this.canvas.add(this.userMarkers[uid]);
@@ -177,5 +206,4 @@ export class CommandCenterMapPage implements OnInit {
       });
     });
   }
-
 }

@@ -1,5 +1,8 @@
 import { Injectable } from '@angular/core';
-import { AngularFirestore, AngularFirestoreDocument } from '@angular/fire/firestore';
+import {
+  AngularFirestore,
+  AngularFirestoreDocument,
+} from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 import * as EasyStar from 'easystarjs';
 import * as util from 'util';
@@ -7,13 +10,12 @@ import { MapInfo } from '../../views/tabs/employee-map/models/map-info';
 import { Point } from '../../views/tabs/employee-map/models/point';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class PathfindingService {
   // A star finder
   private easystar: EasyStar.js;
   private findPathAsync: Function;
-
 
   public mapDoc: AngularFirestoreDocument<MapInfo>;
 
@@ -29,7 +31,10 @@ export class PathfindingService {
 
   origImg: HTMLImageElement;
 
-  constructor(private firestore: AngularFirestore, private storage: AngularFireStorage) {
+  constructor(
+    private firestore: AngularFirestore,
+    private storage: AngularFireStorage
+  ) {
     this.mapDoc = firestore.doc<MapInfo>('map/unknown');
 
     this.easystar = new EasyStar.js();
@@ -41,9 +46,7 @@ export class PathfindingService {
     console.log('hiii', uuidMap);
 
     const imgRef = this.storage.ref('map/' + this.uuidMap + '/orig');
-    let res = await imgRef
-      .getDownloadURL()
-      .toPromise();
+    let res = await imgRef.getDownloadURL().toPromise();
 
     console.log(res);
 
@@ -65,6 +68,7 @@ export class PathfindingService {
     const data = res.data();
     const imgString = data.array;
     const imgArray = JSON.parse(imgString);
+    console.log(imgArray);
     this.imgMatrix = imgArray;
 
     this.easystar.setGrid(this.imgMatrix);
@@ -113,7 +117,13 @@ export class PathfindingService {
     this.scale = this.origImg.height / this.imgMatrix.length;
   }
 
-  async getPath(curpos: Point, targets: Point[], flipTarget = true, scaleTarget = false, getMinTarget = false) {
+  async getPath(
+    curpos: Point,
+    targets: Point[],
+    flipTarget = true,
+    scaleTarget = false,
+    getMinTarget = false
+  ) {
     const scale = this.origImg.height / this.imgMatrix.length;
     const curposActual = {
       x: Math.round(curpos.x / scale),

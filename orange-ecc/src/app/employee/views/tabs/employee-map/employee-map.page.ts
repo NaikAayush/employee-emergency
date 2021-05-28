@@ -52,7 +52,7 @@ export class EmployeeMapPage {
   //////////////////////////////////////////////
   // uuidMap of the map to download
   // uuidMap: string = 'f206100a-62d2-4e55-a15f-1f8b331fdada';
-  uuidMap: string = 'd27ee365-6bb6-44eb-8436-44ee722f8168';
+  uuidMap: string = '5f820658-e546-4145-9734-7cff675f7ec7';
   private canvas: fabric.Canvas;
 
   // icons
@@ -555,11 +555,14 @@ export class EmployeeMapPage {
     }
 
     // send to ws server
-    this.socket.sendMessage(this.subject, {
+    console.log('WS I THINK');
+    const x = this.socket.sendMessage(this.subject, {
       x: pos[0],
-      y: pos[0],
+      y: pos[1],
       name: this.userUuid,
     });
+    console.log(x);
+    console.log(this.socket);
 
     this.getNearestExit();
   }

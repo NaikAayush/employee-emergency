@@ -23,7 +23,8 @@ export class EmployeeSignInComponent implements OnInit {
     this.auth.user$.subscribe((x) => {
       if (x.approved == false) {
         console.log(x);
-        this.router.navigateByUrl('employee/verify');
+        // this.router.navigateByUrl('employee/verify');
+        this.router.navigateByUrl('employee/employee-tabs');
       }
     });
   }

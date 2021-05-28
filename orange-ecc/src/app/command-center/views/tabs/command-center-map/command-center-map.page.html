@@ -5,7 +5,156 @@
 </ion-header>
 
 <ion-content>
-
-<canvas id="mapFabricCanvas"></canvas>
-
+  <div class="flex flex-row justify-around mt-6">
+    <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+      <div class="flex items-center">
+        <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+          Incapacitated employees
+        </p>
+      </div>
+      <div class="flex flex-col justify-start">
+        <p
+          class="
+            text-gray-800 text-4xl text-center
+            dark:text-white
+            font-bold
+            my-4
+          "
+        >
+          {{totalEmpIncapacitated}}
+        </p>
+        <input
+          class="
+            aa
+            red
+            rounded-lg
+            overflow-hidden
+            appearance-none
+            bg-red-200
+            h-4
+            w-200
+            m-4
+          "
+          type="range"
+          min="0"
+          max="{{ totalEmpNumber }}"
+          step="1"
+          disabled
+          [(ngModel)]="totalEmpIncapacitated"
+        />
+      </div>
+    </div>
+    <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+      <div class="flex items-center">
+        <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+          Not assigned ERTs
+        </p>
+      </div>
+      <div class="flex flex-col justify-start">
+        <p
+          class="
+            text-gray-800 text-4xl text-center
+            dark:text-white
+            font-bold
+            my-4
+          "
+        >
+          {{totalERTIncapacitated}}
+        </p>
+        <input
+          class="
+            aa
+            rounded-lg
+            overflow-hidden
+            appearance-none
+            bg-green-200
+            h-4
+            w-200
+            m-4
+          "
+          type="range"
+          min="0"
+          max="{{ totalERTNumber }}"
+          step="1"
+          disabled
+          [(ngModel)]="totalERTIncapacitated"
+        />
+      </div>
+    </div>
+    <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+      <div class="flex items-center">
+        <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+          Employees marked as safe
+        </p>
+      </div>
+      <div class="flex flex-col justify-start">
+        <p
+          class="
+            text-gray-800 text-4xl text-center
+            dark:text-white
+            font-bold
+            my-4
+          "
+        >
+          {{totalEmpExited}}
+        </p>
+        <input
+          class="
+            aa
+            rounded-lg
+            overflow-hidden
+            appearance-none
+            bg-green-200
+            h-4
+            w-200
+            m-4
+          "
+          type="range"
+          min="0"
+          max="{{ totalEmpNumber }}"
+          step="1"
+          disabled
+          [(ngModel)]="totalEmpExited"
+        />
+      </div>
+    </div>
+    <div class="shadow-lg rounded-2xl w-48 p-4 bg-white dark:bg-gray-800">
+      <div class="flex items-center">
+        <p class="text-md text-gray-700 dark:text-gray-50 text-center">
+          ERTs marked as safe
+        </p>
+      </div>
+      <div class="flex flex-col justify-start">
+        <p
+          class="
+            text-gray-800 text-4xl text-center
+            dark:text-white
+            font-bold
+            my-4
+          "
+        >
+          {{totalErtExited}}
+        </p>
+        <input
+          class="
+            aa
+            rounded-lg
+            overflow-hidden
+            appearance-none
+            bg-green-200
+            h-4
+            w-200
+            m-4
+          "
+          type="range"
+          min="0"
+          max="{{ totalERTNumber }}"
+          step="1"
+          disabled
+          [(ngModel)]="totalErtExited"
+        />
+      </div>
+    </div>
+  </div>
+  <canvas id="mapFabricCanvas"></canvas>
 </ion-content>
