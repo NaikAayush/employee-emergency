@@ -92,7 +92,8 @@ export class EmployeeMapPage {
 
   // ws
   userUuid: string = 'sampleasechangethis';
-  subject: WebSocketSubject<any>;
+  // subject: WebSocketSubject<any>;
+  wsLoc: WebSocket;
 
   // navigation icon
   private navIcon: HTMLImageElement;
@@ -127,7 +128,7 @@ export class EmployeeMapPage {
     // trilateration
     private trilateration: TrilaterationService,
     // ws
-    private socket: WebsocketService,
+    // private socket: WebSocket,
 
     // pathfinding
     private pathfinding: PathfindingService,
@@ -198,7 +199,8 @@ export class EmployeeMapPage {
     }
 
     // ws
-    this.subject = this.socket.connectSocket('update?id=' + this.userUuid);
+    // this.subject = this.socket.connectSocket('update?id=' + this.userUuid);
+    this.wsLoc = new WebSocket('update?id=' + this.userUuid);
     // download nav icon
     this.navIcon = new Image();
     this.navIcon.src = this.navIconSrc;
@@ -555,14 +557,12 @@ export class EmployeeMapPage {
     }
 
     // send to ws server
-    console.log('WS I THINK');
-    const x = this.socket.sendMessage(this.subject, {
+    // this.socket.sendMessage(this.subject, );
+    this.wsLoc.send(JSON.stringify({
       x: pos[0],
       y: pos[1],
       name: this.userUuid,
-    });
-    console.log(x);
-    console.log(this.socket);
+    }));
 
     this.getNearestExit();
   }
