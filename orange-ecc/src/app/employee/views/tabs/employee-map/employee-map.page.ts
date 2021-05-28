@@ -91,7 +91,7 @@ export class EmployeeMapPage {
   headingAngle: number = 45;
 
   // ws
-  userUuid: string = 'sampleasechangethis';
+  userUuid: string = 'leUKab3VjIe42HgCq0qPafS1FLs2';
   // subject: WebSocketSubject<any>;
   wsLoc: WebSocket;
 
@@ -200,7 +200,9 @@ export class EmployeeMapPage {
 
     // ws
     // this.subject = this.socket.connectSocket('update?id=' + this.userUuid);
-    this.wsLoc = new WebSocket('update?id=' + this.userUuid);
+    this.wsLoc = new WebSocket(
+      'ws://35.244.26.150:5050/' + 'update?id=' + this.userUuid
+    );
     // download nav icon
     this.navIcon = new Image();
     this.navIcon.src = this.navIconSrc;
@@ -558,11 +560,13 @@ export class EmployeeMapPage {
 
     // send to ws server
     // this.socket.sendMessage(this.subject, );
-    this.wsLoc.send(JSON.stringify({
-      x: pos[0],
-      y: pos[1],
-      name: this.userUuid,
-    }));
+    this.wsLoc.send(
+      JSON.stringify({
+        x: pos[0],
+        y: pos[1],
+        name: 'Aayush',
+      })
+    );
 
     this.getNearestExit();
   }
