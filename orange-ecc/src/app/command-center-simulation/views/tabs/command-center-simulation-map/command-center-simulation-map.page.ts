@@ -124,6 +124,64 @@ export class CommandCenterSimulationMapPage implements OnInit {
 
     this.addMarkers();
 
+    this.canvas.on('mouse:wheel', (opt) => {
+      let delta = (opt.e as WheelEvent).deltaY;
+      let zoom = this.canvas.getZoom();
+      zoom *= 0.999 ** delta;
+      if (zoom > 20) zoom = 20;
+      if (zoom < 0.01) zoom = 0.01;
+      this.canvas.zoomToPoint(new fabric.Point((opt.e as WheelEvent).offsetX, (opt.e as WheelEvent).offsetY), zoom);
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
+      this.canvas.requestRenderAll();
+      // var vpt = this.canvas.viewportTransform;
+      // if (zoom < 400 / 1000) {
+      //   vpt[4] = 200 - 1000 * zoom / 2;
+      //   vpt[5] = 200 - 1000 * zoom / 2;
+      // } else {
+      //   if (vpt[4] >= 0) {
+      //     vpt[4] = 0;
+      //   } else if (vpt[4] < this.canvas.getWidth() - 1000 * zoom) {
+      //     vpt[4] = this.canvas.getWidth() - 1000 * zoom;
+      //   }
+      //   if (vpt[5] >= 0) {
+      //     vpt[5] = 0;
+      //   } else if (vpt[5] < this.canvas.getHeight() - 1000 * zoom) {
+      //     vpt[5] = this.canvas.getHeight() - 1000 * zoom;
+      //   }
+      // }
+    });
+
+    this.canvas.on('mouse:down', function(opt) {
+      const evt = opt.e as MouseEvent;
+      if (evt.altKey === true) {
+        this.isDragging = true;
+        this.selection = false;
+        this.lastPosX = evt.clientX;
+        this.lastPosY = evt.clientY;
+      }
+    });
+
+    this.canvas.on('mouse:move', function(opt) {
+      if (this.isDragging) {
+        const e = opt.e as MouseEvent;
+        const vpt = this.viewportTransform;
+        vpt[4] += e.clientX - this.lastPosX;
+        vpt[5] += e.clientY - this.lastPosY;
+        this.requestRenderAll();
+        this.lastPosX = e.clientX;
+        this.lastPosY = e.clientY;
+      }
+    });
+
+    this.canvas.on('mouse:up', function() {
+      // on mouse up we want to recalculate new interaction
+      // for all objects, so we call setViewportTransform
+      this.setViewportTransform(this.viewportTransform);
+      this.isDragging = false;
+      this.selection = true;
+    });
+
     setInterval(() => {
       let empIncap = 0;
       let ertIncap = 0;
@@ -271,7 +329,7 @@ export class CommandCenterSimulationMapPage implements OnInit {
         `${environment.wsEndpoint}listen?id=${uid}`
       );
 
-      listenWs.addEventListener('open', function () {
+      listenWs.addEventListener('open', function() {
         listenWs.send('Hello Server!');
       });
 
