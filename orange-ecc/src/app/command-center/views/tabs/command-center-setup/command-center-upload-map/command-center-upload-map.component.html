@@ -113,6 +113,7 @@
           >Exit
         </ion-radio>
       </ion-item>
+
       <ion-item>
         <ion-label>Beacon</ion-label>
         <ion-radio
@@ -120,6 +121,16 @@
           name="markerChoice"
           value="beacon"
           >Beacon</ion-radio
+        >
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Other</ion-label>
+        <ion-radio
+          class="marker-radio-button"
+          name="markerChoice"
+          value="other"
+          >Other</ion-radio
         >
       </ion-item>
     </ion-radio-group>
@@ -148,6 +159,8 @@
     >
       Submit
     </button>
+
+        <h4>Map ID: {{ mapId }}</h4>
   </div>
 
   <canvas id="mapFabricCanvas"></canvas>

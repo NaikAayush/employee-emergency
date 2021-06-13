@@ -60,6 +60,7 @@ export class CommandCenterUploadMapComponent implements OnInit {
   private exitIcon!: HTMLImageElement;
   private entryIcon!: HTMLImageElement;
   private beaconIcon!: HTMLImageElement;
+  private otherIcon!: HTMLImageElement;
 
   // choices, so many choices
   private choicesInfo: Record<string, ChoiceInfo> = {
@@ -75,9 +76,13 @@ export class CommandCenterUploadMapComponent implements OnInit {
       iconEl: this.beaconIcon,
       iconSrc: 'assets/img/beacon.svg',
     },
+    other: {
+      iconEl: this.otherIcon,
+      iconSrc: 'assets/img/ping.svg',
+    }
   };
   // for use in ngFor ig
-  private choices = ['exit', 'entry', 'beacon'];
+  private choices = ['exit', 'entry', 'beacon', 'other'];
 
   constructor(
     private api: ApiService,
