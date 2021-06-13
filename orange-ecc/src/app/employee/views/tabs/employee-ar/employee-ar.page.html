@@ -1,8 +1,36 @@
-<ion-header [translucent]="true">
+<!-- <ion-header [translucent]="true">
   <ion-toolbar>
     <ion-title>AR</ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true" [ngClass]="{'custom-ion-content': isToBack}">
+<ion-content>
+  <!DOCTYPE html>
+  <html>
+    <script src="https://aframe.io/releases/0.6.1/aframe.min.js"></script>
+    <script src="https://cdn.rawgit.com/jeromeetienne/AR.js/1.5.0/aframe/build/aframe-ar.js"></script>
+    <body style="margin: 0px; overflow: hidden">
+      <a-scene embedded arjs>
+        <a-marker preset="hiro">
+          <a-box position="0 0.5 0" material="color: black;"></a-box>
+        </a-marker>
+        <a-entity camera></a-entity>
+      </a-scene>
+    </body>
+  </html>
+</ion-content> -->
+
+<ion-header>
+  <ion-toolbar>
+    <ion-title>ARLauncher</ion-title>
+    <ion-buttons slot="end">
+      <ion-button (click)="close()"
+        ><ion-icon name="close" slot="icon-only"></ion-icon
+      ></ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+  <iframe src="/assets/aframe-ar.html"></iframe>
 </ion-content>
