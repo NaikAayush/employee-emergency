@@ -27,6 +27,7 @@ import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Geofence } from '@ionic-native/geofence/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
 
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 @NgModule({
   declarations: [AppComponent],
   entryComponents: [],
@@ -55,5 +56,6 @@ import { Geolocation } from '@ionic-native/geolocation/ngx';
     Geolocation,
   ],
   bootstrap: [AppComponent],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class AppModule {}

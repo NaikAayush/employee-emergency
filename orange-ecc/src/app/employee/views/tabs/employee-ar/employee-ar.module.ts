@@ -7,14 +7,15 @@ import { IonicModule } from '@ionic/angular';
 import { EmployeeArPageRoutingModule } from './employee-ar-routing.module';
 
 import { EmployeeArPage } from './employee-ar.page';
-
+import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 @NgModule({
   imports: [
     CommonModule,
     FormsModule,
     IonicModule,
-    EmployeeArPageRoutingModule
+    EmployeeArPageRoutingModule,
   ],
-  declarations: [EmployeeArPage]
+  declarations: [EmployeeArPage],
+  schemas: [CUSTOM_ELEMENTS_SCHEMA],
 })
 export class EmployeeArPageModule {}
