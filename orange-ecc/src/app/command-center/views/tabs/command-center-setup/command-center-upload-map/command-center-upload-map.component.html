@@ -126,14 +126,18 @@
 
       <ion-item>
         <ion-label>Other</ion-label>
-        <ion-radio
-          class="marker-radio-button"
-          name="markerChoice"
-          value="other"
+        <ion-radio class="marker-radio-button" name="markerChoice" value="other"
           >Other</ion-radio
         >
       </ion-item>
     </ion-radio-group>
+
+    <ion-input
+      *ngIf="markerChoice == 'other'"
+      name="otherName"
+      placeholder="Name for other marker"
+      [(ngModel)]="otherName"
+    ></ion-input>
     <!-- <ion-button color="primary" (click)="submit()">Submit</ion-button> -->
     <button
       (click)="submit()"
@@ -160,7 +164,7 @@
       Submit
     </button>
 
-        <h4>Map ID: {{ mapId }}</h4>
+    <h4>Map ID: {{ mapId }}</h4>
   </div>
 
   <canvas id="mapFabricCanvas"></canvas>

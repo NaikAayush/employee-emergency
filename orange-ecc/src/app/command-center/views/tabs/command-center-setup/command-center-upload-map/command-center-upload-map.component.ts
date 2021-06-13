@@ -56,6 +56,12 @@ export class CommandCenterUploadMapComponent implements OnInit {
   // private markerLocs: any = {};
   public markerChoice: string = 'exit';
 
+  // store custom names
+  public otherName: string = 'Other';
+  private otherNameCounter: Record<string, number> = {};
+
+  private debugCollision = false;
+
   // icons
   private exitIcon!: HTMLImageElement;
   private entryIcon!: HTMLImageElement;
@@ -101,24 +107,44 @@ export class CommandCenterUploadMapComponent implements OnInit {
       } else {
         console.log(e.pointer.x, e.pointer.y, this.markerChoice);
 
-        const iconSize = 20;
-        let x = e.pointer.x - iconSize / 2;
-        let y = e.pointer.y - iconSize / 2;
+        const iconSize = 15;
+        let x = e.pointer.x;
+        let y = e.pointer.y;
         let intersects = false;
         let intObject!: fabric.Object;
+        const intTl = new fabric.Point(x - iconSize / 2, y - iconSize);
+        const intBr = new fabric.Point(x + iconSize / 4, y + iconSize / 2);
+        if (this.debugCollision) {
+          this.canvas.add(new fabric.Circle({ top: intTl.y, left: intTl.x, height: 10, width: 10, fill: "blue", radius: 5, selectable: false }));
+          this.canvas.add(new fabric.Circle({ top: intBr.y, left: intBr.x, height: 10, width: 10, fill: "blue", radius: 5, selectable: false }));
+        }
 
-        this.canvas.getObjects('image').some((obj) => {
+        this.canvas.getObjects().some((o) => {
+          // ignore debug objects (above)
+          if ((o instanceof fabric.Circle)) {
+            return false;
+          }
+
+          let obj: fabric.Object = o;
+          // if (o instanceof fabric.Group) {
+          // obj = o.getObjects()[0];
+          // console.log(obj, o, o.getObjects());
+          // }
           let inter = obj.intersectsWithRect(
-            new fabric.Point(x, y),
-            new fabric.Point(x + iconSize, y + iconSize)
+            intTl,
+            intBr,
+            // false,
+            // true
           );
           if (inter) {
             intersects = true;
-            intObject = obj;
+            intObject = o;
             return true;
           }
           return false;
         });
+
+        // console.log(intObject, intersects);
 
         if (
           intersects &&
@@ -126,39 +152,104 @@ export class CommandCenterUploadMapComponent implements OnInit {
           intObject.left !== undefined &&
           intObject.top !== undefined
         ) {
-          const tl = new fabric.Point(x + iconSize / 4, y + iconSize / 4);
+          // console.log(x, y, intObject.left, intObject.top);
+          const tl = new fabric.Point(x - iconSize / 2, y - iconSize / 2);
           const br = new fabric.Point(
-            x + (3 * iconSize) / 4,
-            y + (3 * iconSize) / 4
+            x,
+            y
           );
+
+          if (this.debugCollision) {
+            this.canvas.add(new fabric.Circle({ top: tl.y, left: tl.x, height: 10, width: 10, fill: "red", radius: 4, selectable: false }));
+            this.canvas.add(new fabric.Circle({ top: br.y, left: br.x, height: 10, width: 10, fill: "red", radius: 4, selectable: false }));
+          }
           const smolRect = new fabric.Rect({
-            left: intObject.left + iconSize / 4,
-            top: intObject.top + iconSize / 4,
+            left: intObject.left,
+            top: intObject.top,
             width: iconSize / 2,
             height: iconSize / 2,
+            originX: "center",
+            originY: "center"
           });
           if (smolRect.intersectsWithRect(tl, br)) {
             this.canvas.remove(intObject);
+
+            // decrement counter when deleting - does not work because
+            //    the deleted one might not be the last one, so there
+            //    will be duplicates
+            // if (intObject.data.otherNameOrig) {
+            //   this.otherNameCounter[intObject.data.otherNameOrig] -= 1;
+            // }
           }
         } else {
-          let iconImg = new fabric.Image(
-            this.choicesInfo[this.markerChoice].iconEl,
-            {
+          let markerIcon: fabric.Object;
+
+          if (this.markerChoice == 'other') {
+            // other name
+            let otherName = this.otherName;
+
+            if (this.otherNameCounter[this.otherName]) {
+              this.otherNameCounter[this.otherName]++;
+
+              otherName = this.otherName + " " + this.otherNameCounter[this.otherName];
+            } else {
+              this.otherNameCounter[this.otherName] = 1;
+            }
+
+            console.log("Other name: ", otherName)
+            // end other name
+
+            let iconImg = new fabric.Image(
+              this.choicesInfo[this.markerChoice].iconEl,
+              {
+                originX: "center",
+                originY: "center"
+              }
+            );
+            iconImg.scaleToHeight(iconSize);
+            iconImg.scaleToWidth(iconSize);
+
+            let text = new fabric.Text(otherName, {
+              fontSize: 9,
+              top: iconSize,
+              originX: "center",
+              originY: "center"
+            });
+
+            markerIcon = new fabric.Group([iconImg, text], {
               left: x,
               top: y,
               selectable: false,
-              width: iconSize,
-              height: iconSize,
-            }
-          );
-          iconImg.data = { name: this.markerChoice };
-          this.canvas.add(iconImg);
+              originX: "center",
+              originY: "center"
+            });
+            markerIcon.data = { otherNameOrig: this.otherName };
+
+          } else {
+            markerIcon = new fabric.Image(
+              this.choicesInfo[this.markerChoice].iconEl,
+              {
+                left: x,
+                top: y,
+                originX: "center",
+                originY: "center",
+                selectable: false,
+                // width: iconSize,
+                // height: iconSize,
+              }
+            );
+            markerIcon.scaleToHeight(iconSize);
+            markerIcon.scaleToWidth(iconSize);
+            markerIcon.data = {};
+          }
+          markerIcon.data.name = this.markerChoice;
+          this.canvas.add(markerIcon);
         }
       }
     });
   }
 
-  private handleMouseEvent(e: fabric.IEvent) {}
+  private handleMouseEvent(e: fabric.IEvent) { }
 
   ngAfterViewInit(): void {
     this.canvas.height = 0;
