@@ -1,13 +1,4 @@
 {
-  "targets": {
-    "orange-ey-gds": {
-      "hosting": {
-        "app": [
-          "orange-ey-gds"
-        ]
-      }
-    }
-  },
   "projects": {
     "default": "ey-gds-hosting-orange"
   }
