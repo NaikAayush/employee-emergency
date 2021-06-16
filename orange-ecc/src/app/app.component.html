@@ -2,20 +2,154 @@
   <ion-split-pane contentId="main-content">
     <ion-menu contentId="main-content" type="overlay">
       <ion-content>
-        <ion-list id="inbox-list">
-          <ion-list-header>Employee Emergency Care</ion-list-header>
-          <ion-note>Team Orange</ion-note>
+        <div class="flex flex-col h-full justify-between">
+          <!-- Ion List Start -->
+          <ion-list id="inbox-list">
+            <ion-list-header>Employee Emergency Care</ion-list-header>
+            <ion-note>Team Orange</ion-note>
 
-          <ion-menu-toggle auto-hide="false" *ngFor="let p of appPages; let i = index">
-            <ion-item routerDirection="root" [routerLink]="[p.url]" lines="none" detail="false"
-              routerLinkActive="selected">
-              <ion-icon slot="start" [ios]="p.icon + '-outline'" [md]="p.icon + '-sharp'"></ion-icon>
-              <ion-label>{{ p.title }}</ion-label>
-            </ion-item>
-          </ion-menu-toggle>
-        </ion-list>
+            <ion-menu-toggle
+              auto-hide="false"
+              *ngFor="let p of appPages; let i = index"
+            >
+              <ion-item
+                routerDirection="root"
+                [routerLink]="[p.url]"
+                lines="none"
+                detail="false"
+                routerLinkActive="selected"
+              >
+                <ion-icon
+                  slot="start"
+                  [ios]="p.icon + '-outline'"
+                  [md]="p.icon + '-sharp'"
+                ></ion-icon>
+                <ion-label>{{ p.title }}</ion-label>
+              </ion-item>
+            </ion-menu-toggle>
+          </ion-list>
+          <!-- Ion List End -->
+
+          <div *ngIf="auth.user$ | async; then authenticated; else guest"></div>
+        </div>
       </ion-content>
     </ion-menu>
     <ion-router-outlet id="main-content"></ion-router-outlet>
   </ion-split-pane>
 </ion-app>
+
+<ng-template #guest>
+  <div
+    class="
+      flex-shrink-0 flex
+      border-t border-gray-200
+      p-4
+      justify-between
+      items-center
+    "
+  >
+    <!-- <a href="#" class="flex-shrink-0 w-full group block"> -->
+    <!-- <div class="flex items-center"> -->
+    <div class="flex items-center">
+      <div>
+        <img
+          class="inline-block h-9 w-9 rounded-full"
+          src="assets/ert-images/{{ avatarNo }}.png"
+          alt=""
+        />
+      </div>
+      <div class="ml-3">
+        <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+          Guest
+        </p>
+        <p class="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+          Guest
+        </p>
+      </div>
+    </div>
+    <div>
+      <button
+        (click)="redirectToLogin()"
+        type="button"
+        class="
+          inline-flex
+          items-center
+          px-3
+          py-1.5
+          border border-transparent
+          text-xs
+          font-medium
+          rounded-full
+          shadow-sm
+          text-white
+          bg-indigo-600
+          hover:bg-indigo-700
+          focus:outline-none
+          focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+        "
+      >
+        Login
+      </button>
+    </div>
+    <!-- </div> -->
+    <!-- </a> -->
+  </div>
+</ng-template>
+
+<ng-template #authenticated>
+  <div
+    class="
+      flex-shrink-0 flex
+      border-t border-gray-200
+      p-4
+      justify-between
+      items-center
+    "
+  >
+    <!-- <a href="#" class="flex-shrink-0 w-full group block"> -->
+    <!-- <div class="flex items-center"> -->
+    <div class="flex items-center">
+      <div>
+        <img
+          class="inline-block h-9 w-9 rounded-full"
+          src="assets/ert-images/{{ avatarNo }}.png"
+          alt=""
+        />
+      </div>
+      <div *ngIf="auth.user$ | async as user" class="ml-3">
+        <p class="text-sm font-medium text-gray-700 group-hover:text-gray-900">
+          {{ user.name }}
+        </p>
+        <p class="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+          {{ user.type }}
+        </p>
+      </div>
+    </div>
+    <div>
+      <button
+        (click)="auth.signOut()"
+        type="button"
+        class="
+          inline-flex
+          items-center
+          px-3
+          py-1.5
+          border border-transparent
+          text-xs
+          font-medium
+          rounded-full
+          shadow-sm
+          text-white
+          bg-indigo-600
+          hover:bg-indigo-700
+          focus:outline-none
+          focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500
+        "
+      >
+        Logout
+      </button>
+    </div>
+    <!-- </div> -->
+    <!-- </a> -->
+  </div>
+</ng-template>

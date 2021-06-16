@@ -26,6 +26,7 @@ import { HttpClientModule } from '@angular/common/http';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Geofence } from '@ionic-native/geofence/ngx';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { IonicStorageModule } from '@ionic/storage-angular';
 
 import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
 @NgModule({
@@ -41,6 +42,7 @@ import { CUSTOM_ELEMENTS_SCHEMA } from '@angular/core';
     AngularFireStorageModule,
     AngularFireAuthModule,
     HttpClientModule,
+    IonicStorageModule.forRoot(),
   ],
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
