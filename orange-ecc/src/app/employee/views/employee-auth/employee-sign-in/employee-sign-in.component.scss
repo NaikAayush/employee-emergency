@@ -1,55 +1,55 @@
-ion-content {
-  height: 100%;
-}
+// ion-content {
+//   height: 100%;
+// }
 
-.default-input {
-  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
-}
+// .default-input {
+//   @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
+// }
 
-.default-input:focus {
-  @apply outline-none shadow-sm;
-}
+// .default-input:focus {
+//   @apply outline-none shadow-sm;
+// }
 
-.error-input {
-  @apply shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight;
-}
-.error-input:focus {
-  @apply outline-none shadow-sm;
-}
+// .error-input {
+//   @apply shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight;
+// }
+// .error-input:focus {
+//   @apply outline-none shadow-sm;
+// }
 
-.ng-valid.pwd,
-.pwd.ng-pristine {
-  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
-}
+// .ng-valid.pwd,
+// .pwd.ng-pristine {
+//   @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
+// }
 
-.email-valid {
-  @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
-}
+// .email-valid {
+//   @apply shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight;
+// }
 
-.email-invalid {
-  @apply shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight;
-}
+// .email-invalid {
+//   @apply shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight;
+// }
 
-.ng-invalid.pwd.ng-touched {
-  @apply shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight;
-}
+// .ng-invalid.pwd.ng-touched {
+//   @apply shadow appearance-none border border-red-500 rounded w-full py-2 px-3 text-gray-700 mb-3 leading-tight;
+// }
 
-.err-msg-inv {
-  visibility: hidden;
-}
-.err-msg {
-  visibility: visible;
-  @apply text-red-500 text-xs italic;
-}
+// .err-msg-inv {
+//   visibility: hidden;
+// }
+// .err-msg {
+//   visibility: visible;
+//   @apply text-red-500 text-xs italic;
+// }
 
-.submit-button:disabled {
-  @apply disabled:opacity-50 bg-yellow-1100 text-white font-bold py-2 px-4 rounded;
-}
+// .submit-button:disabled {
+//   @apply disabled:opacity-50 bg-yellow-1100 text-white font-bold py-2 px-4 rounded;
+// }
 
-.submit-button:enabled {
-  @apply bg-yellow-1100 hover:bg-yellow-1200 text-white font-bold py-2 px-4 rounded;
-}
+// .submit-button:enabled {
+//   @apply bg-yellow-1100 hover:bg-yellow-1200 text-white font-bold py-2 px-4 rounded;
+// }
 
-.submit-button:focus {
-  @apply outline-none shadow-sm;
-}
+// .submit-button:focus {
+//   @apply outline-none shadow-sm;
+// }
