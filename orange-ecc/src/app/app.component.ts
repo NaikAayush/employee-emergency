@@ -6,6 +6,7 @@ import { SplashScreen } from '@ionic-native/splash-screen/ngx';
 import { StatusBar } from '@ionic-native/status-bar/ngx';
 import { Router } from '@angular/router';
 import { Storage } from '@ionic/storage-angular';
+import { AuthService } from './services/auth/auth.service';
 
 @Component({
   selector: 'app-root',
@@ -21,15 +22,16 @@ export class AppComponent {
     { title: 'Employee Tabs', url: '/employee/employee-tabs', icon: 'body' },
     { title: 'ERT Tabs', url: '/ert/ert-tabs', icon: 'body' },
   ];
+  public avatarNo: Number;
   constructor(
     private platform: Platform,
     private splashScreen: SplashScreen,
     private statusBar: StatusBar,
     private fcm: FCM,
     private router: Router,
-    private storage: Storage
+    private storage: Storage,
+    public auth: AuthService
   ) {
-    this.initializeApp();
     if (!this.platform.is('desktop')) {
       this.appPages = [
         { title: 'ERT', url: '/ert', icon: 'people' },
@@ -42,9 +44,13 @@ export class AppComponent {
         { title: 'ERT Tabs', url: '/ert/ert-tabs', icon: 'body' },
       ];
     }
+
+    this.initializeApp();
   }
 
   async initializeApp() {
+    this.avatarNo = this.getRandomInt(6);
+
     await this.storage.create();
     if (this.platform.is('desktop')) {
       this.router.navigateByUrl('/cc/cc/cc-tabs/overview');
@@ -102,5 +108,13 @@ export class AppComponent {
         // this.fcm.unsubscribeFromTopic('offers');
       });
     }
+  }
+  redirectToLogin() {
+    this.router.navigateByUrl('/employee/login');
+  }
+
+  getRandomInt(max) {
+    const random: Number = Math.floor(Math.random() * max);
+    return random;
   }
 }

@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { FormGroup, FormControl } from '@angular/forms';
-import { AuthService } from 'src/app/employee/services/auth/auth.service';
+
 import { Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from 'src/app/services/auth/auth.service';
 @Component({
   selector: 'app-employee-sign-in',
   templateUrl: './employee-sign-in.component.html',
@@ -20,7 +21,7 @@ export class EmployeeSignInComponent implements OnInit {
   constructor(public auth: AuthService, public router: Router) {}
 
   ngOnInit() {
-    this.auth.user$.subscribe((x) => {
+    this.auth.user$.subscribe((x: any) => {
       if (x.approved == false) {
         console.log(x);
         // this.router.navigateByUrl('employee/verify');
