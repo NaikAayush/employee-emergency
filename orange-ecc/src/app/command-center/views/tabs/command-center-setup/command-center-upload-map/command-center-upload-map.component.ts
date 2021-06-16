@@ -29,6 +29,7 @@ interface MarkerInfo {
   left: number;
   width: number;
   height: number;
+  data: any;
 }
 
 interface MapInfo {
@@ -223,7 +224,7 @@ export class CommandCenterUploadMapComponent implements OnInit {
               originX: "center",
               originY: "center"
             });
-            markerIcon.data = { otherNameOrig: this.otherName };
+            markerIcon.data = { otherNameOrig: this.otherName, otherName: otherName };
 
           } else {
             markerIcon = new fabric.Image(
@@ -356,6 +357,7 @@ export class CommandCenterUploadMapComponent implements OnInit {
             left: obj.left,
             width: obj.width,
             height: obj.height,
+            data: obj.data,
           };
           markers.push(newMarker);
         } else {
