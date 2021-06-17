@@ -26,6 +26,7 @@ def draw_img(img):
 
 # beacons will be placed every BEACON_DISTANCE centimeters (= pixels)
 BEACON_DISTANCE = 200
+DEBUG_DRAW = False
 
 
 def estimate_beacon(id_):
@@ -34,24 +35,28 @@ def estimate_beacon(id_):
     if isinstance(map_img, HTTPException):
         return
 
+    logger.info("Got map of size\t%s", map_img.shape)
+
     map_img = _resize_image(map_img)
 
-    print(map_img.shape)
-    total = map_img.size
+    logger.info("Resized map to\t%s", map_img.shape)
+    # total = map_img.size
 
-    ones = np.count_nonzero(map_img)
+    # ones = np.count_nonzero(map_img)
 
-    print(ones, total)
+    # print(ones, total)
 
     # draw_img(map_img)
 
     edges: np.ndarray = cv2.Canny(map_img, 100, 200)
     shape = edges.shape
+    logger.info("Completed edge detection. Shape: %s", shape)
 
     # draw_img(edges)
 
     edge_list = np.argwhere(edges > 0).tolist()
     edge_list.sort()
+    logger.info("Got edge list of size: %s", len(edge_list))
 
     # pprint(edge_list)
 
@@ -124,13 +129,17 @@ def estimate_beacon(id_):
                 if count % BEACON_DISTANCE == 0:
                     logger.info("ah a fine place to setup a beacon: %s", point)
 
-                    draw_point(point, edges)
+                    if DEBUG_DRAW:
+                        draw_point(point, edges)
 
                     beacons.append(point)
 
     logger.info("beacons placed at %s", beacons)
     logger.info("total beacons: %s", len(beacons))
-    draw_img(edges)
+    if DEBUG_DRAW:
+        draw_img(edges)
+
+    return beacons
 
 
 estimate_beacon("a246ddf4-3ded-49b9-bacf-fbf7b700e49e")
