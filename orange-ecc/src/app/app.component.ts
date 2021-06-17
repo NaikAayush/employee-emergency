@@ -52,10 +52,10 @@ export class AppComponent {
     this.avatarNo = this.getRandomInt(6);
 
     await this.storage.create();
-    if (this.platform.is('desktop')) {
-      this.router.navigateByUrl('/cc/cc/cc-tabs/overview');
-      console.log('Desktop');
-    }
+    // if (this.platform.is('desktop')) {
+    //   this.router.navigateByUrl('/cc/cc/cc-tabs/overview');
+    //   console.log('Desktop');
+    // }
     this.storage.get('first_time').then((val) => {
       if (val !== null) {
         if (!this.platform.is('desktop')) {

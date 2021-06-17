@@ -58,10 +58,10 @@ const routes: Routes = [
       ).then((m) => m.CommandCenterSimulationTabsPageModule),
   },
   {
-    path: 'employee-normal',
+    path: 'employee-n',
     loadChildren: () =>
-      import('./employee-normal/employee-normal.module').then(
-        (m) => m.EmployeeNormalPageModule
+      import('./employee-n/views/employee-n-tabs/employee-n-tabs.module').then(
+        (m) => m.EmployeeNTabsPageModule
       ),
   },
 ];
