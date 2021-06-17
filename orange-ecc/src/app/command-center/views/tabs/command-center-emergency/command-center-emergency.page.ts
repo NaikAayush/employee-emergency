@@ -51,7 +51,8 @@ export class CommandCenterEmergencyPage implements OnInit {
       .post(
         'https://fcm.googleapis.com/fcm/send',
         {
-          to: environment.FCMToken,
+          // to: environment.FCMToken,
+          to: environment.ErtToken,
           notification: {
             body: 'Attention ERT, Mark your availability!',
             title: 'Emergency Activated!',
@@ -73,7 +74,8 @@ export class CommandCenterEmergencyPage implements OnInit {
       .post(
         'https://fcm.googleapis.com/fcm/send',
         {
-          to: environment.FCMToken,
+          // to: environment.FCMToken,
+          to: environment.EmpToken,
           notification: {
             body: 'Please use the app to vacate the office area quickly',
             title: 'Emergency Activated!',
