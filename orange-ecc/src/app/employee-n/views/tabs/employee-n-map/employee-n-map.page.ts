@@ -6,10 +6,18 @@ import { Component, OnInit } from '@angular/core';
   styleUrls: ['./employee-n-map.page.scss'],
 })
 export class EmployeeNMapPage implements OnInit {
+  location: String;
+  status = false;
+  constructor() {}
 
-  constructor() { }
+  ngOnInit() {}
 
-  ngOnInit() {
+  hello() {
+    console.log('hi');
   }
 
+  setLoc(location) {
+    this.status = true;
+    this.location = location;
+  }
 }
