@@ -113,6 +113,7 @@
           >Exit
         </ion-radio>
       </ion-item>
+
       <ion-item>
         <ion-label>Beacon</ion-label>
         <ion-radio
@@ -122,7 +123,21 @@
           >Beacon</ion-radio
         >
       </ion-item>
+
+      <ion-item>
+        <ion-label>Other</ion-label>
+        <ion-radio class="marker-radio-button" name="markerChoice" value="other"
+          >Other</ion-radio
+        >
+      </ion-item>
     </ion-radio-group>
+
+    <ion-input
+      *ngIf="markerChoice == 'other'"
+      name="otherName"
+      placeholder="Name for other marker"
+      [(ngModel)]="otherName"
+    ></ion-input>
     <!-- <ion-button color="primary" (click)="submit()">Submit</ion-button> -->
     <button
       (click)="submit()"
@@ -149,6 +164,7 @@
       Submit
     </button>
 
+
     <label id="beaconDistanceLabel">Choose beacon estimator distance</label>
     <ion-select placeholder="Select distance" value="2" (ionChange)="estimateBeacons($event.target.value)">
       <ion-select-option value="1">1 meter</ion-select-option>
@@ -156,6 +172,9 @@
       <ion-select-option value="3">3 meters</ion-select-option>
       <ion-select-option value="4">4 meters</ion-select-option>
     </ion-select>
+
+    <h4>Map ID: {{ mapId }}</h4>
+
   </div>
 
   <canvas id="mapFabricCanvas"></canvas>
