@@ -57,6 +57,13 @@ const routes: Routes = [
         './command-center-simulation/views/command-center-simulation-tabs/command-center-simulation-tabs.module'
       ).then((m) => m.CommandCenterSimulationTabsPageModule),
   },
+  {
+    path: 'employee-normal',
+    loadChildren: () =>
+      import('./employee-normal/employee-normal.module').then(
+        (m) => m.EmployeeNormalPageModule
+      ),
+  },
 ];
 
 @NgModule({
