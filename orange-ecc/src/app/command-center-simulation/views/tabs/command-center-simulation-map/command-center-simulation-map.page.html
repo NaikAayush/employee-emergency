@@ -389,8 +389,8 @@
     <div>Number of rescued employees: {{ totalEmpExited }}</div>
     <div>Number of rescued ERTs: {{ totalErtExited }}</div> -->
   </div>
-  <div class="flex flex-col items-center mt-10" *ngFor="let floor of floors">
-      <canvas id="mapFabricCanvas{{ floor.num }}"></canvas>
+  <div class="flex flex-col items-center mt-10">
+      <canvas *ngFor="let floor of floors" id="mapFabricCanvas{{ floor.num }}"></canvas>
   </div>
   <!-- <div class="flex flex-col items-center mt-10"> -->
   <!--   <canvas id="mapFabricCanvas1"></canvas> -->

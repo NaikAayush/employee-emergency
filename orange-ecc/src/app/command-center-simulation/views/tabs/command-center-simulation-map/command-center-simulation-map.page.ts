@@ -47,6 +47,7 @@ export class CommandCenterSimulationMapPage implements OnInit {
 
   // floor specific
   floors: Floor[] = []
+  uidFloorMap: Record<string, number> = {};
 
   // stats
   totalEmpNumber = 5;
@@ -305,6 +306,17 @@ export class CommandCenterSimulationMapPage implements OnInit {
   }
 
   setupSimulation(numEmp: number, numErt: number, numEmpImm: number) {
+    // cleanup old markers
+    for (let uid of this.userIds) {
+      for (let floor of this.floors) {
+        try {
+          floor.canvas.remove(this.userMarkers[uid]);
+        } catch {
+          console.log("not this time", floor.num, uid)
+        }
+      }
+    }
+
     this.totalEmpNumber = numEmp + numEmpImm;
     this.totalERTNumber = numErt;
 
@@ -314,16 +326,35 @@ export class CommandCenterSimulationMapPage implements OnInit {
     this.totalEmpExited = 0;
     this.totalErtExited = 0;
 
+    this.uidFloorMap = {};
+    let curFloor = 0;
+
     const userIds = [];
-    for (let i = 1; i <= this.totalEmpNumber; ++i) {
-      userIds.push(`emp${i}`);
+    for (let i = 1; i <= numEmp; ++i) {
+      const uid = `emp${i}`;
+      userIds.push(uid);
+
+      this.uidFloorMap[uid] = curFloor;
+      curFloor = (curFloor + 1) % this.noFloors;
     }
-    for (let i = 1; i <= this.totalERTNumber; ++i) {
-      userIds.push(`ert${i}`);
+    for (let i = 1; i <= this.totalERTNumber - numEmpImm; ++i) {
+      const uid = `ert${i}`;
+      userIds.push(uid);
+
+      this.uidFloorMap[uid] = curFloor;
+      curFloor = (curFloor + 1) % this.noFloors;
     }
 
-    for (let uid of this.userIds) {
-      this.canvas.remove(this.userMarkers[uid]);
+    for (let i = 1; i <= numEmpImm; ++i) {
+      const empUid = `emp${numEmp + i}`;
+      const ertUid = `ert${numErt - numEmpImm + i}`;
+
+      userIds.push(empUid);
+      userIds.push(ertUid);
+
+      this.uidFloorMap[empUid] = curFloor;
+      this.uidFloorMap[ertUid] = curFloor;
+      curFloor = (curFloor + 1) % this.noFloors;
     }
 
     this.userMarkers = {}
@@ -371,7 +402,10 @@ export class CommandCenterSimulationMapPage implements OnInit {
             height: marker.height,
           });
           iconImg.data = { name: marker.name };
-          this.canvas.add(iconImg);
+
+          for (let floor of this.floors) {
+            floor.canvas.add(iconImg);
+          }
         }
       });
   }
@@ -476,7 +510,7 @@ export class CommandCenterSimulationMapPage implements OnInit {
               selectable: false,
             });
 
-            this.canvas.add(this.userMarkers[uid]);
+            this.floors[this.uidFloorMap[uid]].canvas.add(this.userMarkers[uid]);
           }
         } catch (error) {
           console.log('Bad data from WS');
