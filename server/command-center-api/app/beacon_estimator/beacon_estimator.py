@@ -33,7 +33,13 @@ def estimate_beacon(id_):
     map_img = get_map_img(id_)
 
     if isinstance(map_img, HTTPException):
+        logger.warn("Map image for %s does not exist!", id_)
         return
+
+    return estimate_beacon_img(map_img)
+
+
+def estimate_beacon_img(map_img):
 
     logger.info("Got map of size\t%s", map_img.shape)
 
@@ -142,5 +148,5 @@ def estimate_beacon(id_):
     return beacons
 
 
-estimate_beacon("a246ddf4-3ded-49b9-bacf-fbf7b700e49e")
+# estimate_beacon("a246ddf4-3ded-49b9-bacf-fbf7b700e49e")
 # estimate_beacon("45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43")

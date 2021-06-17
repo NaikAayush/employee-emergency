@@ -1,19 +1,16 @@
-from pydantic.main import BaseModel
-from app.simulator import simulator
 import base64
 
-from fastapi import FastAPI, UploadFile, File, HTTPException
-from fastapi.middleware.cors import CORSMiddleware
-
-from PIL import Image
 import cv2
 import numpy as np
-
-
-from app.processing.map import process_map
-from app.pathfinder import pathfinder
+from app.beacon_estimator.beacon_estimator import estimate_beacon, estimate_beacon_img
 from app.data import data
-
+from app.pathfinder import pathfinder
+from app.processing.map import process_map
+from app.simulator import simulator
+from fastapi import FastAPI, File, HTTPException, UploadFile
+from fastapi.middleware.cors import CORSMiddleware
+from PIL import Image
+from pydantic.main import BaseModel
 
 # FastAPI stuff
 app = FastAPI()
@@ -39,6 +36,8 @@ async def processImage(file: UploadFile = File(...)):
 
     orig_img, better_img = process_map(img)
 
+    beacons = estimate_beacon_img(better_img)
+
     # return {
     #     "filename": file.filename,
     #     "width": pil_img.width,
@@ -54,6 +53,7 @@ async def processImage(file: UploadFile = File(...)):
     return {
         "orig_img": base64.b64encode(orig_img_bytes),
         "proc_img": base64.b64encode(better_img_bytes),
+        "beacons": beacons,
     }
 
     # return StreamingResponse(io.BytesIO(img_png.tobytes()), media_type="image/png")
@@ -93,6 +93,11 @@ async def nearestExit(id_: str, source: pathfinder.Point):
     return await pathfinder.nearestExit(id_, source)
 
 
+@app.get("/map/estimateBeacons")
+async def estimateBeacons(id_: str):
+    return {"beacons": estimate_beacon(id_)}
+
+
 class SimulationParams(BaseModel):
     num_emp: int
     num_incap_emp: int
@@ -101,4 +106,6 @@ class SimulationParams(BaseModel):
 
 @app.post("/simulate")
 async def simulate(id_: str, params: SimulationParams):
-    return await simulator.simulate(id_, params.num_emp, params.num_incap_emp, params.num_ert)
+    return await simulator.simulate(
+        id_, params.num_emp, params.num_incap_emp, params.num_ert
+    )
