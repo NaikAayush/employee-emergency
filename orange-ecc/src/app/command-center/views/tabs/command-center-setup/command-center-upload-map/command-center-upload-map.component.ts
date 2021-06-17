@@ -153,7 +153,7 @@ export class CommandCenterUploadMapComponent implements OnInit {
     });
   }
 
-  private handleMouseEvent(e: fabric.IEvent) {}
+  private handleMouseEvent(e: fabric.IEvent) { }
 
   ngAfterViewInit(): void {
     this.canvas.height = 0;
@@ -213,6 +213,31 @@ export class CommandCenterUploadMapComponent implements OnInit {
             selectable: false,
           });
           this.canvas.add(orig_img_f);
+
+          // estimated beacons!
+          const beacons: number[][] = res.beacons;
+          console.log("Got beacons!", beacons);
+          for (const beacon of beacons) {
+            console.log(beacon);
+            const iconImg = new fabric.Image(
+              this.choicesInfo["beacon"].iconEl,
+              {
+                left: beacon[1],
+                top: beacon[0],
+                selectable: false,
+                width: 20,
+                height: 20,
+                originX: "center",
+                originY: "center",
+              }
+            );
+            // explicitly say that this must not be uploaded
+            iconImg.data = { name: "beacon" };
+            iconImg.scaleToHeight(20);
+            iconImg.scaleToWidth(20);
+            this.canvas.add(iconImg);
+            // iconImg.bringForward();
+          }
         };
 
         let map_img = new Image();
@@ -220,6 +245,7 @@ export class CommandCenterUploadMapComponent implements OnInit {
 
         this.origImg = orig_img;
         this.mapImg = map_img;
+
       })
       .catch((err) => {
         console.log('error in upload image', err);
