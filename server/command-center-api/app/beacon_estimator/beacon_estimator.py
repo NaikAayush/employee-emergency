@@ -12,7 +12,7 @@ logger = logging.getLogger("beacon_estimator")
 logger.setLevel(logging.INFO)
 ch = logging.StreamHandler()
 ch.setLevel(logging.INFO)
-formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+formatter = logging.Formatter("%(asctime)s - %(name)s - %(levelname)s - %(message)s")
 ch.setFormatter(formatter)
 logger.addHandler(ch)
 
@@ -58,34 +58,39 @@ def estimate_beacon(id_):
     visited = {}
 
     def dfs(edge: Tuple[int, int], local_edge_list: list):
-        logger.debug("in dfs, edge: %s", edge)
-        if edges[edge] <= 0 or edge in visited:
-            return
+        stack = [edge]
 
-        visited[edge] = True
+        while len(stack) > 0:
+            edge = stack.pop()
 
-        local_edge_list.append(edge)
+            logger.debug("in dfs, edge: %s", edge)
+            if edges[edge] <= 0 or edge in visited:
+                continue
 
-        if edge[0] > 0:
-            dfs((edge[0] - 1, edge[1]), local_edge_list)
+            visited[edge] = True
+
+            local_edge_list.append(edge)
+
+            if edge[0] > 0:
+                stack.append((edge[0] - 1, edge[1]))
+
+                if edge[1] > 0:
+                    stack.append((edge[0] - 1, edge[1] - 1))
+                if edge[1] < shape[1] - 1:
+                    stack.append((edge[0] - 1, edge[1] + 1))
+
+            if edge[0] < shape[0] - 1:
+                stack.append((edge[0] + 1, edge[1]))
+
+                if edge[1] > 0:
+                    stack.append((edge[0] + 1, edge[1] - 1))
+                if edge[1] < shape[1] - 1:
+                    stack.append((edge[0] + 1, edge[1] + 1))
 
             if edge[1] > 0:
-                dfs((edge[0] - 1, edge[1] - 1), local_edge_list)
+                stack.append((edge[0], edge[1] - 1))
             if edge[1] < shape[1] - 1:
-                dfs((edge[0] - 1, edge[1] + 1), local_edge_list)
-
-        if edge[0] < shape[0] - 1:
-            dfs((edge[0] + 1, edge[1]), local_edge_list)
-
-            if edge[1] > 0:
-                dfs((edge[0] + 1, edge[1] - 1), local_edge_list)
-            if edge[1] < shape[1] - 1:
-                dfs((edge[0] + 1, edge[1] + 1), local_edge_list)
-
-        if edge[1] > 0:
-            dfs((edge[0], edge[1] - 1), local_edge_list)
-        if edge[1] < shape[1] - 1:
-            dfs((edge[0], edge[1] + 1), local_edge_list)
+                stack.append((edge[0], edge[1] + 1))
 
     beacons = []
 
@@ -102,6 +107,16 @@ def estimate_beacon(id_):
                 "got local_edge_list for %s of size %s", edge, len(local_edge_list)
             )
 
+            def draw_point(point: Tuple[int, int], img: np.ndarray):
+                img[point] = 0
+                color = 200
+
+                for i in range(1, 10):
+                    img[point[0] - i, point[1] - i] = color
+                    img[point[0] + i, point[1] - i] = color
+                    img[point[0] + i, point[1] + i] = color
+                    img[point[0] - i, point[1] + i] = color
+
             count = 0
             for point in local_edge_list:
                 count += 1
@@ -109,7 +124,7 @@ def estimate_beacon(id_):
                 if count % BEACON_DISTANCE == 0:
                     logger.info("ah a fine place to setup a beacon: %s", point)
 
-                    edges[point] = 0
+                    draw_point(point, edges)
 
                     beacons.append(point)
 
@@ -118,5 +133,5 @@ def estimate_beacon(id_):
     draw_img(edges)
 
 
-# estimate_beacon("a246ddf4-3ded-49b9-bacf-fbf7b700e49e")
-estimate_beacon("45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43")
+estimate_beacon("a246ddf4-3ded-49b9-bacf-fbf7b700e49e")
+# estimate_beacon("45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43")
