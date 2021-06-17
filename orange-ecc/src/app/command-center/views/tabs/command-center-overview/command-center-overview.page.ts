@@ -11,6 +11,54 @@ export class CommandCenterOverviewPage {
 
   doubleLineChart: any;
 
+  public masterData = [
+    { building: 'Tower A', floor: 2, emp: 525, ert: 40 },
+    { building: 'Tower A', floor: 3, emp: 1378, ert: 63 },
+    { building: 'Tower A', floor: 4, emp: 264, ert: 8 },
+    { building: 'Tower C', floor: 1, emp: 610, ert: 43 },
+    { building: 'Tower D', floor: 4, emp: 133, ert: 21 },
+    { building: 'Tower B', floor: 3, emp: 853, ert: 32 },
+  ];
+
+  public attendanceData = [
+    {
+      name: 'Jane Cooper',
+      img: 'assets/ert-images/0.png',
+      emp_id: 'EY-100',
+      tow: 'A',
+      floor: 3,
+      status: 'Exited',
+      color: true,
+    },
+    {
+      name: 'Toni Perkins',
+      img: 'assets/ert-images/3.png',
+      emp_id: 'EY-87',
+      tow: 'B',
+      floor: 8,
+      status: 'Stuck',
+      color: false,
+    },
+    {
+      name: 'Nicholas Bishop',
+      img: 'assets/ert-images/2.png',
+      emp_id: 'EY-1110',
+      tow: 'D',
+      floor: 2,
+      status: 'Exited',
+      color: true,
+    },
+    {
+      name: 'Derrick Russell',
+      img: 'assets/ert-images/6.png',
+      emp_id: 'EY-344',
+      tow: 'C',
+      floor: 5,
+      status: 'Stuck',
+      color: false,
+    },
+  ];
+
   constructor() {}
 
   init() {
