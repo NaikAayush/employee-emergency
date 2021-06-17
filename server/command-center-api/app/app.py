@@ -59,6 +59,22 @@ async def processImage(file: UploadFile = File(...)):
     # return StreamingResponse(io.BytesIO(img_png.tobytes()), media_type="image/png")
 
 
+@app.post("/map/estimateBeaconsLocal")
+async def estimateBeaconsLocal(beacon_distance: int, file: UploadFile = File(...)):
+    pil_img = Image.open(file.file)
+
+    # img = cv2.cvtColor(np.array(pil_img), cv2.COLOR_RGB2GRAY)
+    img = np.array(pil_img)
+
+    beacons = estimate_beacon_img(img, beacon_distance)
+
+    return {
+        "beacons": beacons,
+    }
+
+    # return StreamingResponse(io.BytesIO(img_png.tobytes()), media_type="image/png")
+
+
 @app.get("/map/firetest")
 async def firetest(id_: str):
     doc_ref = data.map_ref.document(id_)

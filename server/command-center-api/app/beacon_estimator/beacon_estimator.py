@@ -29,17 +29,17 @@ BEACON_DISTANCE = 200
 DEBUG_DRAW = False
 
 
-def estimate_beacon(id_):
+def estimate_beacon(id_, beacon_distance=BEACON_DISTANCE):
     map_img = get_map_img(id_)
 
     if isinstance(map_img, HTTPException):
         logger.warn("Map image for %s does not exist!", id_)
         return
 
-    return estimate_beacon_img(map_img)
+    return estimate_beacon_img(map_img, beacon_distance)
 
 
-def estimate_beacon_img(map_img):
+def estimate_beacon_img(map_img, beacon_distance=BEACON_DISTANCE):
 
     logger.info("Got map of size\t%s", map_img.shape)
 
@@ -132,7 +132,7 @@ def estimate_beacon_img(map_img):
             for point in local_edge_list:
                 count += 1
 
-                if count % BEACON_DISTANCE == 0:
+                if count % beacon_distance == 0:
                     logger.info("ah a fine place to setup a beacon: %s", point)
 
                     if DEBUG_DRAW:
