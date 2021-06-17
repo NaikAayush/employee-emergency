@@ -5,6 +5,15 @@ import { environment } from 'src/environments/environment';
 import { PathfindingService } from '../../../../employee/services/pathfinding/pathfinding.service';
 import { ChoiceInfo } from '../../../../employee/views/tabs/employee-map/models/choice-info';
 
+class Floor {
+  num: number;
+  canvas: fabric.Canvas;
+
+  constructor (num: number) {
+    this.num = num;
+  }
+}
+
 @Component({
   selector: 'app-command-center-simulation-map',
   templateUrl: './command-center-simulation-map.page.html',
@@ -14,7 +23,11 @@ export class CommandCenterSimulationMapPage implements OnInit {
   noEmp = 10;
   noErt = 5;
   noIncapEmp = 2;
+
+  noFloors = 3;
+
   private canvas: fabric.Canvas;
+  private origImg: HTMLImageElement;
   uuidMap: string = '45b0b2a3-bb7d-4560-8a32-f48d2ba8fd43';
   // user ids to monitor
   userIds: string[] = [
@@ -31,6 +44,10 @@ export class CommandCenterSimulationMapPage implements OnInit {
     'ert4',
     'ert5',
   ];
+
+  // floor specific
+  floors: Floor[] = []
+  uidFloorMap: Record<string, number> = {};
 
   // stats
   totalEmpNumber = 5;
@@ -78,12 +95,9 @@ export class CommandCenterSimulationMapPage implements OnInit {
   }
 
   async ngOnInit() {
-    // initialize canvas
-    this.canvas = new fabric.Canvas('mapFabricCanvas', { renderOnAddRemove: false });
-    this.canvas.selection = false;
-
-    this.canvas.height = 0;
-    this.canvas.width = 0;
+    for (let i = 0; i < this.noFloors; ++i) {
+      this.floors.push(new Floor(i + 1));
+    }
 
     // setup icons
     this.choices.forEach((choice: string) => {
@@ -93,94 +107,17 @@ export class CommandCenterSimulationMapPage implements OnInit {
     });
 
     let orig_img = await this.pathfinding.initialize(this.uuidMap);
+    this.origImg = orig_img;
 
-    this.canvas.setWidth(orig_img.width);
-    // this.canvas.height = orig_img.height;
-    this.canvas.setHeight(orig_img.height);
-    // this.canvas.width = orig_img.width;
-    this.canvas.setDimensions(
-      {
-        width: '80%',
-        height: '',
-      },
-      {
-        cssOnly: true,
-      }
-    );
+    // TODO: parallelize for spid, using Promise.all
+    for (let i = 0; i < this.noFloors; ++i) {
+      const canvas = await this.initializeCanvas(i+1);
+      this.hideCanvas(canvas);
+      this.floors[i].canvas = canvas;
+    }
 
-    const height = this.canvas.getHeight();
-    console.log('height is ', height);
-    this.canvas.hoverCursor = 'auto';
-
-    let orig_img_f = new fabric.Image(orig_img, {
-      left: 0,
-      top: 0,
-      lockMovementX: true,
-      lockMovementY: true,
-      lockScalingX: true,
-      selectable: false,
-    });
-    this.canvas.add(orig_img_f);
-
-    this.addMarkers();
-
-    this.canvas.on('mouse:wheel', (opt) => {
-      let delta = (opt.e as WheelEvent).deltaY;
-      let zoom = this.canvas.getZoom();
-      zoom *= 0.999 ** delta;
-      if (zoom > 20) zoom = 20;
-      if (zoom < 0.01) zoom = 0.01;
-      this.canvas.zoomToPoint(new fabric.Point((opt.e as WheelEvent).offsetX, (opt.e as WheelEvent).offsetY), zoom);
-      opt.e.preventDefault();
-      opt.e.stopPropagation();
-      this.canvas.requestRenderAll();
-      // var vpt = this.canvas.viewportTransform;
-      // if (zoom < 400 / 1000) {
-      //   vpt[4] = 200 - 1000 * zoom / 2;
-      //   vpt[5] = 200 - 1000 * zoom / 2;
-      // } else {
-      //   if (vpt[4] >= 0) {
-      //     vpt[4] = 0;
-      //   } else if (vpt[4] < this.canvas.getWidth() - 1000 * zoom) {
-      //     vpt[4] = this.canvas.getWidth() - 1000 * zoom;
-      //   }
-      //   if (vpt[5] >= 0) {
-      //     vpt[5] = 0;
-      //   } else if (vpt[5] < this.canvas.getHeight() - 1000 * zoom) {
-      //     vpt[5] = this.canvas.getHeight() - 1000 * zoom;
-      //   }
-      // }
-    });
-
-    this.canvas.on('mouse:down', function(opt) {
-      const evt = opt.e as MouseEvent;
-      if (evt.altKey === true) {
-        this.isDragging = true;
-        this.selection = false;
-        this.lastPosX = evt.clientX;
-        this.lastPosY = evt.clientY;
-      }
-    });
-
-    this.canvas.on('mouse:move', function(opt) {
-      if (this.isDragging) {
-        const e = opt.e as MouseEvent;
-        const vpt = this.viewportTransform;
-        vpt[4] += e.clientX - this.lastPosX;
-        vpt[5] += e.clientY - this.lastPosY;
-        this.requestRenderAll();
-        this.lastPosX = e.clientX;
-        this.lastPosY = e.clientY;
-      }
-    });
-
-    this.canvas.on('mouse:up', function() {
-      // on mouse up we want to recalculate new interaction
-      // for all objects, so we call setViewportTransform
-      this.setViewportTransform(this.viewportTransform);
-      this.isDragging = false;
-      this.selection = true;
-    });
+    this.canvas = this.floors[0].canvas;
+    this.showCanvas(this.canvas);
 
     setInterval(() => {
       let empIncap = 0;
@@ -251,7 +188,135 @@ export class CommandCenterSimulationMapPage implements OnInit {
     // this.setupSimulation(this.noEmp, this.noErt, this.noIncapEmp);
   }
 
+  private hideCanvas(canvas: fabric.Canvas) {
+    canvas.getElement().style.display = "none";
+  }
+
+  private showCanvas(canvas: fabric.Canvas) {
+    canvas.getElement().style.display = "block";
+  }
+
+  newFloorSelect(num: number) {
+    console.log(num, typeof num, num - 1);
+
+    this.hideCanvas(this.canvas);
+
+    this.canvas = this.floors[num - 1].canvas;
+
+    this.showCanvas(this.canvas);
+  }
+
+  async initializeCanvas(num: number) {
+    // initialize canvas
+    const canvas = new fabric.Canvas(`mapFabricCanvas${num}`, { renderOnAddRemove: false });
+    canvas.selection = false;
+
+    canvas.height = 0;
+    canvas.width = 0;
+
+    canvas.setWidth(this.origImg.width);
+    // canvas.height = this.origImg.height;
+    canvas.setHeight(this.origImg.height);
+    // canvas.width = this.origImg.width;
+    canvas.setDimensions(
+      {
+        width: '80%',
+        height: '',
+      },
+      {
+        cssOnly: true,
+      }
+    );
+
+    const height = canvas.getHeight();
+    console.log('height is ', height);
+    canvas.hoverCursor = 'auto';
+
+    let orig_img_f = new fabric.Image(this.origImg, {
+      left: 0,
+      top: 0,
+      lockMovementX: true,
+      lockMovementY: true,
+      lockScalingX: true,
+      selectable: false,
+    });
+    canvas.add(orig_img_f);
+
+    this.addMarkers();
+
+    canvas.on('mouse:wheel', (opt) => {
+      let delta = (opt.e as WheelEvent).deltaY;
+      let zoom = canvas.getZoom();
+      zoom *= 0.999 ** delta;
+      if (zoom > 20) zoom = 20;
+      if (zoom < 0.01) zoom = 0.01;
+      canvas.zoomToPoint(new fabric.Point((opt.e as WheelEvent).offsetX, (opt.e as WheelEvent).offsetY), zoom);
+      opt.e.preventDefault();
+      opt.e.stopPropagation();
+      canvas.requestRenderAll();
+      // var vpt = canvas.viewportTransform;
+      // if (zoom < 400 / 1000) {
+      //   vpt[4] = 200 - 1000 * zoom / 2;
+      //   vpt[5] = 200 - 1000 * zoom / 2;
+      // } else {
+      //   if (vpt[4] >= 0) {
+      //     vpt[4] = 0;
+      //   } else if (vpt[4] < canvas.getWidth() - 1000 * zoom) {
+      //     vpt[4] = canvas.getWidth() - 1000 * zoom;
+      //   }
+      //   if (vpt[5] >= 0) {
+      //     vpt[5] = 0;
+      //   } else if (vpt[5] < canvas.getHeight() - 1000 * zoom) {
+      //     vpt[5] = canvas.getHeight() - 1000 * zoom;
+      //   }
+      // }
+    });
+
+    canvas.on('mouse:down', function(opt) {
+      const evt = opt.e as MouseEvent;
+      if (evt.altKey === true) {
+        this.isDragging = true;
+        this.selection = false;
+        this.lastPosX = evt.clientX;
+        this.lastPosY = evt.clientY;
+      }
+    });
+
+    canvas.on('mouse:move', function(opt) {
+      if (this.isDragging) {
+        const e = opt.e as MouseEvent;
+        const vpt = this.viewportTransform;
+        vpt[4] += e.clientX - this.lastPosX;
+        vpt[5] += e.clientY - this.lastPosY;
+        this.requestRenderAll();
+        this.lastPosX = e.clientX;
+        this.lastPosY = e.clientY;
+      }
+    });
+
+    canvas.on('mouse:up', function() {
+      // on mouse up we want to recalculate new interaction
+      // for all objects, so we call setViewportTransform
+      this.setViewportTransform(this.viewportTransform);
+      this.isDragging = false;
+      this.selection = true;
+    });
+
+    return canvas;
+  }
+
   setupSimulation(numEmp: number, numErt: number, numEmpImm: number) {
+    // cleanup old markers
+    for (let uid of this.userIds) {
+      for (let floor of this.floors) {
+        try {
+          floor.canvas.remove(this.userMarkers[uid]);
+        } catch {
+          console.log("not this time", floor.num, uid)
+        }
+      }
+    }
+
     this.totalEmpNumber = numEmp + numEmpImm;
     this.totalERTNumber = numErt;
 
@@ -261,16 +326,35 @@ export class CommandCenterSimulationMapPage implements OnInit {
     this.totalEmpExited = 0;
     this.totalErtExited = 0;
 
+    this.uidFloorMap = {};
+    let curFloor = 0;
+
     const userIds = [];
-    for (let i = 1; i <= this.totalEmpNumber; ++i) {
-      userIds.push(`emp${i}`);
+    for (let i = 1; i <= numEmp; ++i) {
+      const uid = `emp${i}`;
+      userIds.push(uid);
+
+      this.uidFloorMap[uid] = curFloor;
+      curFloor = (curFloor + 1) % this.noFloors;
     }
-    for (let i = 1; i <= this.totalERTNumber; ++i) {
-      userIds.push(`ert${i}`);
+    for (let i = 1; i <= this.totalERTNumber - numEmpImm; ++i) {
+      const uid = `ert${i}`;
+      userIds.push(uid);
+
+      this.uidFloorMap[uid] = curFloor;
+      curFloor = (curFloor + 1) % this.noFloors;
     }
 
-    for (let uid of this.userIds) {
-      this.canvas.remove(this.userMarkers[uid]);
+    for (let i = 1; i <= numEmpImm; ++i) {
+      const empUid = `emp${numEmp + i}`;
+      const ertUid = `ert${numErt - numEmpImm + i}`;
+
+      userIds.push(empUid);
+      userIds.push(ertUid);
+
+      this.uidFloorMap[empUid] = curFloor;
+      this.uidFloorMap[ertUid] = curFloor;
+      curFloor = (curFloor + 1) % this.noFloors;
     }
 
     this.userMarkers = {}
@@ -318,7 +402,10 @@ export class CommandCenterSimulationMapPage implements OnInit {
             height: marker.height,
           });
           iconImg.data = { name: marker.name };
-          this.canvas.add(iconImg);
+
+          for (let floor of this.floors) {
+            floor.canvas.add(iconImg);
+          }
         }
       });
   }
@@ -423,7 +510,7 @@ export class CommandCenterSimulationMapPage implements OnInit {
               selectable: false,
             });
 
-            this.canvas.add(this.userMarkers[uid]);
+            this.floors[this.uidFloorMap[uid]].canvas.add(this.userMarkers[uid]);
           }
         } catch (error) {
           console.log('Bad data from WS');
