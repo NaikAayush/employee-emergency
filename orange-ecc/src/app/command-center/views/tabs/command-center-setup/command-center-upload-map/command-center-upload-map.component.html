@@ -148,6 +148,14 @@
     >
       Submit
     </button>
+
+    <label id="beaconDistanceLabel">Choose beacon estimator distance</label>
+    <ion-select placeholder="Select distance" value="2" (ionChange)="estimateBeacons($event.target.value)">
+      <ion-select-option value="1">1 meter</ion-select-option>
+      <ion-select-option value="2">2 meters</ion-select-option>
+      <ion-select-option value="3">3 meters</ion-select-option>
+      <ion-select-option value="4">4 meters</ion-select-option>
+    </ion-select>
   </div>
 
   <canvas id="mapFabricCanvas"></canvas>

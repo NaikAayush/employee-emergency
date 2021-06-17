@@ -217,27 +217,7 @@ export class CommandCenterUploadMapComponent implements OnInit {
           // estimated beacons!
           const beacons: number[][] = res.beacons;
           console.log("Got beacons!", beacons);
-          for (const beacon of beacons) {
-            console.log(beacon);
-            const iconImg = new fabric.Image(
-              this.choicesInfo["beacon"].iconEl,
-              {
-                left: beacon[1],
-                top: beacon[0],
-                selectable: false,
-                width: 20,
-                height: 20,
-                originX: "center",
-                originY: "center",
-              }
-            );
-            // explicitly say that this must not be uploaded
-            iconImg.data = { name: "beacon" };
-            iconImg.scaleToHeight(20);
-            iconImg.scaleToWidth(20);
-            this.canvas.add(iconImg);
-            // iconImg.bringForward();
-          }
+          this.placeEstimatedBeacons(beacons);
         };
 
         let map_img = new Image();
@@ -251,6 +231,66 @@ export class CommandCenterUploadMapComponent implements OnInit {
         console.log('error in upload image', err);
       });
     // TODO: aaaaaaaaaaaaaa
+  }
+
+  private placeEstimatedBeacons(beacons: number[][]) {
+    const remArr: fabric.Object[] = [];
+    this.canvas.getObjects('image').forEach((obj) => {
+      if (obj.data !== undefined && obj.data.estimatedBeacon) {
+        remArr.push(obj);
+      }
+    });
+
+    console.log("removing old beacons", remArr);
+    this.canvas.renderOnAddRemove = false;
+
+    remArr.forEach((obj) => {
+      this.canvas.remove(obj);
+    });
+
+    for (const beacon of beacons) {
+      const iconImg = new fabric.Image(
+        this.choicesInfo["beacon"].iconEl,
+        {
+          left: beacon[1],
+          top: beacon[0],
+          selectable: false,
+          width: 20,
+          height: 20,
+          originX: "center",
+          originY: "center",
+        }
+      );
+      // explicitly say that this must not be uploaded
+      iconImg.data = { name: "beacon", estimatedBeacon: true };
+      iconImg.scaleToHeight(20);
+      iconImg.scaleToWidth(20);
+      this.canvas.add(iconImg);
+      // iconImg.bringForward();
+    }
+
+    this.canvas.requestRenderAll();
+    this.canvas.renderOnAddRemove = true;
+
+  }
+
+  private async srcToFile(src: string, fileName: string, mimeType: string) {
+    const res = await fetch(src);
+    const buf = await res.arrayBuffer();
+    return new File([buf], fileName, { type: mimeType });
+  }
+
+  async estimateBeacons(distance: number) {
+    console.log(distance, distance * 100);
+    let formData = new FormData();
+    formData.append('file', await this.srcToFile(this.mapImg.src, "map.png", "image/png"));
+
+    const res: any = await this.api
+      .post('/map/estimateBeaconsLocal?beacon_distance=' + distance * 100, formData)
+
+    console.log("got beaconsu", res);
+
+    this.placeEstimatedBeacons(res.beacons);
   }
 
   private async uploadImage(
