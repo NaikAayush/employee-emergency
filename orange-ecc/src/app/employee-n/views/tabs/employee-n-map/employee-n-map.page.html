@@ -1,9 +1,82 @@
 <ion-header>
   <ion-toolbar>
-    <ion-title>employee-n-map</ion-title>
+    <ion-title>Navigation</ion-title>
   </ion-toolbar>
 </ion-header>
 
 <ion-content>
-
+  <div class="flex flex-col m-4">
+    <label for="account_number" class="block text-sm font-medium text-gray-700"
+      >Search</label
+    >
+    <div class="mt-1 relative rounded-md shadow-sm">
+      <input
+        type="text"
+        name="account_number"
+        id="account_number"
+        class="
+          focus:ring-indigo-500
+          focus:border-indigo-500
+          block
+          w-full
+          pr-10
+          sm:text-sm
+          border-gray-300
+          rounded-md
+        "
+        placeholder="Eg. Meeting Room"
+      />
+      <div
+        class="
+          absolute
+          inset-y-0
+          right-0
+          pr-3
+          flex
+          items-center
+          pointer-events-none
+        "
+      >
+        <ion-icon name="search-outline"></ion-icon>
+      </div>
+    </div>
+    <div class="flex flex-row">
+      <div class="overflow-hidden shadow-lg rounded-2xl w-1/3 m-2">
+        <img
+          alt="eggs"
+          src="https://cdn.shopify.com/s/files/1/0020/4433/0057/files/An-empty-meeting-room-and-conference-table.jpg"
+          class="rounded-t-lg"
+        />
+        <div class="bg-white w-full p-4 relative">
+          <p class="text-gray-800 text-sm xl:text-lg font-medium text-center">
+            Meeting Room
+          </p>
+        </div>
+      </div>
+      <div class="overflow-hidden shadow-lg rounded-2xl w-1/3 m-2">
+        <img
+          alt="eggs"
+          src="https://cdn.shopify.com/s/files/1/0020/4433/0057/files/An-empty-meeting-room-and-conference-table.jpg"
+          class="rounded-t-lg"
+        />
+        <div class="bg-white w-full p-4 relative">
+          <p class="text-gray-800 text-sm xl:text-lg font-medium text-center">
+            Conference Room
+          </p>
+        </div>
+      </div>
+      <div class="overflow-hidden shadow-lg rounded-2xl w-1/3 m-2">
+        <img
+          alt="eggs"
+          src="https://cdn.shopify.com/s/files/1/0020/4433/0057/files/An-empty-meeting-room-and-conference-table.jpg"
+          class="rounded-t-lg"
+        />
+        <div class="bg-white w-full p-4 relative">
+          <p class="text-gray-800 text-sm xl:text-lg font-medium text-center">
+            Cafeteria
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
 </ion-content>
