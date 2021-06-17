@@ -18,9 +18,14 @@ export class AppComponent {
     { title: 'Command Center', url: '/cc', icon: 'business' },
     { title: 'Simulation', url: '/cc-sim', icon: 'pulse' },
     { title: 'ERT', url: '/ert', icon: 'people' },
+    { title: 'ERT Tabs', url: '/ert/ert-tabs', icon: 'body' },
     { title: 'Employee', url: '/employee', icon: 'body' },
     { title: 'Employee Tabs', url: '/employee/employee-tabs', icon: 'body' },
-    { title: 'ERT Tabs', url: '/ert/ert-tabs', icon: 'body' },
+    {
+      title: 'Employee Normal',
+      url: '/employee-n',
+      icon: 'navigate',
+    },
   ];
   public avatarNo: Number;
   constructor(
@@ -35,13 +40,13 @@ export class AppComponent {
     if (!this.platform.is('desktop')) {
       this.appPages = [
         { title: 'ERT', url: '/ert', icon: 'people' },
+        { title: 'ERT Tabs', url: '/ert/ert-tabs', icon: 'body' },
         { title: 'Employee', url: '/employee', icon: 'body' },
         {
           title: 'Employee Tabs',
           url: '/employee/employee-tabs',
           icon: 'body',
         },
-        { title: 'ERT Tabs', url: '/ert/ert-tabs', icon: 'body' },
       ];
     }
 
