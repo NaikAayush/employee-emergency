@@ -191,6 +191,7 @@ export class EmployeeNMapPage implements OnInit {
       } else {
         console.log(e.pointer.x, e.pointer.y);
         this.currentPos = new Point(e.pointer.x, e.pointer.y);
+        this.navigateToMarker();
       }
     });
     //////////////////////////////////////////////
