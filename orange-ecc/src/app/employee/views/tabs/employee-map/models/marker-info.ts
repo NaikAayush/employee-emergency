@@ -4,4 +4,5 @@ export interface MarkerInfo {
   left: number;
   width: number;
   height: number;
+  data: any;
 }
