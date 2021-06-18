@@ -60,6 +60,27 @@ export class AppComponent {
   }
 
   async initializeApp() {
+    this.auth.user$.subscribe((x: any) => {
+      console.log(x);
+      try {
+        if (x.type == 'ERT') {
+          this.router.navigateByUrl('/ert');
+          console.log('kill me');
+        }
+        if (x.type == 'Employee') {
+          this.router.navigateByUrl('/employee');
+          console.log('kill me');
+        }
+        if (x.type == 'Admin') {
+          this.router.navigateByUrl('/cc');
+        } else {
+          this.router.navigateByUrl('/employee');
+        }
+      } catch (error) {
+        this.router.navigateByUrl('/employee');
+      }
+    });
+
     this.avatarNo = this.getRandomInt(6);
 
     await this.storage.create();
