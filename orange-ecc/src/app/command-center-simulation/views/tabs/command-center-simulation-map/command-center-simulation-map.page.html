@@ -6,34 +6,6 @@
 
 <ion-content class="m-10">
   <div class="m-3">
-    <div class="mb-3">
-      <label for="location" class="block text-sm font-medium text-gray-700"
-        >Floor</label
-      >
-      <select
-        id="location"
-        name="location"
-        (change)="newFloorSelect($event.target.value)"
-        value="1"
-        class="
-          mt-1
-          block
-          w-full
-          pl-3
-          pr-10
-          py-2
-          text-base
-          border-gray-300
-          focus:outline-none
-          focus:ring-indigo-500
-          focus:border-indigo-500
-          sm:text-sm
-          rounded-md
-        "
-      >
-      <option *ngFor="let floor of floors" value="{{floor.num}}">Floor {{ floor.num }}</option>
-      </select>
-    </div>
     <!-- Sliders Start -->
     <div
       class="
@@ -389,8 +361,41 @@
     <div>Number of rescued employees: {{ totalEmpExited }}</div>
     <div>Number of rescued ERTs: {{ totalErtExited }}</div> -->
   </div>
+  <div class="mb-3">
+    <label for="location" class="block text-sm font-medium text-gray-700"
+      >Floor</label
+    >
+    <select
+      id="location"
+      name="location"
+      (change)="newFloorSelect($event.target.value)"
+      value="1"
+      class="
+        mt-1
+        block
+        w-full
+        pl-3
+        pr-10
+        py-2
+        text-base
+        border-gray-300
+        focus:outline-none
+        focus:ring-indigo-500
+        focus:border-indigo-500
+        sm:text-sm
+        rounded-md
+      "
+    >
+      <option *ngFor="let floor of floors" value="{{floor.num}}">
+        Floor {{ floor.num }}
+      </option>
+    </select>
+  </div>
   <div class="flex flex-col items-center mt-10">
-      <canvas *ngFor="let floor of floors" id="mapFabricCanvas{{ floor.num }}"></canvas>
+    <canvas
+      *ngFor="let floor of floors"
+      id="mapFabricCanvas{{ floor.num }}"
+    ></canvas>
   </div>
   <!-- <div class="flex flex-col items-center mt-10"> -->
   <!--   <canvas id="mapFabricCanvas1"></canvas> -->

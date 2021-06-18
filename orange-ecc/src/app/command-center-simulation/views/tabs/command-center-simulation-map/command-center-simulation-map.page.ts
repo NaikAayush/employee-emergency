@@ -189,21 +189,30 @@ export class CommandCenterSimulationMapPage implements OnInit {
   }
 
   private hideCanvas(canvas: fabric.Canvas) {
-    canvas.getElement().style.display = "none";
+    // canvas.getElement().style.display = "none";
+    canvas.getElement().parentElement.style.display = "none";
+    this.removeEventHandlers(canvas);
+    canvas.calcOffset();
   }
 
   private showCanvas(canvas: fabric.Canvas) {
-    canvas.getElement().style.display = "block";
+    // canvas.getElement().style.display = "block";
+    canvas.getElement().parentElement.style.display = "block";
+    this.addEventHandlers(canvas);
+    canvas.calcOffset();
   }
 
   newFloorSelect(num: number) {
     console.log(num, typeof num, num - 1);
 
+    const nextCanvas = this.floors[num - 1].canvas;
+
+    this.showCanvas(nextCanvas);
+
     this.hideCanvas(this.canvas);
 
-    this.canvas = this.floors[num - 1].canvas;
+    this.canvas = nextCanvas;
 
-    this.showCanvas(this.canvas);
   }
 
   async initializeCanvas(num: number) {
@@ -244,7 +253,15 @@ export class CommandCenterSimulationMapPage implements OnInit {
 
     this.addMarkers();
 
+    return canvas;
+  }
+
+  private addEventHandlers(canvas: fabric.Canvas) {
     canvas.on('mouse:wheel', (opt) => {
+      if (this.canvas != canvas) {
+        return;
+      }
+
       let delta = (opt.e as WheelEvent).deltaY;
       let zoom = canvas.getZoom();
       zoom *= 0.999 ** delta;
@@ -271,8 +288,13 @@ export class CommandCenterSimulationMapPage implements OnInit {
       //   }
       // }
     });
+    const outsideClass = this;
 
     canvas.on('mouse:down', function(opt) {
+      if (outsideClass.canvas != canvas) {
+        return;
+      }
+
       const evt = opt.e as MouseEvent;
       if (evt.altKey === true) {
         this.isDragging = true;
@@ -283,6 +305,10 @@ export class CommandCenterSimulationMapPage implements OnInit {
     });
 
     canvas.on('mouse:move', function(opt) {
+      if (outsideClass.canvas != canvas) {
+        return;
+      }
+
       if (this.isDragging) {
         const e = opt.e as MouseEvent;
         const vpt = this.viewportTransform;
@@ -295,14 +321,23 @@ export class CommandCenterSimulationMapPage implements OnInit {
     });
 
     canvas.on('mouse:up', function() {
+      if (outsideClass.canvas != canvas) {
+        return;
+      }
+
       // on mouse up we want to recalculate new interaction
       // for all objects, so we call setViewportTransform
       this.setViewportTransform(this.viewportTransform);
       this.isDragging = false;
       this.selection = true;
     });
+  }
 
-    return canvas;
+  private removeEventHandlers(canvas: fabric.Canvas) {
+    canvas.off('mouse:wheel');
+    canvas.off('mouse:down');
+    canvas.off('mouse:move');
+    canvas.off('mouse:up');
   }
 
   setupSimulation(numEmp: number, numErt: number, numEmpImm: number) {
