@@ -77,7 +77,7 @@ export class EmployeeNMapPage implements OnInit {
 
   // current position
   currentPos: Point = new Point(327.386, 62.88);
-  drawnPath: fabric.Rect[] = [];
+  drawnPath: fabric.Object[] = [];
 
   otherPoints: MarkerInfo[] = [];
   reqMarker: MarkerInfo = null;
@@ -497,9 +497,13 @@ export class EmployeeNMapPage implements OnInit {
             left: marker.left,
             top: marker.top,
             selectable: false,
-            width: marker.width,
-            height: marker.height,
+            // width: marker.width,
+            // height: marker.height,
+            originX: 'center',
+            originY: 'center',
           });
+          iconImg.scaleToHeight(20);
+          iconImg.scaleToWidth(20);
           iconImg.data = { name: marker.name };
           this.canvas.add(iconImg);
         }
@@ -583,10 +587,7 @@ export class EmployeeNMapPage implements OnInit {
     }
 
     console.log('reqMarker ', this.reqMarker);
-    const reqPoint = new Point(
-      this.reqMarker.top,
-      this.reqMarker.left
-    );
+    const reqPoint = new Point(this.reqMarker.top, this.reqMarker.left);
     console.log('reqPoint ', reqPoint);
 
     const curpos = { x: this.currentPos.x, y: this.currentPos.y };
@@ -598,9 +599,12 @@ export class EmployeeNMapPage implements OnInit {
     // );
 
     // easystarjs
-    const minPath = (await this.pathfinding.getPath(curpos, [
-      reqPoint,
-    ], true, true)) as Point[];
+    const minPath = (await this.pathfinding.getPath(
+      curpos,
+      [reqPoint],
+      true,
+      true
+    )) as Point[];
 
     const path = minPath;
     if (path == null) {
@@ -612,21 +616,71 @@ export class EmployeeNMapPage implements OnInit {
         this.canvas.remove(rect);
       }
 
-      for (let point of path) {
+      for (let i = 1; i < path.length; ++i) {
+        const prevPoint = path[i-1];
+        const point = path[i];
+        this.drawArrow(prevPoint.x, prevPoint.y, point.x, point.y);
         // console.log(point, this.imgMatrix[point.y][point.x]);
-        var rect = new fabric.Rect({
-          left: point.x,
-          top: point.y,
-          fill: 'red',
-          width: 5,
-          height: 5,
-          angle: 45,
-          selectable: false,
-        });
-        this.canvas.add(rect);
-        this.drawnPath.push(rect);
+        // var rect = new fabric.Rect({
+        //   left: point.x,
+        //   top: point.y,
+        //   fill: 'red',
+        //   width: 5,
+        //   height: 5,
+        //   angle: 45,
+        //   selectable: false,
+        // });
+        // this.canvas.add(rect);
+        // this.drawnPath.push(rect);
       }
     }
+  }
+
+  private drawArrow(fromx: number, fromy: number, tox: number, toy: number) {
+    var angle = Math.atan2(toy - fromy, tox - fromx);
+
+    var headlen = 5; // arrow head size
+
+    // bring the line end back some to account for arrow head.
+    tox = tox - headlen * Math.cos(angle);
+    toy = toy - headlen * Math.sin(angle);
+
+    // calculate the points.
+    var points = [
+      {
+        x: tox,
+        y: toy,
+      },
+      {
+        x: tox - headlen * Math.cos(angle - Math.PI / 2),
+        y: toy - headlen * Math.sin(angle - Math.PI / 2),
+      },
+      {
+        x: tox + headlen * Math.cos(angle), // tip
+        y: toy + headlen * Math.sin(angle),
+      },
+      {
+        x: tox - headlen * Math.cos(angle + Math.PI / 2),
+        y: toy - headlen * Math.sin(angle + Math.PI / 2),
+      },
+      {
+        x: tox,
+        y: toy,
+      },
+    ];
+
+    let pline = new fabric.Polyline(points, {
+      fill: 'red',
+      stroke: 'black',
+      opacity: 1,
+      strokeWidth: 0,
+      originX: 'left',
+      originY: 'top',
+      selectable: false,
+    });
+
+    this.canvas.add(pline);
+    this.drawnPath.push(pline);
   }
 
   setLoc(location) {
