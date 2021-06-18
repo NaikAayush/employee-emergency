@@ -157,18 +157,18 @@ export class EmployeeMapPage {
     );
 
     let watch = this.geolocation.watchPosition();
-    watch.subscribe((data: any) => {
-      console.log('You are safe');
-      console.log(data);
-      this.lat = data.coords.latitude;
-      this.long = data.coords.longitude;
-      if (this.lat > 12.90812) {
-        this.presentToast();
-      }
-      // data can be a set of coordinates, or an error (if an error occurred).
-      // data.coords.latitude
-      // data.coords.longitude
-    });
+    // watch.subscribe((data: any) => {
+    //   console.log('You are safe');
+    //   console.log(data);
+    //   this.lat = data.coords.latitude;
+    //   this.long = data.coords.longitude;
+    //   if (this.lat > 12.90812) {
+    //     this.presentToast();
+    //   }
+    //   // data can be a set of coordinates, or an error (if an error occurred).
+    //   // data.coords.latitude
+    //   // data.coords.longitude
+    // });
   }
 
   ngOnInit() {

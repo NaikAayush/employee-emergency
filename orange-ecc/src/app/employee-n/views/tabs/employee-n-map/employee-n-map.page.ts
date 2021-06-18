@@ -156,18 +156,18 @@ export class EmployeeNMapPage implements OnInit {
     );
 
     let watch = this.geolocation.watchPosition();
-    watch.subscribe((data: any) => {
-      console.log('You are safe');
-      console.log(data);
-      this.lat = data.coords.latitude;
-      this.long = data.coords.longitude;
-      if (this.lat > 12.90812) {
-        this.presentToast();
-      }
-      // data can be a set of coordinates, or an error (if an error occurred).
-      // data.coords.latitude
-      // data.coords.longitude
-    });
+    // watch.subscribe((data: any) => {
+    //   console.log('You are safe');
+    //   console.log(data);
+    //   this.lat = data.coords.latitude;
+    //   this.long = data.coords.longitude;
+    //   if (this.lat > 12.90812) {
+    //     this.presentToast();
+    //   }
+    //   // data can be a set of coordinates, or an error (if an error occurred).
+    //   // data.coords.latitude
+    //   // data.coords.longitude
+    // });
   }
 
   ngOnInit() {
@@ -618,7 +618,7 @@ export class EmployeeNMapPage implements OnInit {
       }
 
       for (let i = 1; i < path.length; ++i) {
-        const prevPoint = path[i-1];
+        const prevPoint = path[i - 1];
         const point = path[i];
         this.drawArrow(prevPoint.x, prevPoint.y, point.x, point.y);
         // console.log(point, this.imgMatrix[point.y][point.x]);
