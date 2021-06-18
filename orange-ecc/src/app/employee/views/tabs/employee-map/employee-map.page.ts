@@ -34,6 +34,7 @@ import { WebSocketSubject } from 'rxjs/webSocket';
 import { PathfindingService } from 'src/app/employee/services/pathfinding/pathfinding.service';
 import { ToastController } from '@ionic/angular';
 import { Geolocation } from '@ionic-native/geolocation/ngx';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-employee-map',
@@ -202,7 +203,7 @@ export class EmployeeMapPage {
     // ws
     // this.subject = this.socket.connectSocket('update?id=' + this.userUuid);
     this.wsLoc = new WebSocket(
-      'ws://35.244.26.150:5050/' + 'update?id=' + this.userUuid
+      environment.wsEndpoint + 'update?id=' + this.userUuid
     );
     // download nav icon
     this.navIcon = new Image();

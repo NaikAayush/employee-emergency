@@ -16,12 +16,11 @@ import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 
 import { TrilaterationService } from 'src/app/employee/services/trilateration/trilateration.service';
-import { WebsocketService } from 'src/app/employee/services/websocket/websocket.service';
-import { WebSocketSubject } from 'rxjs/webSocket';
 import { PathfindingService } from 'src/app/employee/services/pathfinding/pathfinding.service';
 import { MarkerInfo } from 'src/app/employee/views/tabs/employee-map/models/marker-info';
 import { ChoiceInfo } from 'src/app/employee/views/tabs/employee-map/models/choice-info';
 import { Point } from 'src/app/employee/views/tabs/employee-map/models/point';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-ert-map',
@@ -77,7 +76,9 @@ export class ErtMapPage implements OnInit {
 
   // ws
   userUuid: string = 'LxhvXHuCJxUXITPfzmYAnKJb6uf2';
-  subject: WebSocketSubject<any>;
+  // subject: WebSocketSubject<any>;
+  // subject: WebSocketSubject<any>;
+  wsLoc: WebSocket;
 
   // navigation icon
   private navIcon: HTMLImageElement;
@@ -113,7 +114,7 @@ export class ErtMapPage implements OnInit {
     // trilateration
     private trilateration: TrilaterationService,
     // ws
-    private socket: WebsocketService,
+    // private socket: WebsocketService,
 
     // pathfinding
     private pathfinding: PathfindingService
@@ -161,7 +162,10 @@ export class ErtMapPage implements OnInit {
     }
 
     // ws
-    this.subject = this.socket.connectSocket('update?id=' + this.userUuid);
+    // this.subject = this.socket.connectSocket('update?id=' + this.userUuid);
+    this.wsLoc = new WebSocket(
+      environment.wsEndpoint + 'update?id=' + this.userUuid
+    );
     // download nav icon
     this.navIcon = new Image();
     this.navIcon.src = this.navIconSrc;
@@ -516,11 +520,18 @@ export class ErtMapPage implements OnInit {
     }
 
     // send to ws server
-    this.socket.sendMessage(this.subject, {
-      x: pos[0],
-      y: pos[0],
-      name: this.userUuid,
-    });
+    // this.socket.sendMessage(this.subject, {
+    //   x: pos[0],
+    //   y: pos[0],
+    //   name: this.userUuid,
+    // });
+    this.wsLoc.send(
+      JSON.stringify({
+        x: pos[0],
+        y: pos[1],
+        name: "Samyak ERT",
+      })
+    );
 
     this.getNearestExit();
   }
