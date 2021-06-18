@@ -20,12 +20,16 @@ export class CommandCenterMapPage implements OnInit {
   // uuidMap: string = 'a246ddf4-3ded-49b9-bacf-fbf7b700e49e';
   uuidMap: string = '5f820658-e546-4145-9734-7cff675f7ec7';
   // user ids to monitor
+  // userIds: string[] = [
+  //   '592s1XmfNwYujg7Y1thbkDyOTZf2',
+  //   'brr',
+  //   'LxhvXHuCJxUXITPfzmYAnKJb6uf2',
+  //   'abc',
+  //   'leUKab3VjIe42HgCq0qPafS1FLs2',
+  // ];
   userIds: string[] = [
-    '592s1XmfNwYujg7Y1thbkDyOTZf2',
-    'brr',
+    'IWF3Z5idpBRA9cbdH9R9IWFN0852',
     'LxhvXHuCJxUXITPfzmYAnKJb6uf2',
-    'abc',
-    'leUKab3VjIe42HgCq0qPafS1FLs2',
   ];
 
   // icons

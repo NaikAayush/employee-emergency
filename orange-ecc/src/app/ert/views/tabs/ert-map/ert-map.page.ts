@@ -5,18 +5,14 @@ import {
   WifiScanResultsOptions,
   WifiWizard2,
 } from '@ionic-native/wifi-wizard-2/ngx';
-import {
-  Magnetometer,
-} from '@ionic-native/magnetometer/ngx';
+import { Magnetometer } from '@ionic-native/magnetometer/ngx';
 import {
   DeviceOrientation,
   DeviceOrientationCompassHeading,
 } from '@ionic-native/device-orientation/ngx';
 
 import { fabric } from 'fabric';
-import {
-  AngularFirestore,
-} from '@angular/fire/firestore';
+import { AngularFirestore } from '@angular/fire/firestore';
 import { AngularFireStorage } from '@angular/fire/storage';
 
 import { TrilaterationService } from 'src/app/employee/services/trilateration/trilateration.service';
@@ -80,7 +76,7 @@ export class ErtMapPage implements OnInit {
   headingAngle: number = 45;
 
   // ws
-  userUuid: string = 'sampleasechangethis';
+  userUuid: string = 'LxhvXHuCJxUXITPfzmYAnKJb6uf2';
   subject: WebSocketSubject<any>;
 
   // navigation icon
@@ -172,30 +168,34 @@ export class ErtMapPage implements OnInit {
   }
 
   async setupEmployees() {
-    const data = { x: this.employeeLocs[0].x - 18, y: this.employeeLocs[0].y - 8, name: "EMP 1" };
-    let color = "blue";
+    const data = {
+      x: this.employeeLocs[0].x - 18,
+      y: this.employeeLocs[0].y - 8,
+      name: 'EMP 1',
+    };
+    let color = 'blue';
 
     let reect = new fabric.Rect({
       height: 10,
       width: 10,
       fill: color,
-      originX: "center",
-      originY: "center"
+      originX: 'center',
+      originY: 'center',
     });
     let text = new fabric.Text(data.name, {
       fontSize: 10,
       top: 10,
-      originX: "center",
-      originY: "center"
+      originX: 'center',
+      originY: 'center',
     });
 
-    this.userMarkers["emp1"] = new fabric.Group([reect, text], {
+    this.userMarkers['emp1'] = new fabric.Group([reect, text], {
       left: data.x,
       top: data.y,
-      selectable: false
+      selectable: false,
     });
 
-    this.canvas.add(this.userMarkers["emp1"]);
+    this.canvas.add(this.userMarkers['emp1']);
   }
 
   async getDirection() {
@@ -328,8 +328,8 @@ export class ErtMapPage implements OnInit {
             return a.accuracy > b.accuracy
               ? -1
               : a.accuracy < b.accuracy
-                ? 1
-                : 0;
+              ? 1
+              : 0;
           });
           const beaconData3 = beaconData2.slice(0, 3);
 

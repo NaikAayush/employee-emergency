@@ -52,7 +52,8 @@ export class EmployeeMapPage {
   //////////////////////////////////////////////
   // uuidMap of the map to download
   // uuidMap: string = 'f206100a-62d2-4e55-a15f-1f8b331fdada';
-  uuidMap: string = '5f820658-e546-4145-9734-7cff675f7ec7';
+  // uuidMap: string = '5f820658-e546-4145-9734-7cff675f7ec7';
+  uuidMap: string = 'e7d93446-9e77-4715-b79b-59463e66c7a1';
   private canvas: fabric.Canvas;
 
   // icons
@@ -91,7 +92,7 @@ export class EmployeeMapPage {
   headingAngle: number = 45;
 
   // ws
-  userUuid: string = 'leUKab3VjIe42HgCq0qPafS1FLs2';
+  userUuid: string = 'IWF3Z5idpBRA9cbdH9R9IWFN0852';
   // subject: WebSocketSubject<any>;
   wsLoc: WebSocket;
 
