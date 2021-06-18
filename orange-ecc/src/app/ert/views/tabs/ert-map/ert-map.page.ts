@@ -80,6 +80,10 @@ export class ErtMapPage implements OnInit {
   // subject: WebSocketSubject<any>;
   wsLoc: WebSocket;
 
+  userIds: string[] = [
+    'IWF3Z5idpBRA9cbdH9R9IWFN0852',
+  ];
+
   // navigation icon
   private navIcon: HTMLImageElement;
   private navIconSrc = 'assets/img/arrow.svg';
@@ -101,14 +105,11 @@ export class ErtMapPage implements OnInit {
   options: WifiScanResultsOptions;
 
   constructor(
-    private firestore: AngularFirestore,
-    private storage: AngularFireStorage,
     //////////////////////////////////////////////
     private readonly ibeacon: IBeacon,
     private readonly platform: Platform,
     private changeRef: ChangeDetectorRef,
     private wifiWizard2: WifiWizard2,
-    private magnetometer: Magnetometer,
     private deviceOrientation: DeviceOrientation,
 
     // trilateration
@@ -124,7 +125,7 @@ export class ErtMapPage implements OnInit {
       this.enableDebugLogs();
     });
 
-    this.startScanning();
+    // this.startScanning();
     // interval(1000).subscribe((x) => {
     //   this.startWifiScan();
     // });
@@ -200,6 +201,92 @@ export class ErtMapPage implements OnInit {
     });
 
     this.canvas.add(this.userMarkers['emp1']);
+  }
+
+  private startMonitoring() {
+    this.userIds.forEach((uid) => {
+      const listenWs = new WebSocket(
+        `${environment.wsEndpoint}listen?id=${uid}`
+      );
+
+      listenWs.addEventListener('open', function () {
+        listenWs.send('Hello Server!');
+      });
+
+      listenWs.addEventListener('message', (event) => {
+        try {
+          let data = JSON.parse(event.data);
+          console.log('Message from server ', data);
+
+          this.employeeLocs[0].x = data.x;
+          this.employeeLocs[0].y = data.y;
+
+          if (this.userMarkers[uid]) {
+            console.log('found');
+            // this.userMarkers[uid].set({
+            //   // left: data.x,
+            //   top: data.y,
+            // });
+
+            fabric.util.animate({
+              startValue: this.userMarkers[uid].left,
+              endValue: data.x,
+              onChange: (val) => {
+                this.userMarkers[uid].left = val;
+                this.userMarkers[uid].setCoords();
+                this.canvas.renderAll();
+              },
+            });
+
+            fabric.util.animate({
+              startValue: this.userMarkers[uid].top,
+              endValue: data.y,
+              onChange: (val) => {
+                this.userMarkers[uid].top = val;
+                this.userMarkers[uid].setCoords();
+                this.canvas.renderAll();
+              },
+            });
+
+            // this.userMarkers[uid].setCoords();
+            // this.canvas.renderAll();
+          } else {
+            let color = 'red';
+
+            if (data.ert) {
+              color = 'blue';
+            }
+
+            let reect = new fabric.Rect({
+              height: 10,
+              width: 10,
+              fill: color,
+              originX: 'center',
+              originY: 'center',
+            });
+            let text = new fabric.Text(data.name, {
+              fontSize: 10,
+              top: 10,
+              originX: 'center',
+              originY: 'center',
+            });
+
+            this.userMarkers[uid] = new fabric.Group([reect, text], {
+              left: data.x,
+              top: data.y,
+              selectable: false,
+            });
+
+            this.canvas.add(this.userMarkers[uid]);
+
+          }
+
+          this.getNearestExit();
+        } catch (error) {
+          console.log('Bad data from WS', error);
+        }
+      });
+    });
   }
 
   async getDirection() {
@@ -435,7 +522,9 @@ export class ErtMapPage implements OnInit {
 
     this.getNearestExit();
 
-    await this.setupEmployees();
+    // await this.setupEmployees();
+
+    this.startMonitoring();
   }
 
   private addMarkers() {
@@ -571,6 +660,8 @@ export class ErtMapPage implements OnInit {
           fill: 'red',
           width: 5,
           height: 5,
+          originX: "center",
+          originY:" center",
           angle: 45,
           selectable: false,
         });
