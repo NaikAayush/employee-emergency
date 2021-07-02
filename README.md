@@ -37,3 +37,23 @@ Winning submission to EY GDS Hackpions 2.0. A complete end-to-end platform to ai
     - `command-center-api`: includes map image processing, pathfinding, simulator and beacon estimator.
     - `ws-api`: WebSocket server for realtime location updates
  - `analysis`: some basic analysis of iBeacon sensor data
+
+
+## Screenshots
+
+Command Center Dashboard
+
+![Command Center](0-cc-dash.png)
+
+Showcase
+
+![Screen 1](1-showcase.png)
+![Screen 2](2-showcase.png)
+![Screen 3](3-showcase.png)
+
+App Features
+
+![Login](4-login.png)
+![Chat](5-chat.png)
+![SOS](6-emp.png)
+
