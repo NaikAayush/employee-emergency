@@ -47,7 +47,13 @@ Winning submission to EY GDS Hackpions 2.0. A complete end-to-end platform to ai
 
 ### Showcase
 
-![Screen 1](screenshots/1-showcase.png) ![Screen 2](screenshots/2-showcase.png) ![Screen 3](screenshots/3-showcase.png)
+<p align="center">
+  <img alt="Screen 1" src="screenshots/1-showcase.png" width="33%">
+&nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="Screen 2" src="screenshots/2-showcase.png" width="33%">
+ &nbsp; &nbsp; &nbsp; &nbsp;
+  <img alt="Screen 3" src="screenshots/3-showcase.png" width="33%">
+</p>
 
 ### App Features
  
