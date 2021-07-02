@@ -43,17 +43,17 @@ Winning submission to EY GDS Hackpions 2.0. A complete end-to-end platform to ai
 
 Command Center Dashboard
 
-![Command Center](0-cc-dash.png)
+![Command Center](screenshots/0-cc-dash.png)
 
 Showcase
 
-![Screen 1](1-showcase.png)
-![Screen 2](2-showcase.png)
-![Screen 3](3-showcase.png)
+![Screen 1](screenshots/1-showcase.png)
+![Screen 2](screenshots/2-showcase.png)
+![Screen 3](screenshots/3-showcase.png)
 
 App Features
 
-![Login](4-login.png)
-![Chat](5-chat.png)
-![SOS](6-emp.png)
+![Login](screenshots/4-login.png)
+![Chat](screenshots/5-chat.png)
+![SOS](screenshots/6-emp.png)
 
